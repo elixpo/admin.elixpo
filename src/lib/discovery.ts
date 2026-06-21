@@ -103,7 +103,6 @@ export interface Inventory {
     durableObjects: DurableObjectNamespace[];
     workflows: WorkflowInfo[];
     zones: ZoneInfo[];
-    logpush: LogpushJob[];
     errors: Record<string, SectionError>;
 }
 
@@ -124,7 +123,7 @@ export async function discoverAccount(force = false): Promise<Inventory> {
     const { getAccountId } = await import("./cloudflare-api");
     const accountId = await getAccountId();
 
-    const [pages, workers, d1, kv, queues, durableObjects, workflows, zones, logpush] =
+    const [pages, workers, d1, kv, queues, durableObjects, workflows, zones] =
         await Promise.all([
             // Pages list rejects page/per_page combos — fetch the default page directly.
             safe(async () => {
@@ -140,7 +139,6 @@ export async function discoverAccount(force = false): Promise<Inventory> {
             ),
             safe(() => listAcct<WorkflowInfo>("/workflows")),
             safe(() => cfList<ZoneInfo>(`/zones?account.id=${accountId}`)),
-            safe(() => listAcct<LogpushJob>("/logpush/jobs")),
         ]);
 
     const errors: Record<string, SectionError> = {};
@@ -170,7 +168,6 @@ export async function discoverAccount(force = false): Promise<Inventory> {
         durableObjects: pick("durableObjects", durableObjects, []),
         workflows: pick("workflows", workflows, []),
         zones: pick("zones", zones, []),
-        logpush: pick("logpush", logpush, []),
         errors,
     };
 

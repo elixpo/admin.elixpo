@@ -3,9 +3,11 @@
 import { Warning } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import MetricChart from "@/components/metric-chart";
 import {
     C,
+    Donut,
     Empty,
     fmt,
     fmtBytes,
@@ -14,17 +16,28 @@ import {
     Panel,
     SectionError,
     StatusChip,
+    TopList,
     trend,
 } from "@/components/ui";
 import type { Inventory } from "@/lib/discovery";
 import { autoLabel, metaFor } from "@/lib/enrich";
-import type { MetricSeries } from "@/lib/metrics";
+import type { MetricSeries, ZoneBreakdown } from "@/lib/metrics";
+
+const Globe = dynamic(() => import("@/components/globe"), { ssr: false });
 
 const grid = (min: number) => ({
     display: "grid",
-    gridTemplateColumns: `repeat(auto-fill, minmax(${min}px, 1fr))`,
+    gridTemplateColumns: `repeat(auto-fit, minmax(${min}px, 1fr))`,
     gap: 1.5,
 });
+
+const statusTone = (code: string): "success" | "info" | "warning" | "error" => {
+    const n = Number(code);
+    if (n >= 500) return "error";
+    if (n >= 400) return "warning";
+    if (n >= 300) return "info";
+    return "success";
+};
 
 function CompactRow({ primary, secondary, href, chip }: { primary: string; secondary?: string; href?: string; chip?: React.ReactNode }) {
     const inner = (
@@ -64,11 +77,13 @@ export default function OverviewView({
     inv,
     workers,
     traffic,
+    breakdown,
     primaryZoneName,
 }: {
     inv: Inventory;
     workers: MetricSeries;
     traffic: MetricSeries | null;
+    breakdown: ZoneBreakdown | null;
     primaryZoneName?: string;
 }) {
     const deadQueues = inv.queues.filter((q) => (q.consumers_total_count ?? 0) === 0);

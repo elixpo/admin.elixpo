@@ -7,7 +7,7 @@
 
 import { Box, Typography } from "@mui/material";
 import { useMemo } from "react";
-import { C } from "@/components/ui";
+import { C, CHART } from "@/components/ui";
 
 export interface ChartSeries {
     key: string;
@@ -20,7 +20,7 @@ export interface MetricPoint {
     [k: string]: number | string;
 }
 
-const PALETTE = ["#4593ff", "#22c55e", "#f59e0b", "#a855f7", "#ef4444"];
+const PALETTE = CHART;
 
 export default function MetricChart({
     points,

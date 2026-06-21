@@ -13,7 +13,6 @@ const SECTION_LABELS: Record<string, string> = {
     durableObjects: "Durable Objects",
     workflows: "Workflows",
     zones: "Zones",
-    logpush: "Logpush / Logs",
 };
 
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {

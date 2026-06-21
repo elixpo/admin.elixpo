@@ -4,7 +4,7 @@
  */
 
 import { discoverAccount } from "@/lib/discovery";
-import { lastHours, workersMetricsAll, zoneTraffic } from "@/lib/metrics";
+import { lastHours, workersMetricsAll, zoneBreakdown, zoneTraffic } from "@/lib/metrics";
 import OverviewView from "./overview-view";
 
 export const runtime = "edge";
@@ -13,21 +13,13 @@ export const dynamic = "force-dynamic";
 export default async function OverviewPage() {
     const inv = await discoverAccount();
     const w = lastHours(24);
+    const primaryZone = inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
 
-    // Account-wide Workers chart + primary-zone traffic chart (best-effort).
-    const primaryZone =
-        inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
-    const [workers, traffic] = await Promise.all([
+    const [workers, traffic, breakdown] = await Promise.all([
         workersMetricsAll(w),
         primaryZone ? zoneTraffic(primaryZone.id, w) : Promise.resolve(null),
+        primaryZone ? zoneBreakdown(primaryZone.id, w) : Promise.resolve(null),
     ]);
 
-    return (
-        <OverviewView
-            inv={inv}
-            workers={workers}
-            traffic={traffic}
-            primaryZoneName={primaryZone?.name}
-        />
-    );
+    return <OverviewView inv={inv} workers={workers} traffic={traffic} breakdown={breakdown} primaryZoneName={primaryZone?.name} />;
 }

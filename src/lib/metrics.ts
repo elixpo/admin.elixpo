@@ -385,6 +385,53 @@ export async function dnsAnalytics(
     }
 }
 
+/* -------------------------------------------------- Zone breakdowns (traffic) */
+
+export interface Dim {
+    label: string;
+    count: number;
+}
+export interface ZoneBreakdown {
+    available: boolean;
+    error?: string;
+    country: Dim[];
+    status: Dim[];
+    device: Dim[];
+    host: Dim[];
+    path: Dim[];
+}
+
+export async function zoneBreakdown(zoneTag: string, w = lastHours()): Promise<ZoneBreakdown> {
+    const empty: ZoneBreakdown = { available: false, country: [], status: [], device: [], host: [], path: [] };
+    try {
+        const grp = (alias: string, dim: string, limit = 10) =>
+            `${alias}:httpRequestsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u},orderBy:[count_DESC]){count dimensions{${dim}}}`;
+        const data = await run<any>(
+            `query($z:String!,$s:Time!,$u:Time!){viewer{zones(filter:{zoneTag:$z}){
+                ${grp("country", "clientCountryName")}
+                ${grp("status", "edgeResponseStatus")}
+                ${grp("device", "clientDeviceType", 6)}
+                ${grp("host", "clientRequestHTTPHost")}
+                ${grp("path", "clientRequestPath")}
+            }}}`,
+            { z: zoneTag, s: w.since, u: w.until },
+        );
+        const z = data?.viewer?.zones?.[0] || {};
+        const map = (rows: any[], key: string): Dim[] =>
+            (rows || []).map((r) => ({ label: String(r.dimensions[key] ?? "—"), count: r.count ?? 0 }));
+        return {
+            available: true,
+            country: map(z.country, "clientCountryName"),
+            status: map(z.status, "edgeResponseStatus"),
+            device: map(z.device, "clientDeviceType"),
+            host: map(z.host, "clientRequestHTTPHost"),
+            path: map(z.path, "clientRequestPath"),
+        };
+    } catch (e) {
+        return { ...empty, error: (e as Error).message };
+    }
+}
+
 /* ------------------------------------------------------------------ Gateway */
 
 export async function gatewayDns(w = lastHours()): Promise<MetricSeries> {
