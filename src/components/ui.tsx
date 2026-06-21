@@ -6,6 +6,7 @@
  * bar tables, donuts). Single accent color (#9b7bf7) across the whole app.
  */
 
+import TimeRange from "@/components/time-range";
 import {
     ArrowDownward,
     ArrowUpward,
@@ -31,7 +32,6 @@ import {
 import Link from "next/link";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
-import TimeRange from "@/components/time-range";
 
 // Re-export pure helpers so client code can keep importing from "@/components/ui".
 // Server code should import these from "@/lib/format" directly.

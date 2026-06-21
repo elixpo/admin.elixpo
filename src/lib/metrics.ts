@@ -283,21 +283,30 @@ export async function queueMetrics(
 
 /* ----------------------------------------------------------- Durable Objects */
 
-export async function doMetrics(w = lastHours()): Promise<MetricSeries> {
+export async function doMetrics(
+    namespaceId?: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
+        const nf = namespaceId ? ",namespaceId:$ns" : "";
         const data = await run<any>(
-            `query($a:String!,$s:Time!,$u:Time!){
+            `query($a:String!,$s:Time!,$u:Time!${namespaceId ? ",$ns:string!" : ""}){
               viewer{accounts(filter:{accountTag:$a}){
                 durableObjectsInvocationsAdaptiveGroups(limit:10000,
-                  filter:{datetimeHour_geq:$s,datetimeHour_leq:$u},
+                  filter:{datetimeHour_geq:$s,datetimeHour_leq:$u${nf}},
                   orderBy:[datetimeHour_ASC]){
-                  sum{requests errors}
+                  sum{requests errors responseBodySize}
                   dimensions{datetimeHour}
                 }
               }}
             }`,
-            { a: account, s: w.since, u: w.until },
+            {
+                a: account,
+                s: w.since,
+                u: w.until,
+                ...(namespaceId ? { ns: namespaceId } : {}),
+            },
         );
         const rows =
             data?.viewer?.accounts?.[0]
@@ -448,8 +457,17 @@ export interface DnsBreakdown {
     colo: Dim[];
 }
 
-export async function dnsBreakdown(zoneTag: string, w = lastHours()): Promise<DnsBreakdown> {
-    const empty: DnsBreakdown = { available: false, queryName: [], queryType: [], responseCode: [], colo: [] };
+export async function dnsBreakdown(
+    zoneTag: string,
+    w = lastHours(),
+): Promise<DnsBreakdown> {
+    const empty: DnsBreakdown = {
+        available: false,
+        queryName: [],
+        queryType: [],
+        responseCode: [],
+        colo: [],
+    };
     try {
         const grp = (alias: string, dim: string, limit = 12) =>
             `${alias}:dnsAnalyticsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u},orderBy:[count_DESC]){count dimensions{${dim}}}`;
@@ -464,7 +482,10 @@ export async function dnsBreakdown(zoneTag: string, w = lastHours()): Promise<Dn
         );
         const z = data?.viewer?.zones?.[0] || {};
         const map = (rows: any[], key: string): Dim[] =>
-            (rows || []).map((r) => ({ label: String(r.dimensions[key] ?? "—"), count: r.count ?? 0 }));
+            (rows || []).map((r) => ({
+                label: String(r.dimensions[key] ?? "—"),
+                count: r.count ?? 0,
+            }));
         return {
             available: true,
             queryName: map(z.qn, "queryName"),

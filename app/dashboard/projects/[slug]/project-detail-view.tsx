@@ -187,7 +187,10 @@ export default function ProjectDetailView({
                         </Box>
                     </Panel>
                     <Panel title="Status Codes">
-                        <BarChart data={statusBars(breakdown.status)} height={180} />
+                        <BarChart
+                            data={statusBars(breakdown.status)}
+                            height={180}
+                        />
                     </Panel>
                     <Panel title="Devices">
                         {breakdown.device.length ? (

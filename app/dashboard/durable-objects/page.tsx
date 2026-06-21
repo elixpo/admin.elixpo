@@ -18,6 +18,7 @@ export default async function DurableObjectsPage() {
         secondary: [d.script, d.use_sqlite ? "SQLite" : null, d.id]
             .filter(Boolean)
             .join(" · "),
+        href: `/dashboard/durable-objects/${d.id}`,
     }));
 
     return (

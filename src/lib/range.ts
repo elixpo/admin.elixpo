@@ -21,5 +21,10 @@ export function rangeWindow(key?: string): RangeWindow {
     const r = RANGES.find((x) => x.key === key) || RANGES[2];
     const until = new Date();
     const since = new Date(until.getTime() - r.hours * 3600_000);
-    return { since: since.toISOString(), until: until.toISOString(), key: r.key, label: r.label };
+    return {
+        since: since.toISOString(),
+        until: until.toISOString(),
+        key: r.key,
+        label: r.label,
+    };
 }

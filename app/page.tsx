@@ -1,9 +1,16 @@
 import LandingSections from "@/components/landing-sections";
 import PixelHero from "@/components/pixel-hero";
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
+import { cookies } from "next/headers";
 
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+    const store = await cookies();
+    const session = await verifySession(store.get(SESSION_COOKIE)?.value);
+    const authed = !!session?.isAdmin;
+
     return (
         <main
             style={{
@@ -13,8 +20,8 @@ export default function Home() {
                 minHeight: "100dvh",
             }}
         >
-            <PixelHero />
-            <LandingSections />
+            <PixelHero authed={authed} />
+            <LandingSections authed={authed} />
         </main>
     );
 }

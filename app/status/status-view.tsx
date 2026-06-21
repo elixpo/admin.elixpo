@@ -1,9 +1,13 @@
 "use client";
 
+import BackgroundAurora from "@/components/background-aurora";
 import { C, StatusBar } from "@/components/ui";
 import { fmt } from "@/lib/format";
+import { GitHub } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+const REPO = "https://github.com/Circuit-Overtime/admin.elixpo";
 
 const theme = createTheme({
     palette: { mode: "dark" },
@@ -50,13 +54,15 @@ export default function StatusView({
             <Box
                 sx={{
                     minHeight: "100dvh",
-                    background:
-                        "linear-gradient(180deg,#0b0d12 0%,#11151c 50%,#0b0d12 100%)",
+                    position: "relative",
                     color: C.text,
                 }}
             >
+                <BackgroundAurora variant="default" />
                 <Box
                     sx={{
+                        position: "relative",
+                        zIndex: 1,
                         maxWidth: 900,
                         mx: "auto",
                         px: 2,
@@ -236,6 +242,61 @@ export default function StatusView({
                                 </Box>
                             );
                         })}
+                    </Box>
+
+                    {/* open-source / GitHub footer */}
+                    <Box
+                        sx={{
+                            mt: 5,
+                            pt: 3,
+                            borderTop: `1px solid ${C.border}`,
+                            textAlign: "center",
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                color: C.textMuted,
+                                fontSize: "0.82rem",
+                                mb: 1.5,
+                            }}
+                        >
+                            Every Elixpo service is open source. Spot a problem?
+                            Open an issue.
+                        </Typography>
+                        <Box
+                            component="a"
+                            href={`${REPO}/issues/new`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 1,
+                                height: 40,
+                                px: 2.25,
+                                borderRadius: "999px",
+                                color: C.text,
+                                textDecoration: "none",
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                                bgcolor: "rgba(255,255,255,0.06)",
+                                border: `1px solid ${C.border}`,
+                                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                            }}
+                        >
+                            <GitHub sx={{ fontSize: "1.1rem" }} />
+                            Report an issue on GitHub
+                        </Box>
+                        <Typography
+                            sx={{
+                                color: C.textMuted,
+                                fontSize: "0.72rem",
+                                mt: 2,
+                            }}
+                        >
+                            Live data from Cloudflare edge analytics · refreshed
+                            every minute
+                        </Typography>
                     </Box>
                 </Box>
             </Box>

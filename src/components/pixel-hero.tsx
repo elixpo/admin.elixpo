@@ -250,12 +250,14 @@ const ArrowRight = () => (
     </svg>
 );
 
-export default function PixelHero() {
+export default function PixelHero({ authed }: { authed?: boolean }) {
     const [mounted, setMounted] = useState(false);
     useEffect(() => {
         const t = setTimeout(() => setMounted(true), 50);
         return () => clearTimeout(t);
     }, []);
+    const primaryHref = authed ? "/dashboard" : "/api/auth/login";
+    const primaryLabel = authed ? "Open dashboard" : "Sign in with Elixpo";
 
     return (
         <section
@@ -421,7 +423,7 @@ export default function PixelHero() {
                 }}
             >
                 <a
-                    href="/api/auth/login"
+                    href={primaryHref}
                     style={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -439,11 +441,11 @@ export default function PixelHero() {
                             "inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.2), 0 14px 30px rgba(124,92,255,0.35)",
                     }}
                 >
-                    Sign in with Elixpo
+                    {primaryLabel}
                     <ArrowRight />
                 </a>
                 <Link
-                    href="https://elixpo.com"
+                    href="/status"
                     style={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -462,7 +464,7 @@ export default function PixelHero() {
                         boxShadow: "inset 0 1px 1px rgba(255,255,255,0.1)",
                     }}
                 >
-                    Explore the suite
+                    Live status
                 </Link>
             </div>
 

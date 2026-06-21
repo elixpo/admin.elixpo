@@ -11,11 +11,12 @@ export default async function KvListPage() {
         id: k.id,
         primary: k.title,
         secondary: `${metaFor(k.title).label} · ${k.id}`,
+        href: `/dashboard/kv/${k.id}`,
     }));
     return (
         <ListView
             title="KV namespaces"
-            subtitle="Key-value stores across the account"
+            subtitle="Click a namespace to view metrics and browse keys"
             panelTitle={`${items.length} namespaces`}
             items={items}
             emptyMessage="No KV namespaces found."

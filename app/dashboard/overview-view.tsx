@@ -319,7 +319,10 @@ export default function OverviewView({
                         </Box>
                     </Panel>
                     <Panel title="Status Codes">
-                        <BarChart data={statusBars(breakdown.status)} height={190} />
+                        <BarChart
+                            data={statusBars(breakdown.status)}
+                            height={190}
+                        />
                     </Panel>
                     <Panel title="Requests by device">
                         {breakdown.device.length ? (

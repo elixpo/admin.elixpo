@@ -1,6 +1,7 @@
 import { acctPath, cfRest, safe } from "@/lib/cloudflare-api";
 import { discoverAccount } from "@/lib/discovery";
 import { d1Metrics } from "@/lib/metrics";
+import { rangeWindow } from "@/lib/range";
 import D1DetailView from "./d1-detail-view";
 
 export const runtime = "edge";
@@ -8,8 +9,13 @@ export const dynamic = "force-dynamic";
 
 export default async function D1DetailPage({
     params,
-}: { params: Promise<{ id: string }> }) {
+    searchParams,
+}: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ range?: string }>;
+}) {
     const { id } = await params;
+    const { range } = await searchParams;
     const inv = await discoverAccount();
     const db = inv.d1.find((d) => d.uuid === id);
 
@@ -29,7 +35,7 @@ export default async function D1DetailPage({
                 (r: any) => r.name as string,
             );
         }),
-        d1Metrics(id),
+        d1Metrics(id, rangeWindow(range)),
     ]);
 
     return (

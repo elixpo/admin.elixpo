@@ -21,7 +21,7 @@ export default function D1DetailView({
 }) {
     return (
         <Box>
-            <PageHeader title={dbName} subtitle={`D1 · ${dbId}`} />
+            <PageHeader title={dbName} subtitle={`D1 · ${dbId}`} timeRange />
 
             <Box
                 sx={{

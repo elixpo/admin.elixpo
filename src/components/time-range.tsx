@@ -2,10 +2,10 @@
 
 /** URL-driven time-range selector. Updates ?range= so server pages re-fetch. */
 
-import { Box } from "@mui/material";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { C } from "@/components/ui";
 import { RANGES } from "@/lib/range";
+import { Box } from "@mui/material";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function TimeRange() {
     const router = useRouter();
@@ -20,7 +20,17 @@ export default function TimeRange() {
     };
 
     return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.25, p: 0.25, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.04)", border: `1px solid ${C.border}` }}>
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.25,
+                p: 0.25,
+                borderRadius: "8px",
+                bgcolor: "rgba(255,255,255,0.04)",
+                border: `1px solid ${C.border}`,
+            }}
+        >
             {RANGES.map((r) => {
                 const active = current === r.key;
                 return (
@@ -39,7 +49,12 @@ export default function TimeRange() {
                             fontFamily: "inherit",
                             color: active ? "#fff" : C.textMuted,
                             bgcolor: active ? C.accent : "transparent",
-                            "&:hover": { color: active ? "#fff" : C.text, bgcolor: active ? C.accent : "rgba(255,255,255,0.06)" },
+                            "&:hover": {
+                                color: active ? "#fff" : C.text,
+                                bgcolor: active
+                                    ? C.accent
+                                    : "rgba(255,255,255,0.06)",
+                            },
                         }}
                     >
                         {r.label}
