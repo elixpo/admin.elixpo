@@ -95,6 +95,7 @@ export default async function StatusPage() {
         <StatusView
             products={products}
             uptime={uptime}
+            changelogs={changelogs}
             fetchedAt={inv.fetchedAt}
         />
     );

@@ -3,6 +3,7 @@
 /** Public status page — light, commercial (Atlassian Statuspage style):
  * a real 90-day platform uptime history bar + per-service live rows. */
 
+import type { ChangeLogItem } from "@/lib/changelog";
 import type { DailyUptime, DayPoint } from "@/lib/metrics";
 import { GitHub, OpenInNew } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
@@ -119,13 +120,28 @@ function serviceSegments(status: { label: string; count: number }[]) {
         .filter((s) => s.pct > 0);
 }
 
+function relTime(iso: string): string {
+    const diff = Date.now() - new Date(iso).getTime();
+    const days = Math.floor(diff / 86400_000);
+    if (days <= 0) {
+        const hrs = Math.floor(diff / 3600_000);
+        return hrs <= 1 ? "just now" : `${hrs}h ago`;
+    }
+    if (days === 1) return "yesterday";
+    if (days < 30) return `${days}d ago`;
+    const months = Math.floor(days / 30);
+    return months === 1 ? "1 month ago" : `${months} months ago`;
+}
+
 export default function StatusView({
     products,
     uptime,
+    changelogs,
     fetchedAt,
 }: {
     products: ProductStatus[];
     uptime: DailyUptime;
+    changelogs: ChangeLogItem[];
     fetchedAt: number;
 }) {
     const worst: Health = products.some((p) => p.health === "outage")
