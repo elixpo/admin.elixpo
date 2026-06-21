@@ -6,10 +6,31 @@
  * bar tables, donuts). Single accent color (#9b7bf7) across the whole app.
  */
 
-import { ArrowDownward, ArrowUpward, MoreHoriz } from "@mui/icons-material";
-import { Box, Card, Chip, Typography } from "@mui/material";
+import {
+    ArrowDownward,
+    ArrowUpward,
+    ContentCopy,
+    DownloadOutlined,
+    ImageOutlined,
+    MoreHoriz,
+    PrintOutlined,
+    Search as SearchIcon,
+    SwapVert,
+} from "@mui/icons-material";
+import {
+    Box,
+    Card,
+    Chip,
+    IconButton,
+    InputBase,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Typography,
+} from "@mui/material";
 import Link from "next/link";
 import type React from "react";
+import { useMemo, useRef, useState } from "react";
 
 // Re-export pure helpers so client code can keep importing from "@/components/ui".
 // Server code should import these from "@/lib/format" directly.
@@ -122,12 +143,18 @@ export function Panel({
     action,
     children,
     dense,
+    exportData,
+    exportName,
 }: {
     title?: string;
     action?: React.ReactNode;
     children: React.ReactNode;
     dense?: boolean;
+    /** Rows offered for CSV export via the panel menu. */
+    exportData?: { label: string; value: number | string }[];
+    exportName?: string;
 }) {
+    const contentRef = useRef<HTMLDivElement>(null);
     return (
         <Card
             sx={{
@@ -157,14 +184,100 @@ export function Panel({
                         {title}
                     </Typography>
                     {action ?? (
-                        <MoreHoriz
-                            sx={{ fontSize: "1.05rem", color: C.textMuted }}
+                        <PanelMenu
+                            title={title}
+                            targetRef={contentRef}
+                            exportData={exportData}
+                            exportName={exportName || title}
                         />
                     )}
                 </Box>
             )}
-            <Box sx={{ p: dense ? 0 : 1.75 }}>{children}</Box>
+            <Box ref={contentRef} sx={{ p: dense ? 0 : 1.75 }}>
+                {children}
+            </Box>
         </Card>
+    );
+}
+
+/* ----------------------------------------------------- panel action menu (3-dots) */
+
+function PanelMenu({
+    title,
+    targetRef,
+    exportData,
+    exportName,
+}: {
+    title?: string;
+    targetRef: React.RefObject<HTMLDivElement | null>;
+    exportData?: { label: string; value: number | string }[];
+    exportName?: string;
+}) {
+    const [anchor, setAnchor] = useState<null | HTMLElement>(null);
+    const close = () => setAnchor(null);
+    const slug = (exportName || title || "panel").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+
+    const copyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+        } catch {}
+        close();
+    };
+    const print = () => {
+        window.print();
+        close();
+    };
+    const saveImage = async () => {
+        close();
+        if (!targetRef.current) return;
+        try {
+            const { toPng } = await import("html-to-image");
+            const url = await toPng(targetRef.current, { backgroundColor: "#11151f", pixelRatio: 2 });
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${slug}.png`;
+            a.click();
+        } catch {}
+    };
+    const downloadCsv = () => {
+        close();
+        if (!exportData?.length) return;
+        const rows = [["label", "value"], ...exportData.map((d) => [d.label, String(d.value)])];
+        const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${slug}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    return (
+        <>
+            <IconButton size="small" onClick={(e) => setAnchor(e.currentTarget)} sx={{ color: C.textMuted, p: 0.25, "&:hover": { color: C.text } }}>
+                <MoreHoriz sx={{ fontSize: "1.1rem" }} />
+            </IconButton>
+            <Menu
+                anchorEl={anchor}
+                open={Boolean(anchor)}
+                onClose={close}
+                slotProps={{ paper: { sx: { bgcolor: "rgba(20,22,34,0.97)", backdropFilter: "blur(16px)", border: `1px solid ${C.border}`, borderRadius: "10px", minWidth: 190 } } }}
+            >
+                <PanelMenuItem icon={<ContentCopy fontSize="small" />} label="Copy link" onClick={copyLink} />
+                <PanelMenuItem icon={<ImageOutlined fontSize="small" />} label="Save as image" onClick={saveImage} />
+                {exportData && exportData.length > 0 && <PanelMenuItem icon={<DownloadOutlined fontSize="small" />} label="Download CSV" onClick={downloadCsv} />}
+                <PanelMenuItem icon={<PrintOutlined fontSize="small" />} label="Print" onClick={print} />
+            </Menu>
+        </>
+    );
+}
+
+function PanelMenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+    return (
+        <MenuItem onClick={onClick} sx={{ py: 0.85, color: C.textDim, fontSize: "0.82rem", "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: C.text } }}>
+            <ListItemIcon sx={{ color: "inherit", minWidth: 32 }}>{icon}</ListItemIcon>
+            {label}
+        </MenuItem>
     );
 }
 
@@ -319,6 +432,7 @@ export function TopList({
     items,
     color = C.accent,
     valueFmt = (n: number) => n.toLocaleString(),
+    controls = true,
 }: {
     items: {
         label: string;
@@ -328,12 +442,41 @@ export function TopList({
     }[];
     color?: string;
     valueFmt?: (n: number) => string;
+    controls?: boolean;
 }) {
-    const max = Math.max(...items.map((i) => i.value), 1);
+    const [filter, setFilter] = useState("");
+    const [desc, setDesc] = useState(true);
+
+    const shown = useMemo(() => {
+        let r = items;
+        if (filter.trim()) {
+            const q = filter.toLowerCase();
+            r = r.filter((i) => i.label.toLowerCase().includes(q));
+        }
+        return [...r].sort((a, b) => (desc ? b.value - a.value : a.value - b.value));
+    }, [items, filter, desc]);
+
     if (!items.length) return <Empty message="No data." />;
+    const max = Math.max(...shown.map((i) => i.value), 1);
     return (
         <Box>
-            {items.map((it) => {
+            {controls && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1, py: 0.75, borderBottom: `1px solid ${C.border}` }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flex: 1, bgcolor: "rgba(255,255,255,0.04)", borderRadius: "6px", px: 1 }}>
+                        <SearchIcon sx={{ fontSize: "0.95rem", color: C.textMuted }} />
+                        <InputBase
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                            placeholder="Filter…"
+                            sx={{ flex: 1, fontSize: "0.78rem", color: C.text, "& input::placeholder": { color: C.textMuted, opacity: 1 } }}
+                        />
+                    </Box>
+                    <IconButton size="small" onClick={() => setDesc((d) => !d)} title={desc ? "Sort ascending" : "Sort descending"} sx={{ color: C.textMuted, "&:hover": { color: C.text } }}>
+                        <SwapVert sx={{ fontSize: "1rem" }} />
+                    </IconButton>
+                </Box>
+            )}
+            {shown.map((it) => {
                 const row = (
                     <Box
                         sx={{

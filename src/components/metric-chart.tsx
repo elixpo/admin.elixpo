@@ -67,9 +67,10 @@ export default function MetricChart({
             return { color, line, area, label: s.label, total };
         });
 
-        const gridY = [0, 0.25, 0.5, 0.75, 1].map(
-            (f) => PAD.top + innerH - f * innerH,
-        );
+        const gridLevels = [0, 0.25, 0.5, 0.75, 1].map((f) => ({
+            y: PAD.top + innerH - f * innerH,
+            val: max * f,
+        }));
         const labels =
             n > 0
                 ? [
@@ -86,7 +87,7 @@ export default function MetricChart({
                   ]
                 : ["", ""];
 
-        return { paths, max, labels, gridY };
+        return { paths, max, labels, gridLevels };
     }, [points, series, H]);
 
     if (!points.length) {
