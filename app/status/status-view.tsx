@@ -237,18 +237,6 @@ export default function StatusView({
                             );
                         })}
                     </Box>
-
-                    <Typography
-                        sx={{
-                            color: C.textMuted,
-                            fontSize: "0.72rem",
-                            mt: 4,
-                            textAlign: "center",
-                        }}
-                    >
-                        Powered by Cloudflare edge analytics · this page is
-                        public.
-                    </Typography>
                 </Box>
             </Box>
         </ThemeProvider>

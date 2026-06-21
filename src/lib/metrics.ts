@@ -439,6 +439,44 @@ export async function dnsAnalytics(
     }
 }
 
+export interface DnsBreakdown {
+    available: boolean;
+    error?: string;
+    queryName: Dim[];
+    queryType: Dim[];
+    responseCode: Dim[];
+    colo: Dim[];
+}
+
+export async function dnsBreakdown(zoneTag: string, w = lastHours()): Promise<DnsBreakdown> {
+    const empty: DnsBreakdown = { available: false, queryName: [], queryType: [], responseCode: [], colo: [] };
+    try {
+        const grp = (alias: string, dim: string, limit = 12) =>
+            `${alias}:dnsAnalyticsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u},orderBy:[count_DESC]){count dimensions{${dim}}}`;
+        const data = await run<any>(
+            `query($z:String!,$s:Time!,$u:Time!){viewer{zones(filter:{zoneTag:$z}){
+                ${grp("qn", "queryName")}
+                ${grp("qt", "queryType")}
+                ${grp("rc", "responseCode")}
+                ${grp("co", "coloName")}
+            }}}`,
+            { z: zoneTag, s: w.since, u: w.until },
+        );
+        const z = data?.viewer?.zones?.[0] || {};
+        const map = (rows: any[], key: string): Dim[] =>
+            (rows || []).map((r) => ({ label: String(r.dimensions[key] ?? "—"), count: r.count ?? 0 }));
+        return {
+            available: true,
+            queryName: map(z.qn, "queryName"),
+            queryType: map(z.qt, "queryType"),
+            responseCode: map(z.rc, "responseCode"),
+            colo: map(z.co, "coloName"),
+        };
+    } catch (e) {
+        return { ...empty, error: (e as Error).message };
+    }
+}
+
 /* -------------------------------------------------- Zone breakdowns (traffic) */
 
 export interface Dim {
