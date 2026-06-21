@@ -45,7 +45,8 @@ export async function GET(request: NextRequest) {
     let profile;
     let tokens;
     try {
-        tokens = await exchangeCode(code);
+        const redirect = new URL("/api/auth/callback", request.url).toString();
+        tokens = await exchangeCode(code, redirect);
         profile = await fetchMe(tokens.access_token);
     } catch {
         return redirectTo(request, "/denied?reason=exchange_failed");
