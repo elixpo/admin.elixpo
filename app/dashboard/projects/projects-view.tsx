@@ -17,7 +17,8 @@ export default function ProjectsView({ projects }: { projects: ProjItem[] }) {
         <Box>
             <PageHeader
                 title="Projects"
-                subtitle="Every Cloudflare project, with its 24h traffic. Click through for bindings & full monitoring."
+                subtitle="Every Cloudflare project, with its traffic. Click through for bindings & full monitoring."
+                timeRange
             />
             <Box
                 sx={{

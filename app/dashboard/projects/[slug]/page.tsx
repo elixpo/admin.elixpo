@@ -1,13 +1,8 @@
 import { Empty, PageHeader } from "@/components/ui";
 import { discoverAccount, pagesProjectDetail } from "@/lib/discovery";
 import { metaFor } from "@/lib/enrich";
-import {
-    d1Metrics,
-    hostTraffic,
-    kvMetrics,
-    lastHours,
-    zoneBreakdown,
-} from "@/lib/metrics";
+import { d1Metrics, hostTraffic, kvMetrics, zoneBreakdown } from "@/lib/metrics";
+import { rangeWindow } from "@/lib/range";
 import { Box } from "@mui/material";
 import ProjectDetailView, { type BindingMetric } from "./project-detail-view";
 
@@ -16,8 +11,13 @@ export const dynamic = "force-dynamic";
 
 export default async function ProjectDetailPage({
     params,
-}: { params: Promise<{ slug: string }> }) {
+    searchParams,
+}: {
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<{ range?: string }>;
+}) {
     const { slug } = await params;
+    const { range } = await searchParams;
     const [inv, detail] = await Promise.all([
         discoverAccount(),
         pagesProjectDetail(slug),
@@ -39,7 +39,7 @@ export default async function ProjectDetailPage({
         !detail.productionDomain.endsWith(".pages.dev")
             ? detail.productionDomain
             : undefined;
-    const w = lastHours(24);
+    const w = rangeWindow(range);
 
     const [traffic, breakdown, d1, kv] = await Promise.all([
         zone && domain

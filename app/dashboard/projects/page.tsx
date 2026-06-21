@@ -1,14 +1,20 @@
 import { discoverAccount } from "@/lib/discovery";
 import { metaFor } from "@/lib/enrich";
-import { hostTraffic, lastHours } from "@/lib/metrics";
+import { hostTraffic } from "@/lib/metrics";
+import { rangeWindow } from "@/lib/range";
 import ProjectsView, { type ProjItem } from "./projects-view";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ range?: string }>;
+}) {
     const inv = await discoverAccount();
-    const w = lastHours(24);
+    const { range } = await searchParams;
+    const w = rangeWindow(range);
     const zone = inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
 
     const projects: ProjItem[] = await Promise.all(

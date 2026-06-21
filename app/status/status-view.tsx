@@ -19,6 +19,7 @@ export type Health = "operational" | "degraded" | "outage" | "idle";
 export interface ProductStatus {
     label: string;
     domain?: string;
+    repo?: string;
     total: number;
     availability: number; // %
     health: Health;
@@ -235,6 +236,33 @@ export default function StatusView({
                                                     : "no traffic in 24h"}
                                             </Typography>
                                         </Box>
+                                        {p.repo && (
+                                            <Box
+                                                component="a"
+                                                href={`${p.repo}/issues`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                sx={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: 0.6,
+                                                    height: 32,
+                                                    px: 1.5,
+                                                    borderRadius: "8px",
+                                                    color: C.textDim,
+                                                    textDecoration: "none",
+                                                    fontSize: "0.78rem",
+                                                    fontWeight: 600,
+                                                    bgcolor: "rgba(255,255,255,0.05)",
+                                                    border: `1px solid ${C.border}`,
+                                                    whiteSpace: "nowrap",
+                                                    "&:hover": { bgcolor: "rgba(255,255,255,0.1)", color: C.text },
+                                                }}
+                                            >
+                                                <GitHub sx={{ fontSize: "1rem" }} />
+                                                Issues
+                                            </Box>
+                                        )}
                                     </Box>
                                     {p.total > 0 && (
                                         <StatusBar status={p.status} />

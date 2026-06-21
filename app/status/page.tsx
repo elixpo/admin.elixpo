@@ -64,9 +64,11 @@ export default async function StatusPage() {
                   .map(async ({ p, domain }) => {
                       const b = await zoneBreakdown(zone.id, w, domain);
                       const { total, fivexx } = classify(b.status);
+                      const meta = metaFor(p.name);
                       return {
-                          label: metaFor(p.name).label,
+                          label: meta.label,
                           domain,
+                          repo: meta.repo,
                           total,
                           fivexx,
                           availability:

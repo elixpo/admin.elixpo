@@ -55,6 +55,7 @@ export default function ProjectDetailView({
             <PageHeader
                 title={label}
                 subtitle={detail.productionDomain || detail.name}
+                timeRange
                 action={
                     detail.productionDomain ? (
                         <Box
