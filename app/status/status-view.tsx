@@ -538,6 +538,47 @@ export default function StatusView({
                         })}
                     </Box>
 
+                    {/* recent changes (from gist changelogs) */}
+                    {changelogs.length > 0 && (
+                        <>
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 4, mb: 1.5 }}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.95rem" }}>Recent changes</Typography>
+                                <Box component="a" href="https://gist.github.com/elixpoo" target="_blank" rel="noreferrer" sx={{ color: L.muted, fontSize: "0.78rem", textDecoration: "none", "&:hover": { color: L.text } }}>
+                                    All changelogs →
+                                </Box>
+                            </Box>
+                            <Box sx={{ bgcolor: L.card, border: `1px solid ${L.border}`, borderRadius: "10px", overflow: "hidden" }}>
+                                {changelogs.map((c, i) => (
+                                    <Box
+                                        key={c.url}
+                                        component="a"
+                                        href={c.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            gap: 2,
+                                            px: 2.5,
+                                            py: 1.5,
+                                            textDecoration: "none",
+                                            borderTop: i === 0 ? "none" : `1px solid ${L.border}`,
+                                            "&:hover": { bgcolor: "#faf9f7" },
+                                        }}
+                                    >
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, minWidth: 0 }}>
+                                            <GitHub sx={{ fontSize: "1rem", color: L.muted }} />
+                                            <Typography sx={{ color: L.text, fontSize: "0.88rem", fontWeight: 600 }}>{c.project}</Typography>
+                                            <Typography sx={{ color: L.muted, fontSize: "0.8rem" }}>changelog updated</Typography>
+                                        </Box>
+                                        <Typography sx={{ color: L.muted, fontSize: "0.78rem", whiteSpace: "nowrap" }}>{relTime(c.updatedAt)}</Typography>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </>
+                    )}
+
                     {/* footer */}
                     <Box sx={{ mt: 4, textAlign: "center" }}>
                         <Box
