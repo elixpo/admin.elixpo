@@ -253,13 +253,20 @@ export default function StatusView({
                                                     textDecoration: "none",
                                                     fontSize: "0.78rem",
                                                     fontWeight: 600,
-                                                    bgcolor: "rgba(255,255,255,0.05)",
+                                                    bgcolor:
+                                                        "rgba(255,255,255,0.05)",
                                                     border: `1px solid ${C.border}`,
                                                     whiteSpace: "nowrap",
-                                                    "&:hover": { bgcolor: "rgba(255,255,255,0.1)", color: C.text },
+                                                    "&:hover": {
+                                                        bgcolor:
+                                                            "rgba(255,255,255,0.1)",
+                                                        color: C.text,
+                                                    },
                                                 }}
                                             >
-                                                <GitHub sx={{ fontSize: "1rem" }} />
+                                                <GitHub
+                                                    sx={{ fontSize: "1rem" }}
+                                                />
                                                 Issues
                                             </Box>
                                         )}

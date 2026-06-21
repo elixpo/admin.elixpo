@@ -20,30 +20,60 @@ const GH = "https://github.com/Circuit-Overtime";
 /** Owning-project metadata keyed by the Cloudflare resource name (Pages/Worker/D1/KV). */
 const META: Record<string, ProjectMeta> = {
     // Pages projects
-    elixpo: { key: "elixpo", label: "Elixpo (Base)", domain: "elixpo.com", repo: `${GH}/elixpo` },
-    lixblogs: { key: "blogs", label: "Blogs", domain: "blogs.elixpo.com", repo: `${GH}/blogs.elixpo` },
-    lixsketch: { key: "sketch", label: "Sketch", domain: "sketch.elixpo.com", repo: `${GH}/sketch.elixpo` },
+    elixpo: {
+        key: "elixpo",
+        label: "Elixpo (Base)",
+        domain: "elixpo.com",
+        repo: `${GH}/elixpo`,
+    },
+    lixblogs: {
+        key: "blogs",
+        label: "Blogs",
+        domain: "blogs.elixpo.com",
+        repo: `${GH}/blogs.elixpo`,
+    },
+    lixsketch: {
+        key: "sketch",
+        label: "Sketch",
+        domain: "sketch.elixpo.com",
+        repo: `${GH}/sketch.elixpo`,
+    },
     "lixsketch-collab": {
         key: "sketch",
         label: "Sketch Collab (Worker)",
         domain: "sketch.elixpo.com",
         repo: `${GH}/sketch.elixpo`,
     },
-    elixpourl: { key: "url", label: "URL Shortener", domain: "url.elixpo.com", repo: `${GH}/url.elixpo` },
+    elixpourl: {
+        key: "url",
+        label: "URL Shortener",
+        domain: "url.elixpo.com",
+        repo: `${GH}/url.elixpo`,
+    },
     "elixpo-accounts": {
         key: "accounts",
         label: "Accounts (SSO)",
         domain: "accounts.elixpo.com",
         repo: `${GH}/accounts.elixpo`,
     },
-    elixpome: { key: "me", label: "Portfolio", domain: "me.elixpo.com", repo: `${GH}/me.elixpo` },
+    elixpome: {
+        key: "me",
+        label: "Portfolio",
+        domain: "me.elixpo.com",
+        repo: `${GH}/me.elixpo`,
+    },
     "elixpo-pay": {
         key: "pay",
         label: "Payouts",
         domain: "payouts.elixpo.com",
         repo: `${GH}/payouts.elixpo`,
     },
-    "elixpo-mail": { key: "mail", label: "Mail", domain: "mails.elixpo.com", repo: `${GH}/mail.elixpo` },
+    "elixpo-mail": {
+        key: "mail",
+        label: "Mail",
+        domain: "mails.elixpo.com",
+        repo: `${GH}/mail.elixpo`,
+    },
     lixsearch: { key: "search", label: "Search" },
     oreo: { key: "oreo", label: "Oreo", domain: "oreo.elixpo.com" },
     career: { key: "career", label: "Career", domain: "career.elixpo.com" },

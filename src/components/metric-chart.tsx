@@ -151,7 +151,10 @@ export default function MetricChart({
                 sx={{ position: "relative" }}
                 onMouseMove={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
-                    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+                    const ratio = Math.min(
+                        1,
+                        Math.max(0, (e.clientX - rect.left) / rect.width),
+                    );
                     setHover(Math.round(ratio * (points.length - 1)));
                 }}
                 onMouseLeave={() => setHover(null)}
@@ -176,7 +179,10 @@ export default function MetricChart({
                                 position: "absolute",
                                 top: 4,
                                 left: `${(hover / Math.max(1, points.length - 1)) * 100}%`,
-                                transform: hover > points.length / 2 ? "translateX(-104%)" : "translateX(4%)",
+                                transform:
+                                    hover > points.length / 2
+                                        ? "translateX(-104%)"
+                                        : "translateX(4%)",
                                 zIndex: 3,
                                 pointerEvents: "none",
                                 bgcolor: "rgba(15,17,26,0.96)",
@@ -187,17 +193,68 @@ export default function MetricChart({
                                 minWidth: 110,
                             }}
                         >
-                            <Typography sx={{ fontSize: "0.64rem", color: C.textMuted, mb: 0.5 }}>
-                                {new Date(points[hover].ts).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                            <Typography
+                                sx={{
+                                    fontSize: "0.64rem",
+                                    color: C.textMuted,
+                                    mb: 0.5,
+                                }}
+                            >
+                                {new Date(points[hover].ts).toLocaleString(
+                                    "en-US",
+                                    {
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                    },
+                                )}
                             </Typography>
                             {cols.map((c) => (
-                                <Box key={c.key} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5 }}>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                        <Box sx={{ width: 7, height: 7, borderRadius: "2px", bgcolor: c.color }} />
-                                        <Typography sx={{ fontSize: "0.68rem", color: C.textDim }}>{c.label}</Typography>
+                                <Box
+                                    key={c.key}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        gap: 1.5,
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 0.5,
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                width: 7,
+                                                height: 7,
+                                                borderRadius: "2px",
+                                                bgcolor: c.color,
+                                            }}
+                                        />
+                                        <Typography
+                                            sx={{
+                                                fontSize: "0.68rem",
+                                                color: C.textDim,
+                                            }}
+                                        >
+                                            {c.label}
+                                        </Typography>
                                     </Box>
-                                    <Typography sx={{ fontSize: "0.7rem", color: C.text, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
-                                        {(Number(points[hover][c.key]) || 0).toLocaleString()}
+                                    <Typography
+                                        sx={{
+                                            fontSize: "0.7rem",
+                                            color: C.text,
+                                            fontWeight: 600,
+                                            fontVariantNumeric: "tabular-nums",
+                                        }}
+                                    >
+                                        {(
+                                            Number(points[hover][c.key]) || 0
+                                        ).toLocaleString()}
                                     </Typography>
                                 </Box>
                             ))}

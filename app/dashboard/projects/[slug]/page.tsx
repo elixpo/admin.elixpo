@@ -1,7 +1,12 @@
 import { Empty, PageHeader } from "@/components/ui";
 import { discoverAccount, pagesProjectDetail } from "@/lib/discovery";
 import { metaFor } from "@/lib/enrich";
-import { d1Metrics, hostTraffic, kvMetrics, zoneBreakdown } from "@/lib/metrics";
+import {
+    d1Metrics,
+    hostTraffic,
+    kvMetrics,
+    zoneBreakdown,
+} from "@/lib/metrics";
 import { rangeWindow } from "@/lib/range";
 import { Box } from "@mui/material";
 import ProjectDetailView, { type BindingMetric } from "./project-detail-view";

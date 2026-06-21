@@ -121,12 +121,10 @@ export default async function DnsPage({
                             <Panel title="Data centres (colo)" dense>
                                 <TopList
                                     color="#86efac"
-                                    items={z.bd.colo
-                                        .slice(0, 12)
-                                        .map((x) => ({
-                                            label: x.label,
-                                            value: x.count,
-                                        }))}
+                                    items={z.bd.colo.slice(0, 12).map((x) => ({
+                                        label: x.label,
+                                        value: x.count,
+                                    }))}
                                 />
                             </Panel>
                         </div>
