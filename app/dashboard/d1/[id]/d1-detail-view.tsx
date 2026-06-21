@@ -35,13 +35,17 @@ export default function D1DetailView({
                 <KpiTile
                     label="Read queries · 24h"
                     value={metrics.totals.readQueries?.toLocaleString() ?? "—"}
-                    spark={metrics.points.map((p) => Number(p.readQueries) || 0)}
+                    spark={metrics.points.map(
+                        (p) => Number(p.readQueries) || 0,
+                    )}
                     color="#22c55e"
                 />
                 <KpiTile
                     label="Write queries · 24h"
                     value={metrics.totals.writeQueries?.toLocaleString() ?? "—"}
-                    spark={metrics.points.map((p) => Number(p.writeQueries) || 0)}
+                    spark={metrics.points.map(
+                        (p) => Number(p.writeQueries) || 0,
+                    )}
                     color="#f59e0b"
                 />
                 <KpiTile
@@ -53,7 +57,9 @@ export default function D1DetailView({
                 <KpiTile
                     label="Rows written · 24h"
                     value={metrics.totals.rowsWritten?.toLocaleString() ?? "—"}
-                    spark={metrics.points.map((p) => Number(p.rowsWritten) || 0)}
+                    spark={metrics.points.map(
+                        (p) => Number(p.rowsWritten) || 0,
+                    )}
                     color="#a855f7"
                 />
             </Box>

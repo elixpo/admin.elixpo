@@ -401,8 +401,18 @@ export interface ZoneBreakdown {
     path: Dim[];
 }
 
-export async function zoneBreakdown(zoneTag: string, w = lastHours()): Promise<ZoneBreakdown> {
-    const empty: ZoneBreakdown = { available: false, country: [], status: [], device: [], host: [], path: [] };
+export async function zoneBreakdown(
+    zoneTag: string,
+    w = lastHours(),
+): Promise<ZoneBreakdown> {
+    const empty: ZoneBreakdown = {
+        available: false,
+        country: [],
+        status: [],
+        device: [],
+        host: [],
+        path: [],
+    };
     try {
         const grp = (alias: string, dim: string, limit = 10) =>
             `${alias}:httpRequestsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u},orderBy:[count_DESC]){count dimensions{${dim}}}`;
@@ -418,7 +428,10 @@ export async function zoneBreakdown(zoneTag: string, w = lastHours()): Promise<Z
         );
         const z = data?.viewer?.zones?.[0] || {};
         const map = (rows: any[], key: string): Dim[] =>
-            (rows || []).map((r) => ({ label: String(r.dimensions[key] ?? "—"), count: r.count ?? 0 }));
+            (rows || []).map((r) => ({
+                label: String(r.dimensions[key] ?? "—"),
+                count: r.count ?? 0,
+            }));
         return {
             available: true,
             country: map(z.country, "clientCountryName"),

@@ -1,5 +1,7 @@
 "use client";
 
+import BackgroundAurora from "@/components/background-aurora";
+import { C } from "@/components/ui";
 import {
     AccountTree,
     Bolt,
@@ -37,8 +39,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import BackgroundAurora from "@/components/background-aurora";
-import { C } from "@/components/ui";
 
 const theme = createTheme({
     palette: {
@@ -47,7 +47,10 @@ const theme = createTheme({
         background: { default: "transparent", paper: "rgba(20,22,34,0.6)" },
         text: { primary: C.text, secondary: C.textDim },
     },
-    typography: { fontFamily: "var(--font-geist-sans), Arial, sans-serif", fontSize: 13 },
+    typography: {
+        fontFamily: "var(--font-geist-sans), Arial, sans-serif",
+        fontSize: 13,
+    },
     components: {
         MuiCard: { styleOverrides: { root: { backgroundImage: "none" } } },
         MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
@@ -73,33 +76,101 @@ export interface ChromeUser {
     name?: string;
 }
 
-export default function DashboardChrome({ user, children }: { user: ChromeUser; children: React.ReactNode }) {
+export default function DashboardChrome({
+    user,
+    children,
+}: { user: ChromeUser; children: React.ReactNode }) {
     const pathname = usePathname();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [drawer, setDrawer] = useState(false);
 
-    const isActive = (href: string) => (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href));
+    const isActive = (href: string) =>
+        href === "/dashboard"
+            ? pathname === "/dashboard"
+            : pathname.startsWith(href);
 
     return (
         <ThemeProvider theme={theme}>
-            <Box sx={{ minHeight: "100vh", position: "relative", color: C.text }}>
+            <Box
+                sx={{ minHeight: "100vh", position: "relative", color: C.text }}
+            >
                 <BackgroundAurora variant="default" />
                 <Box sx={{ position: "relative", zIndex: 1 }}>
-                    <AppBar position="sticky" elevation={0} sx={{ bgcolor: "rgba(11,13,18,0.55)", backdropFilter: "blur(16px)", borderBottom: `1px solid ${C.border}`, backgroundImage: "none" }}>
-                        <Toolbar sx={{ maxWidth: 1600, width: "100%", mx: "auto", px: { xs: 1.5, md: 2.5 }, minHeight: { xs: 56, md: 60 } }}>
+                    <AppBar
+                        position="sticky"
+                        elevation={0}
+                        sx={{
+                            bgcolor: "rgba(11,13,18,0.55)",
+                            backdropFilter: "blur(16px)",
+                            borderBottom: `1px solid ${C.border}`,
+                            backgroundImage: "none",
+                        }}
+                    >
+                        <Toolbar
+                            sx={{
+                                maxWidth: 1600,
+                                width: "100%",
+                                mx: "auto",
+                                px: { xs: 1.5, md: 2.5 },
+                                minHeight: { xs: 56, md: 60 },
+                            }}
+                        >
                             {/* mobile hamburger */}
-                            <IconButton onClick={() => setDrawer(true)} sx={{ display: { xs: "inline-flex", md: "none" }, mr: 1, color: C.textDim }}>
+                            <IconButton
+                                onClick={() => setDrawer(true)}
+                                sx={{
+                                    display: { xs: "inline-flex", md: "none" },
+                                    mr: 1,
+                                    color: C.textDim,
+                                }}
+                            >
                                 <MenuIcon />
                             </IconButton>
 
                             {/* logo */}
-                            <Box component={Link} href="/dashboard" sx={{ display: "flex", alignItems: "center", gap: 1.25, textDecoration: "none", mr: 3, flexShrink: 0 }}>
-                                <Box component="img" src="/icon.png" alt="Elixpo" sx={{ width: 28, height: 28, borderRadius: "7px" }} />
-                                <Typography sx={{ fontWeight: 800, fontSize: "1rem", color: C.text, letterSpacing: "-0.01em" }}>Elixpo Admin</Typography>
+                            <Box
+                                component={Link}
+                                href="/dashboard"
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.25,
+                                    textDecoration: "none",
+                                    mr: 3,
+                                    flexShrink: 0,
+                                }}
+                            >
+                                <Box
+                                    component="img"
+                                    src="/icon.png"
+                                    alt="Elixpo"
+                                    sx={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: "7px",
+                                    }}
+                                />
+                                <Typography
+                                    sx={{
+                                        fontWeight: 800,
+                                        fontSize: "1rem",
+                                        color: C.text,
+                                        letterSpacing: "-0.01em",
+                                    }}
+                                >
+                                    Elixpo Admin
+                                </Typography>
                             </Box>
 
                             {/* desktop nav with labels */}
-                            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 0.25, flexWrap: "wrap" }}>
+                            <Box
+                                sx={{
+                                    display: { xs: "none", md: "flex" },
+                                    alignItems: "center",
+                                    gap: 0.25,
+                                    flexWrap: "wrap",
+                                }}
+                            >
                                 {navItems.map((item) => {
                                     const active = isActive(item.href);
                                     return (
@@ -117,12 +188,25 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
                                                 textDecoration: "none",
                                                 fontSize: "0.8rem",
                                                 fontWeight: 600,
-                                                color: active ? C.accentLight : C.textMuted,
-                                                bgcolor: active ? C.accentDim : "transparent",
-                                                "&:hover": { bgcolor: active ? C.accentDim : "rgba(255,255,255,0.05)", color: active ? C.accentLight : C.text },
+                                                color: active
+                                                    ? C.accentLight
+                                                    : C.textMuted,
+                                                bgcolor: active
+                                                    ? C.accentDim
+                                                    : "transparent",
+                                                "&:hover": {
+                                                    bgcolor: active
+                                                        ? C.accentDim
+                                                        : "rgba(255,255,255,0.05)",
+                                                    color: active
+                                                        ? C.accentLight
+                                                        : C.text,
+                                                },
                                             }}
                                         >
-                                            <item.icon sx={{ fontSize: "1.05rem" }} />
+                                            <item.icon
+                                                sx={{ fontSize: "1.05rem" }}
+                                            />
                                             {item.label}
                                         </Box>
                                     );
@@ -131,8 +215,24 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
 
                             <Box sx={{ flexGrow: 1 }} />
 
-                            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ p: 0.5 }}>
-                                <Box sx={{ width: 30, height: 30, borderRadius: "50%", background: `linear-gradient(135deg, #ff8a5b 0%, ${C.accent} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", fontWeight: 700, color: "#161228" }}>
+                            <IconButton
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                                sx={{ p: 0.5 }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: 30,
+                                        height: 30,
+                                        borderRadius: "50%",
+                                        background: `linear-gradient(135deg, #ff8a5b 0%, ${C.accent} 100%)`,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "0.85rem",
+                                        fontWeight: 700,
+                                        color: "#161228",
+                                    }}
+                                >
                                     {user.email?.charAt(0).toUpperCase() || "A"}
                                 </Box>
                             </IconButton>
@@ -141,27 +241,115 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
                                 anchorEl={anchorEl}
                                 open={Boolean(anchorEl)}
                                 onClose={() => setAnchorEl(null)}
-                                transformOrigin={{ horizontal: "right", vertical: "top" }}
-                                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                                slotProps={{ paper: { sx: { mt: 1, bgcolor: "rgba(20,22,34,0.97)", backdropFilter: "blur(16px)", border: `1px solid ${C.border}`, borderRadius: "12px", minWidth: 250 } } }}
+                                transformOrigin={{
+                                    horizontal: "right",
+                                    vertical: "top",
+                                }}
+                                anchorOrigin={{
+                                    horizontal: "right",
+                                    vertical: "bottom",
+                                }}
+                                slotProps={{
+                                    paper: {
+                                        sx: {
+                                            mt: 1,
+                                            bgcolor: "rgba(20,22,34,0.97)",
+                                            backdropFilter: "blur(16px)",
+                                            border: `1px solid ${C.border}`,
+                                            borderRadius: "12px",
+                                            minWidth: 250,
+                                        },
+                                    },
+                                }}
                             >
                                 <Box sx={{ px: 2, py: 1.5 }}>
-                                    <Typography sx={{ color: C.text, fontWeight: 700, fontSize: "0.9rem" }}>{user.name || "Admin"}</Typography>
-                                    <Typography sx={{ color: C.textMuted, fontSize: "0.78rem" }}>{user.email}</Typography>
-                                    <Box sx={{ mt: 0.75, display: "inline-flex", alignItems: "center", gap: 0.5, px: 1, py: 0.25, borderRadius: "6px", bgcolor: C.accentDim, border: `1px solid ${C.accent}44` }}>
-                                        <Typography sx={{ color: C.accentLight, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em" }}>Admin</Typography>
+                                    <Typography
+                                        sx={{
+                                            color: C.text,
+                                            fontWeight: 700,
+                                            fontSize: "0.9rem",
+                                        }}
+                                    >
+                                        {user.name || "Admin"}
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            color: C.textMuted,
+                                            fontSize: "0.78rem",
+                                        }}
+                                    >
+                                        {user.email}
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            mt: 0.75,
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: 0.5,
+                                            px: 1,
+                                            py: 0.25,
+                                            borderRadius: "6px",
+                                            bgcolor: C.accentDim,
+                                            border: `1px solid ${C.accent}44`,
+                                        }}
+                                    >
+                                        <Typography
+                                            sx={{
+                                                color: C.accentLight,
+                                                fontSize: "0.68rem",
+                                                fontWeight: 700,
+                                                textTransform: "uppercase",
+                                                letterSpacing: "0.04em",
+                                            }}
+                                        >
+                                            Admin
+                                        </Typography>
                                     </Box>
                                 </Box>
                                 <Divider sx={{ borderColor: C.border }} />
-                                <ProfileLink href="https://dash.cloudflare.com" icon={<Launch fontSize="small" />} label="Cloudflare dashboard" external />
-                                <ProfileLink href="https://accounts.elixpo.com/dashboard" icon={<OpenInNew fontSize="small" />} label="Elixpo Accounts" external />
-                                <ProfileLink href="/dashboard/settings" icon={<SettingsIcon fontSize="small" />} label="Settings" onClick={() => setAnchorEl(null)} />
+                                <ProfileLink
+                                    href="https://dash.cloudflare.com"
+                                    icon={<Launch fontSize="small" />}
+                                    label="Cloudflare dashboard"
+                                    external
+                                />
+                                <ProfileLink
+                                    href="https://accounts.elixpo.com/dashboard"
+                                    icon={<OpenInNew fontSize="small" />}
+                                    label="Elixpo Accounts"
+                                    external
+                                />
+                                <ProfileLink
+                                    href="/dashboard/settings"
+                                    icon={<SettingsIcon fontSize="small" />}
+                                    label="Settings"
+                                    onClick={() => setAnchorEl(null)}
+                                />
                                 <Divider sx={{ borderColor: C.border }} />
-                                <MenuItem component="a" href="/api/auth/logout" sx={{ py: 1.1, color: C.textDim, "&:hover": { bgcolor: "rgba(248,113,113,0.1)", color: C.error } }}>
-                                    <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>
+                                <MenuItem
+                                    component="a"
+                                    href="/api/auth/logout"
+                                    sx={{
+                                        py: 1.1,
+                                        color: C.textDim,
+                                        "&:hover": {
+                                            bgcolor: "rgba(248,113,113,0.1)",
+                                            color: C.error,
+                                        },
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{ color: "inherit", minWidth: 34 }}
+                                    >
                                         <Logout fontSize="small" />
                                     </ListItemIcon>
-                                    <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>Logout</ListItemText>
+                                    <ListItemText
+                                        primaryTypographyProps={{
+                                            fontSize: "0.85rem",
+                                        }}
+                                    >
+                                        Logout
+                                    </ListItemText>
                                 </MenuItem>
                             </Menu>
                         </Toolbar>
@@ -172,11 +360,39 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
                         anchor="left"
                         open={drawer}
                         onClose={() => setDrawer(false)}
-                        slotProps={{ paper: { sx: { width: 260, bgcolor: "rgba(15,17,26,0.98)", backdropFilter: "blur(16px)", borderRight: `1px solid ${C.border}` } } }}
+                        slotProps={{
+                            paper: {
+                                sx: {
+                                    width: 260,
+                                    bgcolor: "rgba(15,17,26,0.98)",
+                                    backdropFilter: "blur(16px)",
+                                    borderRight: `1px solid ${C.border}`,
+                                },
+                            },
+                        }}
                     >
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, px: 2, py: 2 }}>
-                            <Box component="img" src="/icon.png" alt="Elixpo" sx={{ width: 26, height: 26, borderRadius: "6px" }} />
-                            <Typography sx={{ fontWeight: 800, color: C.text }}>Elixpo Admin</Typography>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.25,
+                                px: 2,
+                                py: 2,
+                            }}
+                        >
+                            <Box
+                                component="img"
+                                src="/icon.png"
+                                alt="Elixpo"
+                                sx={{
+                                    width: 26,
+                                    height: 26,
+                                    borderRadius: "6px",
+                                }}
+                            />
+                            <Typography sx={{ fontWeight: 800, color: C.text }}>
+                                Elixpo Admin
+                            </Typography>
                         </Box>
                         <Divider sx={{ borderColor: C.border }} />
                         <List sx={{ px: 1 }}>
@@ -188,19 +404,51 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
                                         component={Link}
                                         href={item.href}
                                         onClick={() => setDrawer(false)}
-                                        sx={{ borderRadius: "8px", mb: 0.25, color: active ? C.accentLight : C.textDim, bgcolor: active ? C.accentDim : "transparent", "&:hover": { bgcolor: "rgba(255,255,255,0.05)" } }}
+                                        sx={{
+                                            borderRadius: "8px",
+                                            mb: 0.25,
+                                            color: active
+                                                ? C.accentLight
+                                                : C.textDim,
+                                            bgcolor: active
+                                                ? C.accentDim
+                                                : "transparent",
+                                            "&:hover": {
+                                                bgcolor:
+                                                    "rgba(255,255,255,0.05)",
+                                            },
+                                        }}
                                     >
-                                        <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                                        <ListItemIcon
+                                            sx={{
+                                                color: "inherit",
+                                                minWidth: 36,
+                                            }}
+                                        >
                                             <item.icon fontSize="small" />
                                         </ListItemIcon>
-                                        <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>{item.label}</ListItemText>
+                                        <ListItemText
+                                            primaryTypographyProps={{
+                                                fontSize: "0.85rem",
+                                            }}
+                                        >
+                                            {item.label}
+                                        </ListItemText>
                                     </ListItemButton>
                                 );
                             })}
                         </List>
                     </Drawer>
 
-                    <Box component="main" sx={{ maxWidth: 1600, mx: "auto", px: { xs: 1.5, md: 2.5 }, py: 2.5 }}>
+                    <Box
+                        component="main"
+                        sx={{
+                            maxWidth: 1600,
+                            mx: "auto",
+                            px: { xs: 1.5, md: 2.5 },
+                            py: 2.5,
+                        }}
+                    >
                         {children}
                     </Box>
                 </Box>
@@ -209,12 +457,43 @@ export default function DashboardChrome({ user, children }: { user: ChromeUser; 
     );
 }
 
-function ProfileLink({ href, icon, label, external, onClick }: { href: string; icon: React.ReactNode; label: string; external?: boolean; onClick?: () => void }) {
-    const props = external ? { component: "a" as const, href, target: "_blank", rel: "noopener noreferrer" } : { component: Link, href };
+function ProfileLink({
+    href,
+    icon,
+    label,
+    external,
+    onClick,
+}: {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    external?: boolean;
+    onClick?: () => void;
+}) {
+    const props = external
+        ? {
+              component: "a" as const,
+              href,
+              target: "_blank",
+              rel: "noopener noreferrer",
+          }
+        : { component: Link, href };
     return (
-        <MenuItem {...props} onClick={onClick} sx={{ py: 1, color: C.textDim, "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: C.text } }}>
-            <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>{icon}</ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>{label}</ListItemText>
+        <MenuItem
+            {...props}
+            onClick={onClick}
+            sx={{
+                py: 1,
+                color: C.textDim,
+                "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: C.text },
+            }}
+        >
+            <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>
+                {label}
+            </ListItemText>
         </MenuItem>
     );
 }

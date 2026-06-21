@@ -77,7 +77,8 @@ const sub: CSSProperties = {
 };
 
 const card: CSSProperties = {
-    background: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
+    background:
+        "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
     backdropFilter: "blur(20px)",
     border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 16,
@@ -92,15 +93,17 @@ export default function LandingSections() {
                 <span style={eyebrow}>One control plane</span>
                 <h2 style={h2}>The whole Cloudflare account, in one window.</h2>
                 <p style={sub}>
-                    Elixpo Admin is the internal control plane for everything the suite runs on
-                    Cloudflare. No tab-juggling across dashboards — discovery, metrics and a query
-                    console, all gated to admins.
+                    Elixpo Admin is the internal control plane for everything
+                    the suite runs on Cloudflare. No tab-juggling across
+                    dashboards — discovery, metrics and a query console, all
+                    gated to admins.
                 </p>
 
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                        gridTemplateColumns:
+                            "repeat(auto-fit, minmax(240px, 1fr))",
                         gap: "1rem",
                         marginTop: "2.2rem",
                     }}
@@ -117,10 +120,24 @@ export default function LandingSections() {
                                     border: `1px solid ${f.accent}55`,
                                 }}
                             />
-                            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#f5f5f4", margin: "0 0 0.5rem" }}>
+                            <h3
+                                style={{
+                                    fontSize: "1.1rem",
+                                    fontWeight: 700,
+                                    color: "#f5f5f4",
+                                    margin: "0 0 0.5rem",
+                                }}
+                            >
                                 {f.title}
                             </h3>
-                            <p style={{ fontSize: "0.88rem", lineHeight: 1.6, color: "rgba(245,245,244,0.62)", margin: 0 }}>
+                            <p
+                                style={{
+                                    fontSize: "0.88rem",
+                                    lineHeight: 1.6,
+                                    color: "rgba(245,245,244,0.62)",
+                                    margin: 0,
+                                }}
+                            >
                                 {f.body}
                             </p>
                         </div>
@@ -133,9 +150,17 @@ export default function LandingSections() {
                 <span style={eyebrow}>Coverage</span>
                 <h2 style={h2}>Every primitive you ship on.</h2>
                 <p style={sub}>
-                    If it lives in the Elixpo Cloudflare account, it shows up here automatically.
+                    If it lives in the Elixpo Cloudflare account, it shows up
+                    here automatically.
                 </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginTop: "1.8rem" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "0.6rem",
+                        marginTop: "1.8rem",
+                    }}
+                >
                     {COVERAGE.map((c) => (
                         <span
                             key={c}
@@ -156,7 +181,9 @@ export default function LandingSections() {
             </section>
 
             {/* CTA */}
-            <section style={{ ...wrap, marginTop: "4.5rem", textAlign: "center" }}>
+            <section
+                style={{ ...wrap, marginTop: "4.5rem", textAlign: "center" }}
+            >
                 <div
                     style={{
                         ...card,
@@ -165,9 +192,12 @@ export default function LandingSections() {
                             "radial-gradient(circle at 50% 0%, rgba(155,123,247,0.14) 0%, rgba(255,255,255,0.02) 60%)",
                     }}
                 >
-                    <h2 style={{ ...h2, margin: "0 0 0.6rem" }}>Ready when you are.</h2>
+                    <h2 style={{ ...h2, margin: "0 0 0.6rem" }}>
+                        Ready when you are.
+                    </h2>
                     <p style={{ ...sub, margin: "0 auto 1.8rem" }}>
-                        Sign in with your Elixpo ID. Admins land straight on the live overview.
+                        Sign in with your Elixpo ID. Admins land straight on the
+                        live overview.
                     </p>
                     <a
                         href="/api/auth/login"
@@ -182,7 +212,8 @@ export default function LandingSections() {
                             fontWeight: 700,
                             color: "#fff",
                             textDecoration: "none",
-                            background: "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
+                            background:
+                                "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
                             boxShadow:
                                 "inset 0 1px 1px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.2), 0 14px 30px rgba(124,92,255,0.35)",
                         }}
@@ -190,7 +221,13 @@ export default function LandingSections() {
                         Sign in with Elixpo
                     </a>
                 </div>
-                <p style={{ color: "rgba(245,245,244,0.35)", fontSize: "0.8rem", marginTop: "2rem" }}>
+                <p
+                    style={{
+                        color: "rgba(245,245,244,0.35)",
+                        fontSize: "0.8rem",
+                        marginTop: "2rem",
+                    }}
+                >
                     Elixpo Admin · internal control plane · admins only
                 </p>
             </section>

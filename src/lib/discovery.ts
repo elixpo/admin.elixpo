@@ -127,7 +127,9 @@ export async function discoverAccount(force = false): Promise<Inventory> {
         await Promise.all([
             // Pages list rejects page/per_page combos — fetch the default page directly.
             safe(async () => {
-                const env = await cfRest<PagesProject[]>(await acctPath("/pages/projects"));
+                const env = await cfRest<PagesProject[]>(
+                    await acctPath("/pages/projects"),
+                );
                 return env.result || [];
             }),
             safe(() => listAcct<WorkerScript>("/workers/scripts")),
@@ -135,7 +137,9 @@ export async function discoverAccount(force = false): Promise<Inventory> {
             safe(() => listAcct<KvNamespace>("/storage/kv/namespaces")),
             safe(() => listAcct<QueueInfo>("/queues")),
             safe(() =>
-                listAcct<DurableObjectNamespace>("/workers/durable_objects/namespaces"),
+                listAcct<DurableObjectNamespace>(
+                    "/workers/durable_objects/namespaces",
+                ),
             ),
             safe(() => listAcct<WorkflowInfo>("/workflows")),
             safe(() => cfList<ZoneInfo>(`/zones?account.id=${accountId}`)),

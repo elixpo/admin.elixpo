@@ -6,5 +6,11 @@ export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
     const inv = await discoverAccount();
-    return <SettingsView accountId={inv.accountId} fetchedAt={inv.fetchedAt} errors={inv.errors} />;
+    return (
+        <SettingsView
+            accountId={inv.accountId}
+            fetchedAt={inv.fetchedAt}
+            errors={inv.errors}
+        />
+    );
 }
