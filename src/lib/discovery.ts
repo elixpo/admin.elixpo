@@ -124,33 +124,24 @@ export async function discoverAccount(force = false): Promise<Inventory> {
     const { getAccountId } = await import("./cloudflare-api");
     const accountId = await getAccountId();
 
-    const [
-        pages,
-        workers,
-        d1,
-        kv,
-        queues,
-        durableObjects,
-        containers,
-        workflows,
-        zones,
-        logpush,
-    ] = await Promise.all([
-        safe(() => listAcct<PagesProject>("/pages/projects")),
-        safe(() => listAcct<WorkerScript>("/workers/scripts")),
-        safe(() => listAcct<D1Database>("/d1/database")),
-        safe(() => listAcct<KvNamespace>("/storage/kv/namespaces")),
-        safe(() => listAcct<QueueInfo>("/queues")),
-        safe(() =>
-            listAcct<DurableObjectNamespace>(
-                "/workers/durable_objects/namespaces",
+    const [pages, workers, d1, kv, queues, durableObjects, workflows, zones, logpush] =
+        await Promise.all([
+            // Pages list rejects page/per_page combos — fetch the default page directly.
+            safe(async () => {
+                const env = await cfRest<PagesProject[]>(await acctPath("/pages/projects"));
+                return env.result || [];
+            }),
+            safe(() => listAcct<WorkerScript>("/workers/scripts")),
+            safe(() => listAcct<D1Database>("/d1/database")),
+            safe(() => listAcct<KvNamespace>("/storage/kv/namespaces")),
+            safe(() => listAcct<QueueInfo>("/queues")),
+            safe(() =>
+                listAcct<DurableObjectNamespace>("/workers/durable_objects/namespaces"),
             ),
-        ),
-        safe(() => listAcct<ContainerApp>("/containers/applications")),
-        safe(() => listAcct<WorkflowInfo>("/workflows")),
-        safe(() => cfList<ZoneInfo>(`/zones?account.id=${accountId}`)),
-        safe(() => listAcct<LogpushJob>("/logpush/jobs")),
-    ]);
+            safe(() => listAcct<WorkflowInfo>("/workflows")),
+            safe(() => cfList<ZoneInfo>(`/zones?account.id=${accountId}`)),
+            safe(() => listAcct<LogpushJob>("/logpush/jobs")),
+        ]);
 
     const errors: Record<string, SectionError> = {};
     const pick = <T>(
@@ -177,7 +168,6 @@ export async function discoverAccount(force = false): Promise<Inventory> {
         kv: pick("kv", kv, []),
         queues: pick("queues", queues, []),
         durableObjects: pick("durableObjects", durableObjects, []),
-        containers: pick("containers", containers, []),
         workflows: pick("workflows", workflows, []),
         zones: pick("zones", zones, []),
         logpush: pick("logpush", logpush, []),

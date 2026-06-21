@@ -2,7 +2,7 @@
 
 import MetricChart from "@/components/metric-chart";
 import QueryConsole from "@/components/query-console";
-import { PageHeader, Panel, SectionError, StatCard } from "@/components/ui";
+import { KpiTile, PageHeader, Panel, SectionError } from "@/components/ui";
 import type { MetricSeries } from "@/lib/metrics";
 import { Box } from "@mui/material";
 
@@ -32,25 +32,29 @@ export default function D1DetailView({
                     mb: 3,
                 }}
             >
-                <StatCard
+                <KpiTile
                     label="Read queries · 24h"
                     value={metrics.totals.readQueries?.toLocaleString() ?? "—"}
-                    color="#86efac"
+                    spark={metrics.points.map((p) => Number(p.readQueries) || 0)}
+                    color="#22c55e"
                 />
-                <StatCard
+                <KpiTile
                     label="Write queries · 24h"
                     value={metrics.totals.writeQueries?.toLocaleString() ?? "—"}
-                    color="#fbbf24"
+                    spark={metrics.points.map((p) => Number(p.writeQueries) || 0)}
+                    color="#f59e0b"
                 />
-                <StatCard
+                <KpiTile
                     label="Rows read · 24h"
                     value={metrics.totals.rowsRead?.toLocaleString() ?? "—"}
-                    color="#9b7bf7"
+                    spark={metrics.points.map((p) => Number(p.rowsRead) || 0)}
+                    color="#4593ff"
                 />
-                <StatCard
+                <KpiTile
                     label="Rows written · 24h"
                     value={metrics.totals.rowsWritten?.toLocaleString() ?? "—"}
-                    color="#5fb6ff"
+                    spark={metrics.points.map((p) => Number(p.rowsWritten) || 0)}
+                    color="#a855f7"
                 />
             </Box>
 

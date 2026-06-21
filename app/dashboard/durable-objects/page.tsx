@@ -4,7 +4,6 @@ import { Panel, SectionError } from "@/components/ui";
 import { discoverAccount } from "@/lib/discovery";
 import { autoLabel } from "@/lib/enrich";
 import { doMetrics } from "@/lib/metrics";
-import { Box } from "@mui/material";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -16,9 +15,7 @@ export default async function DurableObjectsPage() {
     const items: ListItem[] = inv.durableObjects.map((d) => ({
         id: d.id,
         primary: d.class || d.name || autoLabel(d.id),
-        secondary: [d.script, d.use_sqlite ? "SQLite" : null, d.id]
-            .filter(Boolean)
-            .join(" · "),
+        secondary: [d.script, d.use_sqlite ? "SQLite" : null, d.id].filter(Boolean).join(" · "),
     }));
 
     return (
@@ -30,31 +27,21 @@ export default async function DurableObjectsPage() {
             emptyMessage="No Durable Object namespaces found."
             error={inv.errors.durableObjects?.error}
         >
-            <Box sx={{ mb: 3 }}>
+            <div style={{ marginBottom: 12 }}>
                 <Panel title="Durable Object requests · 24h (account-wide)">
                     {metrics.available ? (
                         <MetricChart
                             points={metrics.points}
                             series={[
-                                {
-                                    key: "requests",
-                                    label: "Requests",
-                                    color: "#c4b5fd",
-                                },
-                                {
-                                    key: "errors",
-                                    label: "Errors",
-                                    color: "#f87171",
-                                },
+                                { key: "requests", label: "Requests", color: "#a855f7" },
+                                { key: "errors", label: "Errors", color: "#ef4444" },
                             ]}
                         />
                     ) : (
-                        <SectionError
-                            message={`Metrics unavailable: ${metrics.error}`}
-                        />
+                        <SectionError message={`Metrics unavailable: ${metrics.error}`} />
                     )}
                 </Panel>
-            </Box>
+            </div>
         </ListView>
     );
 }
