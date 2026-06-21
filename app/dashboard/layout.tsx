@@ -24,7 +24,7 @@ export default async function DashboardLayout({
     }
 
     return (
-        <DashboardChrome user={{ email: session.email, name: session.name }}>
+        <DashboardChrome user={{ email: session.email, name: session.name, avatar: session.avatar }}>
             {children}
         </DashboardChrome>
     );

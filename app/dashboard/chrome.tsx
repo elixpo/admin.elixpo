@@ -5,11 +5,14 @@ import { C } from "@/components/ui";
 import {
     AccountTree,
     Bolt,
+    CreditCard,
     Dns,
     History,
     Hub,
     Inventory2,
     Launch,
+    MenuBook,
+    VpnKey,
     Logout,
     Menu as MenuIcon,
     OpenInNew,
@@ -76,6 +79,7 @@ const navItems = [
 export interface ChromeUser {
     email: string;
     name?: string;
+    avatar?: string | null;
 }
 
 export default function DashboardChrome({
@@ -221,22 +225,7 @@ export default function DashboardChrome({
                                 onClick={(e) => setAnchorEl(e.currentTarget)}
                                 sx={{ p: 0.5 }}
                             >
-                                <Box
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                        borderRadius: "50%",
-                                        background: `linear-gradient(135deg, #ff8a5b 0%, ${C.accent} 100%)`,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: "0.85rem",
-                                        fontWeight: 700,
-                                        color: "#161228",
-                                    }}
-                                >
-                                    {user.email?.charAt(0).toUpperCase() || "A"}
-                                </Box>
+                                <Avatar user={user} size={32} />
                             </IconButton>
 
                             <Menu
@@ -320,6 +309,30 @@ export default function DashboardChrome({
                                     icon={<OpenInNew fontSize="small" />}
                                     label="Elixpo Accounts"
                                     external
+                                />
+                                <ProfileLink
+                                    href="https://dash.cloudflare.com/?to=/:account/billing"
+                                    icon={<CreditCard fontSize="small" />}
+                                    label="Billing & usage"
+                                    external
+                                />
+                                <ProfileLink
+                                    href="https://dash.cloudflare.com/profile/api-tokens"
+                                    icon={<VpnKey fontSize="small" />}
+                                    label="API tokens"
+                                    external
+                                />
+                                <ProfileLink
+                                    href="https://developers.cloudflare.com"
+                                    icon={<MenuBook fontSize="small" />}
+                                    label="Documentation"
+                                    external
+                                />
+                                <ProfileLink
+                                    href="/dashboard/audit"
+                                    icon={<History fontSize="small" />}
+                                    label="Audit log"
+                                    onClick={() => setAnchorEl(null)}
                                 />
                                 <ProfileLink
                                     href="/dashboard/settings"
@@ -497,5 +510,37 @@ function ProfileLink({
                 {label}
             </ListItemText>
         </MenuItem>
+    );
+}
+
+function Avatar({ user, size }: { user: ChromeUser; size: number }) {
+    if (user.avatar) {
+        return (
+            <Box
+                component="img"
+                src={user.avatar}
+                alt={user.name || user.email}
+                referrerPolicy="no-referrer"
+                sx={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: `1px solid ${C.border}` }}
+            />
+        );
+    }
+    return (
+        <Box
+            sx={{
+                width: size,
+                height: size,
+                borderRadius: "50%",
+                background: `linear-gradient(135deg, #ff8a5b 0%, ${C.accent} 100%)`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.85rem",
+                fontWeight: 700,
+                color: "#161228",
+            }}
+        >
+            {user.email?.charAt(0).toUpperCase() || "A"}
+        </Box>
     );
 }

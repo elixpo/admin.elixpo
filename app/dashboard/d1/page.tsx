@@ -1,5 +1,5 @@
 import ListView, { type ListItem } from "@/components/list-view";
-import { fmtBytes } from "@/components/ui";
+import { fmtBytes } from "@/lib/format";
 import { discoverAccount } from "@/lib/discovery";
 
 export const runtime = "edge";
