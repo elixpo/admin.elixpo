@@ -201,10 +201,7 @@ export default function StatusView({
                             </Typography>
                         </Box>
                         <Box
-                            component="a"
-                            href={REPO}
-                            target="_blank"
-                            rel="noreferrer"
+                            title="Coming soon"
                             sx={{
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -212,17 +209,16 @@ export default function StatusView({
                                 height: 40,
                                 px: 2,
                                 borderRadius: "8px",
-                                bgcolor: "#1c1917",
-                                color: "#fff",
-                                textDecoration: "none",
+                                bgcolor: "#e7e5e4",
+                                color: L.muted,
+                                cursor: "not-allowed",
                                 fontSize: "0.8rem",
                                 fontWeight: 700,
                                 letterSpacing: "0.06em",
                                 textTransform: "uppercase",
-                                "&:hover": { bgcolor: "#000" },
                             }}
                         >
-                            Subscribe to updates
+                            Subscribe · coming soon
                         </Box>
                     </Box>
 
