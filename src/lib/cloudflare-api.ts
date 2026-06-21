@@ -4,12 +4,13 @@
  * - REST   : https://api.cloudflare.com/client/v4   (inventory + mutations)
  * - GraphQL: https://api.cloudflare.com/client/v4/graphql  (analytics/charts)
  *
- * Auth comes from the admin app's own scoped token. We read the existing
- * CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID env vars (same names the rest of
- * the ecosystem uses for the REST fallback), so no extra secret is required.
+ * Auth comes from the admin app's OWN dedicated, scoped token (CF_API_TOKEN),
+ * kept separate from the wrangler/CI token (CLOUDFLARE_API_TOKEN) so the
+ * dashboard's blast radius is isolated and independently revocable. The account
+ * id falls back to CLOUDFLARE_ACCOUNT_ID since it's the same account.
  */
 
-import { requireEnv } from "./env";
+import { getEnv, requireEnv } from "./env";
 
 const API = "https://api.cloudflare.com/client/v4";
 
@@ -42,11 +43,11 @@ export class CloudflareApiError extends Error {
 }
 
 async function token(): Promise<string> {
-    return requireEnv("CLOUDFLARE_API_TOKEN");
+    return requireEnv("CF_API_TOKEN");
 }
 
 export async function getAccountId(): Promise<string> {
-    return requireEnv("CLOUDFLARE_ACCOUNT_ID");
+    return (await getEnv("CF_ACCOUNT_ID")) || requireEnv("CLOUDFLARE_ACCOUNT_ID");
 }
 
 /** A single REST call. Throws CloudflareApiError on non-2xx / success:false. */

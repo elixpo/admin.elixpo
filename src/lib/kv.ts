@@ -32,16 +32,18 @@ export async function getKV(): Promise<KvLike> {
         // local dev — fall through to REST
     }
 
-    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-    const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-    const nsId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
+    // Local dev: use the admin app's dedicated token (CF_API_TOKEN, with KV Edit)
+    // so cache + audit-log writes to admin-cache work without the binding.
+    const accountId = process.env.CF_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
+    const apiToken = process.env.CF_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
+    const nsId = process.env.CF_KV_NAMESPACE_ID || process.env.CLOUDFLARE_KV_NAMESPACE_ID;
     if (accountId && apiToken && nsId) {
         cachedKv = createRestKv(accountId, apiToken, nsId);
         return cachedKv;
     }
 
     throw new Error(
-        "[KV] No KV binding and missing CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN / CLOUDFLARE_KV_NAMESPACE_ID for the REST fallback.",
+        "[KV] No KV binding and missing CF_ACCOUNT_ID / CF_API_TOKEN / CF_KV_NAMESPACE_ID for the REST fallback.",
     );
 }
 
