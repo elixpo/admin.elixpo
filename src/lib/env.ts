@@ -37,7 +37,8 @@ export async function appUrl(): Promise<string> {
 /** Elixpo Accounts SSO base URL (no trailing slash). */
 export async function accountsUrl(): Promise<string> {
     const v =
-        (await getEnv("NEXT_PUBLIC_ACCOUNTS_URL")) || "https://accounts.elixpo.com";
+        (await getEnv("NEXT_PUBLIC_ACCOUNTS_URL")) ||
+        "https://accounts.elixpo.com";
     return v.replace(/\/$/, "");
 }
 

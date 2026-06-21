@@ -9,7 +9,12 @@
  */
 
 import type { NextRequest } from "next/server";
-import { base64url, base64urlDecode, hmacSha256Hex, timingSafeEqual } from "./crypto";
+import {
+    base64url,
+    base64urlDecode,
+    hmacSha256Hex,
+    timingSafeEqual,
+} from "./crypto";
 import { getEnv, requireEnv } from "./env";
 
 export const SESSION_COOKIE = "admin_session";
@@ -41,7 +46,9 @@ export async function signSession(
     return `${body}.${sig}`;
 }
 
-export async function verifySession(token: string | undefined): Promise<SessionData | null> {
+export async function verifySession(
+    token: string | undefined,
+): Promise<SessionData | null> {
     if (!token) return null;
     const secret = await getEnv("SESSION_SECRET");
     if (!secret) return null;
@@ -63,7 +70,9 @@ export async function verifySession(token: string | undefined): Promise<SessionD
     }
 }
 
-export async function getSession(request: NextRequest): Promise<SessionData | null> {
+export async function getSession(
+    request: NextRequest,
+): Promise<SessionData | null> {
     return verifySession(request.cookies.get(SESSION_COOKIE)?.value);
 }
 
@@ -73,7 +82,9 @@ export async function getSession(request: NextRequest): Promise<SessionData | nu
  *   const session = await requireAdmin(request);
  *   if (!session) return unauthorized();
  */
-export async function requireAdmin(request: NextRequest): Promise<SessionData | null> {
+export async function requireAdmin(
+    request: NextRequest,
+): Promise<SessionData | null> {
     const s = await getSession(request);
     if (!s || !s.isAdmin) return null;
     return s;

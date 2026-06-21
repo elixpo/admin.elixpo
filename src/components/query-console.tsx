@@ -22,7 +22,11 @@ import { useState } from "react";
 
 interface QueryResult {
     results?: Record<string, unknown>[];
-    meta?: { duration?: number; rows_read?: number; rows_written?: number } | null;
+    meta?: {
+        duration?: number;
+        rows_read?: number;
+        rows_written?: number;
+    } | null;
     error?: string;
 }
 
@@ -33,7 +37,9 @@ export default function QueryConsole({
     dbId: string;
     tables: string[];
 }) {
-    const [sql, setSql] = useState("SELECT name FROM sqlite_master WHERE type='table';");
+    const [sql, setSql] = useState(
+        "SELECT name FROM sqlite_master WHERE type='table';",
+    );
     const [running, setRunning] = useState(false);
     const [result, setResult] = useState<QueryResult | null>(null);
 
@@ -46,8 +52,9 @@ export default function QueryConsole({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sql }),
             });
-            const body = await res.json();
-            if (!res.ok) setResult({ error: body.error || `Error ${res.status}` });
+            const body = (await res.json()) as QueryResult & { error?: string };
+            if (!res.ok)
+                setResult({ error: body.error || `Error ${res.status}` });
             else setResult(body);
         } catch (e) {
             setResult({ error: (e as Error).message });
@@ -62,13 +69,22 @@ export default function QueryConsole({
     return (
         <Box>
             {tables.length > 0 && (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 0.75,
+                        mb: 1.5,
+                    }}
+                >
                     {tables.map((t) => (
                         <Chip
                             key={t}
                             label={t}
                             size="small"
-                            onClick={() => setSql(`SELECT * FROM "${t}" LIMIT 100;`)}
+                            onClick={() =>
+                                setSql(`SELECT * FROM "${t}" LIMIT 100;`)
+                            }
                             sx={{
                                 height: 24,
                                 fontSize: "0.72rem",
@@ -87,7 +103,9 @@ export default function QueryConsole({
             <Box
                 component="textarea"
                 value={sql}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSql(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setSql(e.target.value)
+                }
                 onKeyDown={(e: React.KeyboardEvent) => {
                     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run();
                 }}
@@ -109,7 +127,9 @@ export default function QueryConsole({
                 }}
             />
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1.5 }}>
+            <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1.5 }}
+            >
                 <Button
                     onClick={run}
                     disabled={running}
@@ -120,19 +140,39 @@ export default function QueryConsole({
                         color: "#fff",
                         px: 2.5,
                         borderRadius: "10px",
-                        background: "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
-                        "&:hover": { background: "linear-gradient(180deg, #b69aff 0%, #8b6cff 100%)" },
-                        "&.Mui-disabled": { color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.08)" },
+                        background:
+                            "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
+                        "&:hover": {
+                            background:
+                                "linear-gradient(180deg, #b69aff 0%, #8b6cff 100%)",
+                        },
+                        "&.Mui-disabled": {
+                            color: "rgba(255,255,255,0.5)",
+                            background: "rgba(255,255,255,0.08)",
+                        },
                     }}
                 >
                     {running ? "Running…" : "Run"}
                 </Button>
-                <Typography sx={{ color: "rgba(255,255,255,0.35)", fontSize: "0.72rem" }}>
-                    ⌘/Ctrl + Enter · read-only (SELECT / WITH / EXPLAIN / PRAGMA)
+                <Typography
+                    sx={{
+                        color: "rgba(255,255,255,0.35)",
+                        fontSize: "0.72rem",
+                    }}
+                >
+                    ⌘/Ctrl + Enter · read-only (SELECT / WITH / EXPLAIN /
+                    PRAGMA)
                 </Typography>
                 {result?.meta && (
-                    <Typography sx={{ color: "rgba(255,255,255,0.45)", fontSize: "0.72rem", ml: "auto" }}>
-                        {rows.length} rows · {result.meta.rows_read ?? "?"} read · {result.meta.duration ?? "?"}ms
+                    <Typography
+                        sx={{
+                            color: "rgba(255,255,255,0.45)",
+                            fontSize: "0.72rem",
+                            ml: "auto",
+                        }}
+                    >
+                        {rows.length} rows · {result.meta.rows_read ?? "?"} read
+                        · {result.meta.duration ?? "?"}ms
                     </Typography>
                 )}
             </Box>
@@ -156,7 +196,14 @@ export default function QueryConsole({
             )}
 
             {rows.length > 0 && (
-                <TableContainer sx={{ mt: 2, maxHeight: 460, borderRadius: "12px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <TableContainer
+                    sx={{
+                        mt: 2,
+                        maxHeight: 460,
+                        borderRadius: "12px",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                >
                     <Table size="small" stickyHeader>
                         <TableHead>
                             <TableRow>
@@ -168,8 +215,10 @@ export default function QueryConsole({
                                             color: "#9b7bf7",
                                             fontWeight: 700,
                                             fontSize: "0.78rem",
-                                            borderBottom: "1px solid rgba(255,255,255,0.1)",
-                                            fontFamily: "var(--font-geist-mono), monospace",
+                                            borderBottom:
+                                                "1px solid rgba(255,255,255,0.1)",
+                                            fontFamily:
+                                                "var(--font-geist-mono), monospace",
                                         }}
                                     >
                                         {c}
@@ -179,15 +228,24 @@ export default function QueryConsole({
                         </TableHead>
                         <TableBody>
                             {rows.map((r, i) => (
-                                <TableRow key={i} sx={{ "&:hover": { bgcolor: "rgba(155,123,247,0.04)" } }}>
+                                <TableRow
+                                    key={i}
+                                    sx={{
+                                        "&:hover": {
+                                            bgcolor: "rgba(155,123,247,0.04)",
+                                        },
+                                    }}
+                                >
                                     {columns.map((c) => (
                                         <TableCell
                                             key={c}
                                             sx={{
                                                 color: "rgba(245,245,244,0.85)",
                                                 fontSize: "0.78rem",
-                                                borderBottom: "1px solid rgba(255,255,255,0.05)",
-                                                fontFamily: "var(--font-geist-mono), monospace",
+                                                borderBottom:
+                                                    "1px solid rgba(255,255,255,0.05)",
+                                                fontFamily:
+                                                    "var(--font-geist-mono), monospace",
                                                 maxWidth: 360,
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
@@ -205,7 +263,13 @@ export default function QueryConsole({
             )}
 
             {result && !result.error && rows.length === 0 && (
-                <Typography sx={{ mt: 2, color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>
+                <Typography
+                    sx={{
+                        mt: 2,
+                        color: "rgba(255,255,255,0.4)",
+                        fontSize: "0.85rem",
+                    }}
+                >
                     Query OK — 0 rows returned.
                 </Typography>
             )}

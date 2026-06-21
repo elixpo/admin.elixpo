@@ -5,9 +5,9 @@
 
 export const runtime = "edge";
 
-import { type NextRequest, NextResponse } from "next/server";
 import { ssoLogout } from "@/lib/oauth";
 import { SESSION_COOKIE, getSession } from "@/lib/session";
+import { type NextRequest, NextResponse } from "next/server";
 
 async function handle(request: NextRequest) {
     const session = await getSession(request);

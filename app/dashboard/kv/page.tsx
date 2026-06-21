@@ -1,6 +1,6 @@
 import ListView, { type ListItem } from "@/components/list-view";
-import { metaFor } from "@/lib/enrich";
 import { discoverAccount } from "@/lib/discovery";
+import { metaFor } from "@/lib/enrich";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";

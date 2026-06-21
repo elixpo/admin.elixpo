@@ -56,7 +56,9 @@ export async function exchangeCode(code: string): Promise<TokenResponse> {
     });
     if (!res.ok) {
         const body = await res.text().catch(() => "");
-        throw new Error(`Token exchange failed (${res.status}): ${body.slice(0, 300)}`);
+        throw new Error(
+            `Token exchange failed (${res.status}): ${body.slice(0, 300)}`,
+        );
     }
     return res.json();
 }
@@ -75,7 +77,9 @@ export async function refresh(refreshToken: string): Promise<TokenResponse> {
     return res.json();
 }
 
-export async function fetchMe(accessToken: string): Promise<AccountsProfile | null> {
+export async function fetchMe(
+    accessToken: string,
+): Promise<AccountsProfile | null> {
     const res = await fetch(`${await accountsUrl()}/api/auth/me`, {
         headers: { "Authorization": `Bearer ${accessToken}` },
     });
@@ -88,7 +92,9 @@ export async function ssoLogout(refreshToken?: string): Promise<void> {
         await fetch(`${await accountsUrl()}/api/auth/logout`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
+            body: JSON.stringify(
+                refreshToken ? { refresh_token: refreshToken } : {},
+            ),
         });
     } catch {
         // best-effort

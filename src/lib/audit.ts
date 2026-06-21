@@ -38,10 +38,14 @@ export async function recordAction(
         meta,
     };
     // Descending timestamp prefix → KV list (ascending) yields newest-first.
-    const descending = (Number.MAX_SAFE_INTEGER - ts).toString().padStart(16, "0");
+    const descending = (Number.MAX_SAFE_INTEGER - ts)
+        .toString()
+        .padStart(16, "0");
     const key = `${PREFIX}${descending}:${randomToken(6)}`;
     const kv = await getKV();
-    await kv.put(key, JSON.stringify(entry), { expirationTtl: RETENTION_SECONDS });
+    await kv.put(key, JSON.stringify(entry), {
+        expirationTtl: RETENTION_SECONDS,
+    });
 }
 
 export async function listAudit(limit = 100): Promise<AuditEntry[]> {

@@ -11,9 +11,15 @@ let cachedKv: KvLike | null = null;
 
 export interface KvLike {
     get(key: string): Promise<string | null>;
-    put(key: string, value: string, opts?: { expirationTtl?: number }): Promise<void>;
+    put(
+        key: string,
+        value: string,
+        opts?: { expirationTtl?: number },
+    ): Promise<void>;
     delete(key: string): Promise<void>;
-    list(opts?: { prefix?: string; limit?: number }): Promise<{ keys: { name: string }[] }>;
+    list(opts?: { prefix?: string; limit?: number }): Promise<{
+        keys: { name: string }[];
+    }>;
 }
 
 export async function getKV(): Promise<KvLike> {
@@ -34,9 +40,13 @@ export async function getKV(): Promise<KvLike> {
 
     // Local dev: use the admin app's dedicated token (CF_API_TOKEN, with KV Edit)
     // so cache + audit-log writes to admin-cache work without the binding.
-    const accountId = process.env.CF_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
-    const apiToken = process.env.CF_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
-    const nsId = process.env.CF_KV_NAMESPACE_ID || process.env.CLOUDFLARE_KV_NAMESPACE_ID;
+    const accountId =
+        process.env.CF_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID;
+    const apiToken =
+        process.env.CF_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
+    const nsId =
+        process.env.CF_KV_NAMESPACE_ID ||
+        process.env.CLOUDFLARE_KV_NAMESPACE_ID;
     if (accountId && apiToken && nsId) {
         cachedKv = createRestKv(accountId, apiToken, nsId);
         return cachedKv;
@@ -47,20 +57,31 @@ export async function getKV(): Promise<KvLike> {
     );
 }
 
-function createRestKv(accountId: string, apiToken: string, nsId: string): KvLike {
+function createRestKv(
+    accountId: string,
+    apiToken: string,
+    nsId: string,
+): KvLike {
     const base = `https://api.cloudflare.com/client/v4/accounts/${accountId}/storage/kv/namespaces/${nsId}`;
     const auth = { "Authorization": `Bearer ${apiToken}` };
 
     return {
         async get(key) {
-            const res = await fetch(`${base}/values/${encodeURIComponent(key)}`, { headers: auth });
+            const res = await fetch(
+                `${base}/values/${encodeURIComponent(key)}`,
+                { headers: auth },
+            );
             if (res.status === 404) return null;
             if (!res.ok) throw new Error(`KV get failed: ${res.status}`);
             return res.text();
         },
         async put(key, value, opts) {
             const url = new URL(`${base}/values/${encodeURIComponent(key)}`);
-            if (opts?.expirationTtl) url.searchParams.set("expiration_ttl", String(opts.expirationTtl));
+            if (opts?.expirationTtl)
+                url.searchParams.set(
+                    "expiration_ttl",
+                    String(opts.expirationTtl),
+                );
             const res = await fetch(url, {
                 method: "PUT",
                 headers: { ...auth, "Content-Type": "text/plain" },
@@ -69,7 +90,10 @@ function createRestKv(accountId: string, apiToken: string, nsId: string): KvLike
             if (!res.ok) throw new Error(`KV put failed: ${res.status}`);
         },
         async delete(key) {
-            await fetch(`${base}/values/${encodeURIComponent(key)}`, { method: "DELETE", headers: auth });
+            await fetch(`${base}/values/${encodeURIComponent(key)}`, {
+                method: "DELETE",
+                headers: auth,
+            });
         },
         async list(opts) {
             const url = new URL(`${base}/keys`);
@@ -96,7 +120,11 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 }
 
 /** JSON cache helper with TTL (seconds). */
-export async function cacheSet(key: string, value: unknown, ttlSeconds = 60): Promise<void> {
+export async function cacheSet(
+    key: string,
+    value: unknown,
+    ttlSeconds = 60,
+): Promise<void> {
     const kv = await getKV();
     await kv.put(key, JSON.stringify(value), { expirationTtl: ttlSeconds });
 }

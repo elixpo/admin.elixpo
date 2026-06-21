@@ -4,10 +4,10 @@
  * Cloudflare API, so gating lives here (and in requireAdmin on each /api route).
  */
 
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type React from "react";
-import { SESSION_COOKIE, verifySession } from "@/lib/session";
 import DashboardChrome from "./chrome";
 
 export const runtime = "edge";

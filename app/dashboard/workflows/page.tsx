@@ -9,7 +9,9 @@ export default async function WorkflowsPage() {
     const items: ListItem[] = inv.workflows.map((w) => ({
         id: w.name,
         primary: w.name,
-        secondary: [w.class_name, w.script_name].filter(Boolean).join(" · ") || undefined,
+        secondary:
+            [w.class_name, w.script_name].filter(Boolean).join(" · ") ||
+            undefined,
     }));
     return (
         <ListView

@@ -10,7 +10,11 @@ export default async function AuditPage() {
     return (
         <AuditView
             entries={res.ok ? res.data : []}
-            error={res.ok ? null : `Audit log unavailable (admin-cache KV not reachable): ${res.error}`}
+            error={
+                res.ok
+                    ? null
+                    : `Audit log unavailable (admin-cache KV not reachable): ${res.error}`
+            }
         />
     );
 }

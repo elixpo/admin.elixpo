@@ -1,10 +1,10 @@
-import { Box } from "@mui/material";
 import ListView, { type ListItem } from "@/components/list-view";
 import MetricChart from "@/components/metric-chart";
 import { Panel, SectionError } from "@/components/ui";
 import { discoverAccount } from "@/lib/discovery";
-import { doMetrics } from "@/lib/metrics";
 import { autoLabel } from "@/lib/enrich";
+import { doMetrics } from "@/lib/metrics";
+import { Box } from "@mui/material";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -16,7 +16,9 @@ export default async function DurableObjectsPage() {
     const items: ListItem[] = inv.durableObjects.map((d) => ({
         id: d.id,
         primary: d.class || d.name || autoLabel(d.id),
-        secondary: [d.script, d.use_sqlite ? "SQLite" : null, d.id].filter(Boolean).join(" · "),
+        secondary: [d.script, d.use_sqlite ? "SQLite" : null, d.id]
+            .filter(Boolean)
+            .join(" · "),
     }));
 
     return (
@@ -34,12 +36,22 @@ export default async function DurableObjectsPage() {
                         <MetricChart
                             points={metrics.points}
                             series={[
-                                { key: "requests", label: "Requests", color: "#c4b5fd" },
-                                { key: "errors", label: "Errors", color: "#f87171" },
+                                {
+                                    key: "requests",
+                                    label: "Requests",
+                                    color: "#c4b5fd",
+                                },
+                                {
+                                    key: "errors",
+                                    label: "Errors",
+                                    color: "#f87171",
+                                },
                             ]}
                         />
                     ) : (
-                        <SectionError message={`Metrics unavailable: ${metrics.error}`} />
+                        <SectionError
+                            message={`Metrics unavailable: ${metrics.error}`}
+                        />
                     )}
                 </Panel>
             </Box>

@@ -46,11 +46,17 @@ export function lastDays(d = 7): Window {
     return { since: since.toISOString(), until: until.toISOString() };
 }
 
-async function run<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+async function run<T>(
+    query: string,
+    variables: Record<string, unknown>,
+): Promise<T> {
     return cfGraphQL<T>(query, variables);
 }
 
-function sumTotals(points: MetricPoint[], fields: string[]): Record<string, number> {
+function sumTotals(
+    points: MetricPoint[],
+    fields: string[],
+): Record<string, number> {
     const t: Record<string, number> = {};
     for (const f of fields) t[f] = 0;
     for (const p of points) {
@@ -64,7 +70,10 @@ function sumTotals(points: MetricPoint[], fields: string[]): Record<string, numb
 
 /* ------------------------------------------------------------------ Workers */
 
-export async function workersMetrics(scriptName: string, w = lastHours()): Promise<MetricSeries> {
+export async function workersMetrics(
+    scriptName: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
         const data = await run<any>(
@@ -80,21 +89,28 @@ export async function workersMetrics(scriptName: string, w = lastHours()): Promi
             }`,
             { a: account, s: w.since, u: w.until, script: scriptName },
         );
-        const rows = data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive ?? [];
         const points: MetricPoint[] = rows.map((r: any) => ({
             ts: r.dimensions.datetimeHour,
             requests: r.sum.requests ?? 0,
             errors: r.sum.errors ?? 0,
             subrequests: r.sum.subrequests ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["requests", "errors", "subrequests"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["requests", "errors", "subrequests"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
 }
 
 /** Account-wide Workers invocations (all scripts), bucketed hourly. */
-export async function workersMetricsAll(w = lastHours()): Promise<MetricSeries> {
+export async function workersMetricsAll(
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
         const data = await run<any>(
@@ -110,7 +126,8 @@ export async function workersMetricsAll(w = lastHours()): Promise<MetricSeries> 
             }`,
             { a: account, s: w.since, u: w.until },
         );
-        const rows = data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive ?? [];
         // Multiple script rows can share an hour — fold them together.
         const byHour = new Map<string, MetricPoint>();
         for (const r of rows) {
@@ -120,8 +137,14 @@ export async function workersMetricsAll(w = lastHours()): Promise<MetricSeries> 
             p.errors = (p.errors as number) + (r.sum.errors ?? 0);
             byHour.set(ts, p);
         }
-        const points = Array.from(byHour.values()).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
-        return { available: true, points, totals: sumTotals(points, ["requests", "errors"]) };
+        const points = Array.from(byHour.values()).sort((a, b) =>
+            String(a.ts).localeCompare(String(b.ts)),
+        );
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["requests", "errors"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
@@ -129,7 +152,10 @@ export async function workersMetricsAll(w = lastHours()): Promise<MetricSeries> 
 
 /* ----------------------------------------------------------------------- D1 */
 
-export async function d1Metrics(databaseId: string, w = lastHours()): Promise<MetricSeries> {
+export async function d1Metrics(
+    databaseId: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
         const data = await run<any>(
@@ -145,7 +171,8 @@ export async function d1Metrics(databaseId: string, w = lastHours()): Promise<Me
             }`,
             { a: account, s: w.since, u: w.until, db: databaseId },
         );
-        const rows = data?.viewer?.accounts?.[0]?.d1AnalyticsAdaptiveGroups ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.d1AnalyticsAdaptiveGroups ?? [];
         const points: MetricPoint[] = rows.map((r: any) => ({
             ts: r.dimensions.datetimeHour,
             readQueries: r.sum.readQueries ?? 0,
@@ -156,7 +183,12 @@ export async function d1Metrics(databaseId: string, w = lastHours()): Promise<Me
         return {
             available: true,
             points,
-            totals: sumTotals(points, ["readQueries", "writeQueries", "rowsRead", "rowsWritten"]),
+            totals: sumTotals(points, [
+                "readQueries",
+                "writeQueries",
+                "rowsRead",
+                "rowsWritten",
+            ]),
         };
     } catch (e) {
         return EMPTY((e as Error).message);
@@ -165,7 +197,10 @@ export async function d1Metrics(databaseId: string, w = lastHours()): Promise<Me
 
 /* ----------------------------------------------------------------------- KV */
 
-export async function kvMetrics(namespaceId: string, w = lastHours()): Promise<MetricSeries> {
+export async function kvMetrics(
+    namespaceId: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
         const data = await run<any>(
@@ -181,18 +216,23 @@ export async function kvMetrics(namespaceId: string, w = lastHours()): Promise<M
             }`,
             { a: account, s: w.since, u: w.until, ns: namespaceId },
         );
-        const rows = data?.viewer?.accounts?.[0]?.kvOperationsAdaptiveGroups ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.kvOperationsAdaptiveGroups ?? [];
         // Pivot actionType (read/write/delete/list) into columns per hour.
         const byHour = new Map<string, MetricPoint>();
         for (const r of rows) {
             const ts = r.dimensions.datetimeHour;
             const action = r.dimensions.actionType || "op";
-            const p = byHour.get(ts) || { ts };
+            const p: MetricPoint = byHour.get(ts) || { ts };
             p[action] = ((p[action] as number) || 0) + (r.sum.requests ?? 0);
             byHour.set(ts, p);
         }
-        const points = Array.from(byHour.values()).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
-        const cols = Array.from(new Set(rows.map((r: any) => r.dimensions.actionType || "op"))) as string[];
+        const points = Array.from(byHour.values()).sort((a, b) =>
+            String(a.ts).localeCompare(String(b.ts)),
+        );
+        const cols = Array.from(
+            new Set(rows.map((r: any) => r.dimensions.actionType || "op")),
+        ) as string[];
         return { available: true, points, totals: sumTotals(points, cols) };
     } catch (e) {
         return EMPTY((e as Error).message);
@@ -201,7 +241,10 @@ export async function kvMetrics(namespaceId: string, w = lastHours()): Promise<M
 
 /* -------------------------------------------------------------------- Queues */
 
-export async function queueMetrics(queueId: string, w = lastHours()): Promise<MetricSeries> {
+export async function queueMetrics(
+    queueId: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const account = await getAccountId();
         const data = await run<any>(
@@ -217,13 +260,18 @@ export async function queueMetrics(queueId: string, w = lastHours()): Promise<Me
             }`,
             { a: account, s: w.since, u: w.until, q: queueId },
         );
-        const rows = data?.viewer?.accounts?.[0]?.queueBacklogAdaptiveGroups ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.queueBacklogAdaptiveGroups ?? [];
         const points: MetricPoint[] = rows.map((r: any) => ({
             ts: r.dimensions.datetimeHour,
             backlogMessages: r.avg?.messages ?? 0,
             backlogBytes: r.avg?.bytes ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["backlogMessages", "backlogBytes"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["backlogMessages", "backlogBytes"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
@@ -247,13 +295,19 @@ export async function doMetrics(w = lastHours()): Promise<MetricSeries> {
             }`,
             { a: account, s: w.since, u: w.until },
         );
-        const rows = data?.viewer?.accounts?.[0]?.durableObjectsInvocationsAdaptiveGroups ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]
+                ?.durableObjectsInvocationsAdaptiveGroups ?? [];
         const points: MetricPoint[] = rows.map((r: any) => ({
             ts: r.dimensions.datetimeHour,
             requests: r.sum.requests ?? 0,
             errors: r.sum.errors ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["requests", "errors"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["requests", "errors"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
@@ -261,7 +315,10 @@ export async function doMetrics(w = lastHours()): Promise<MetricSeries> {
 
 /* ------------------------------------------------------------- Zone traffic */
 
-export async function zoneTraffic(zoneTag: string, w = lastHours()): Promise<MetricSeries> {
+export async function zoneTraffic(
+    zoneTag: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const data = await run<any>(
             `query($z:String!,$s:Time!,$u:Time!){
@@ -283,7 +340,11 @@ export async function zoneTraffic(zoneTag: string, w = lastHours()): Promise<Met
             requests: r.count ?? 0,
             bytes: r.sum?.edgeResponseBytes ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["requests", "bytes"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["requests", "bytes"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
@@ -291,7 +352,10 @@ export async function zoneTraffic(zoneTag: string, w = lastHours()): Promise<Met
 
 /* --------------------------------------------------------------- DNS / zone */
 
-export async function dnsAnalytics(zoneTag: string, w = lastHours()): Promise<MetricSeries> {
+export async function dnsAnalytics(
+    zoneTag: string,
+    w = lastHours(),
+): Promise<MetricSeries> {
     try {
         const data = await run<any>(
             `query($z:String!,$s:Time!,$u:Time!){
@@ -311,7 +375,11 @@ export async function dnsAnalytics(zoneTag: string, w = lastHours()): Promise<Me
             ts: r.dimensions.datetimeHour,
             queries: r.count ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["queries"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["queries"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }
@@ -335,12 +403,18 @@ export async function gatewayDns(w = lastHours()): Promise<MetricSeries> {
             }`,
             { a: account, s: w.since, u: w.until },
         );
-        const rows = data?.viewer?.accounts?.[0]?.gatewayResolverQueriesAdaptiveGroups ?? [];
+        const rows =
+            data?.viewer?.accounts?.[0]?.gatewayResolverQueriesAdaptiveGroups ??
+            [];
         const points: MetricPoint[] = rows.map((r: any) => ({
             ts: r.dimensions.datetimeHour,
             queries: r.count ?? 0,
         }));
-        return { available: true, points, totals: sumTotals(points, ["queries"]) };
+        return {
+            available: true,
+            points,
+            totals: sumTotals(points, ["queries"]),
+        };
     } catch (e) {
         return EMPTY((e as Error).message);
     }

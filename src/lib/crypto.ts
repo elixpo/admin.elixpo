@@ -14,7 +14,9 @@ export function toHex(buf: ArrayBuffer): string {
 
 export function base64url(input: ArrayBuffer | string): string {
     const bytes =
-        typeof input === "string" ? encoder.encode(input) : new Uint8Array(input);
+        typeof input === "string"
+            ? encoder.encode(input)
+            : new Uint8Array(input);
     let bin = "";
     for (const b of bytes) bin += String.fromCharCode(b);
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -42,7 +44,10 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
 }
 
 /** HMAC-SHA256 of `message` with `secret`, hex-encoded. */
-export async function hmacSha256Hex(secret: string, message: string): Promise<string> {
+export async function hmacSha256Hex(
+    secret: string,
+    message: string,
+): Promise<string> {
     const key = await importHmacKey(secret);
     const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
     return toHex(sig);
@@ -52,7 +57,8 @@ export async function hmacSha256Hex(secret: string, message: string): Promise<st
 export function timingSafeEqual(a: string, b: string): boolean {
     if (a.length !== b.length) return false;
     let diff = 0;
-    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    for (let i = 0; i < a.length; i++)
+        diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
     return diff === 0;
 }
 

@@ -10,9 +10,14 @@
 
 export const runtime = "edge";
 
-import { type NextRequest, NextResponse } from "next/server";
 import { exchangeCode, fetchMe } from "@/lib/oauth";
-import { SESSION_COOKIE, SESSION_TTL_SECONDS, STATE_COOKIE, signSession } from "@/lib/session";
+import {
+    SESSION_COOKIE,
+    SESSION_TTL_SECONDS,
+    STATE_COOKIE,
+    signSession,
+} from "@/lib/session";
+import { type NextRequest, NextResponse } from "next/server";
 
 function redirectTo(request: NextRequest, path: string) {
     return NextResponse.redirect(new URL(path, request.url));
@@ -26,7 +31,10 @@ export async function GET(request: NextRequest) {
     const secure = url.protocol === "https:";
 
     if (oauthError) {
-        return redirectTo(request, `/denied?reason=${encodeURIComponent(oauthError)}`);
+        return redirectTo(
+            request,
+            `/denied?reason=${encodeURIComponent(oauthError)}`,
+        );
     }
 
     const cookieState = request.cookies.get(STATE_COOKIE)?.value;

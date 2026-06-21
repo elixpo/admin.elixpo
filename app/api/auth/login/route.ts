@@ -6,10 +6,10 @@
 
 export const runtime = "edge";
 
-import { type NextRequest, NextResponse } from "next/server";
 import { randomToken } from "@/lib/crypto";
 import { buildAuthorizeUrl } from "@/lib/oauth";
 import { STATE_COOKIE } from "@/lib/session";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const state = randomToken(24);

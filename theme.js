@@ -16,8 +16,16 @@ export const colors = {
         border: "rgba(155, 123, 247, 0.3)",
         glow: "rgba(155, 123, 247, 0.6)",
     },
-    sage: { main: "#86efac", dim: "rgba(134, 239, 172, 0.15)", border: "rgba(134, 239, 172, 0.3)" },
-    honey: { main: "#fbbf24", dim: "rgba(251, 191, 36, 0.15)", border: "rgba(251, 191, 36, 0.3)" },
+    sage: {
+        main: "#86efac",
+        dim: "rgba(134, 239, 172, 0.15)",
+        border: "rgba(134, 239, 172, 0.3)",
+    },
+    honey: {
+        main: "#fbbf24",
+        dim: "rgba(251, 191, 36, 0.15)",
+        border: "rgba(251, 191, 36, 0.3)",
+    },
     sky: { main: "#5fb6ff" },
     rose: { main: "#ff6a8a" },
     text: {
@@ -35,19 +43,41 @@ export const colors = {
         hover: "rgba(255, 255, 255, 0.3)",
     },
     status: {
-        success: { main: "#4ade80", bg: "rgba(34, 197, 94, 0.1)", border: "rgba(34, 197, 94, 0.3)" },
-        warning: { main: "#fbbf24", bg: "rgba(251, 191, 36, 0.1)", border: "rgba(251, 191, 36, 0.3)" },
-        error: { main: "#f87171", bg: "rgba(239, 68, 68, 0.1)", border: "rgba(239, 68, 68, 0.3)" },
-        info: { main: "#818cf8", bg: "rgba(88, 101, 242, 0.15)", border: "rgba(88, 101, 242, 0.3)" },
-        neutral: { main: "#d1d5db", bg: "rgba(156, 163, 175, 0.1)", border: "rgba(156, 163, 175, 0.2)" },
+        success: {
+            main: "#4ade80",
+            bg: "rgba(34, 197, 94, 0.1)",
+            border: "rgba(34, 197, 94, 0.3)",
+        },
+        warning: {
+            main: "#fbbf24",
+            bg: "rgba(251, 191, 36, 0.1)",
+            border: "rgba(251, 191, 36, 0.3)",
+        },
+        error: {
+            main: "#f87171",
+            bg: "rgba(239, 68, 68, 0.1)",
+            border: "rgba(239, 68, 68, 0.3)",
+        },
+        info: {
+            main: "#818cf8",
+            bg: "rgba(88, 101, 242, 0.15)",
+            border: "rgba(88, 101, 242, 0.3)",
+        },
+        neutral: {
+            main: "#d1d5db",
+            bg: "rgba(156, 163, 175, 0.1)",
+            border: "rgba(156, 163, 175, 0.2)",
+        },
     },
 };
 
 export const gradients = {
     cardAccent: "linear-gradient(90deg, #9b7bf7, #86efac, #fbbf24)",
     textHeading: "linear-gradient(to bottom right, #f5f5f4, #a1a1aa)",
-    textHero: "linear-gradient(135deg, #f5f5f4 0%, #9b7bf7 30%, #86efac 60%, #fbbf24 100%)",
-    textAccent: "linear-gradient(135deg, #9b7bf7 0%, #86efac 50%, #fbbf24 100%)",
+    textHero:
+        "linear-gradient(135deg, #f5f5f4 0%, #9b7bf7 30%, #86efac 60%, #fbbf24 100%)",
+    textAccent:
+        "linear-gradient(135deg, #9b7bf7 0%, #86efac 50%, #fbbf24 100%)",
     bgPage: "linear-gradient(135deg, #0f1117 0%, #131922 50%, #0f1117 100%)",
     bgCard: "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
     buttonPrimary: "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",

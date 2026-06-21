@@ -3,9 +3,12 @@ import Link from "next/link";
 export const runtime = "edge";
 
 const REASONS: Record<string, string> = {
-    not_admin: "Your Elixpo account isn't marked as an admin. Ask an existing admin to grant you access.",
-    bad_state: "The sign-in request expired or was tampered with. Please try again.",
-    exchange_failed: "We couldn't complete sign-in with Elixpo Accounts. Please try again.",
+    not_admin:
+        "Your Elixpo account isn't marked as an admin. Ask an existing admin to grant you access.",
+    bad_state:
+        "The sign-in request expired or was tampered with. Please try again.",
+    exchange_failed:
+        "We couldn't complete sign-in with Elixpo Accounts. Please try again.",
     no_profile: "We couldn't read your Elixpo profile. Please try again.",
     access_denied: "You declined the sign-in request.",
 };
@@ -16,7 +19,9 @@ export default async function Denied({
     searchParams: Promise<{ reason?: string }>;
 }) {
     const { reason } = await searchParams;
-    const message = (reason && REASONS[reason]) || "You don't have access to the Elixpo Admin console.";
+    const message =
+        (reason && REASONS[reason]) ||
+        "You don't have access to the Elixpo Admin console.";
 
     return (
         <main
@@ -47,13 +52,34 @@ export default async function Denied({
             >
                 Access denied
             </div>
-            <h1 style={{ fontSize: "clamp(2rem, 6vw, 3.2rem)", fontWeight: 800, margin: 0 }}>
+            <h1
+                style={{
+                    fontSize: "clamp(2rem, 6vw, 3.2rem)",
+                    fontWeight: 800,
+                    margin: 0,
+                }}
+            >
                 Admins only
             </h1>
-            <p style={{ maxWidth: 460, color: "rgba(245,245,244,0.72)", lineHeight: 1.6, margin: 0 }}>
+            <p
+                style={{
+                    maxWidth: 460,
+                    color: "rgba(245,245,244,0.72)",
+                    lineHeight: 1.6,
+                    margin: 0,
+                }}
+            >
                 {message}
             </p>
-            <div style={{ display: "flex", gap: 12, marginTop: "0.5rem", flexWrap: "wrap", justifyContent: "center" }}>
+            <div
+                style={{
+                    display: "flex",
+                    gap: 12,
+                    marginTop: "0.5rem",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                }}
+            >
                 <a
                     href="/api/auth/login"
                     style={{
@@ -65,7 +91,8 @@ export default async function Denied({
                         fontWeight: 700,
                         color: "#fff",
                         textDecoration: "none",
-                        background: "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
+                        background:
+                            "linear-gradient(180deg, #a98cff 0%, #7c5cff 100%)",
                     }}
                 >
                     Try again

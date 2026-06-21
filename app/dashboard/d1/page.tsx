@@ -1,6 +1,6 @@
 import ListView, { type ListItem } from "@/components/list-view";
-import { discoverAccount } from "@/lib/discovery";
 import { fmtBytes } from "@/components/ui";
+import { discoverAccount } from "@/lib/discovery";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";

@@ -18,7 +18,11 @@ export interface PagesProject {
     name: string;
     subdomain?: string;
     domains?: string[];
-    latest_deployment?: { id?: string; created_on?: string; environment?: string };
+    latest_deployment?: {
+        id?: string;
+        created_on?: string;
+        environment?: string;
+    };
     created_on?: string;
 }
 
@@ -110,7 +114,10 @@ export interface Inventory {
     errors: Record<string, SectionError>;
 }
 
-async function listAcct<T>(suffix: string, opts?: { perPage?: number }): Promise<T[]> {
+async function listAcct<T>(
+    suffix: string,
+    opts?: { perPage?: number },
+): Promise<T[]> {
     return cfList<T>(await acctPath(suffix), opts);
 }
 
@@ -141,7 +148,11 @@ export async function discoverAccount(force = false): Promise<Inventory> {
         safe(() => listAcct<D1Database>("/d1/database")),
         safe(() => listAcct<KvNamespace>("/storage/kv/namespaces")),
         safe(() => listAcct<QueueInfo>("/queues")),
-        safe(() => listAcct<DurableObjectNamespace>("/workers/durable_objects/namespaces")),
+        safe(() =>
+            listAcct<DurableObjectNamespace>(
+                "/workers/durable_objects/namespaces",
+            ),
+        ),
         safe(() => listAcct<ContainerApp>("/containers/applications")),
         safe(() => listAcct<WorkflowInfo>("/workflows")),
         safe(() => cfList<ZoneInfo>(`/zones?account.id=${accountId}`)),
@@ -151,7 +162,9 @@ export async function discoverAccount(force = false): Promise<Inventory> {
     const errors: Record<string, SectionError> = {};
     const pick = <T>(
         name: string,
-        r: { ok: true; data: T } | { ok: false; error: string; status?: number },
+        r:
+            | { ok: true; data: T }
+            | { ok: false; error: string; status?: number },
         fallback: T,
     ): T => {
         if (r.ok) {
@@ -196,7 +209,14 @@ export async function workerSchedules(scriptName: string): Promise<string[]> {
 }
 
 /** Recent deployments for a Pages project (best-effort). */
-export async function pagesDeployments(project: string, max = 10): Promise<any[]> {
-    const r = await safe(() => listAcct<any>(`/pages/projects/${project}/deployments`, { perPage: max }));
+export async function pagesDeployments(
+    project: string,
+    max = 10,
+): Promise<any[]> {
+    const r = await safe(() =>
+        listAcct<any>(`/pages/projects/${project}/deployments`, {
+            perPage: max,
+        }),
+    );
     return r.ok ? r.data.slice(0, max) : [];
 }

@@ -34,7 +34,11 @@ export interface CfEnvelope<T> {
 export class CloudflareApiError extends Error {
     status: number;
     errors?: { code?: number; message: string }[];
-    constructor(status: number, message: string, errors?: { code?: number; message: string }[]) {
+    constructor(
+        status: number,
+        message: string,
+        errors?: { code?: number; message: string }[],
+    ) {
         super(message);
         this.name = "CloudflareApiError";
         this.status = status;
@@ -47,7 +51,9 @@ async function token(): Promise<string> {
 }
 
 export async function getAccountId(): Promise<string> {
-    return (await getEnv("CF_ACCOUNT_ID")) || requireEnv("CLOUDFLARE_ACCOUNT_ID");
+    return (
+        (await getEnv("CF_ACCOUNT_ID")) || requireEnv("CLOUDFLARE_ACCOUNT_ID")
+    );
 }
 
 /** A single REST call. Throws CloudflareApiError on non-2xx / success:false. */
@@ -64,11 +70,16 @@ export async function cfRest<T = any>(
             ...(init?.headers || {}),
         },
     });
-    const body: CfEnvelope<T> = await res
-        .json()
-        .catch(() => ({ success: false, result: null as T, errors: [{ message: res.statusText }] }));
+    const body = (await res.json().catch(() => ({
+        success: false,
+        result: null as T,
+        errors: [{ message: res.statusText }],
+    }))) as CfEnvelope<T>;
     if (!res.ok || body.success === false) {
-        const msg = body.errors?.[0]?.message || res.statusText || "Cloudflare API error";
+        const msg =
+            body.errors?.[0]?.message ||
+            res.statusText ||
+            "Cloudflare API error";
         throw new CloudflareApiError(res.status, msg, body.errors);
     }
     return body;
@@ -93,7 +104,9 @@ export async function cfList<T = any>(
     // Guard against runaway pagination.
     for (let i = 0; i < 100; i++) {
         const sep = path.includes("?") ? "&" : "?";
-        const env = await cfRest<T[]>(`${path}${sep}page=${page}&per_page=${perPage}`);
+        const env = await cfRest<T[]>(
+            `${path}${sep}page=${page}&per_page=${perPage}`,
+        );
         const batch = (env.result || []) as T[];
         out.push(...batch);
         const info = env.result_info;
@@ -117,12 +130,19 @@ export async function cfGraphQL<T = any>(
         },
         body: JSON.stringify({ query, variables }),
     });
-    const body = await res.json().catch(() => null);
+    const body = (await res.json().catch(() => null)) as {
+        data?: T;
+        errors?: { message: string }[];
+    } | null;
     if (!res.ok) {
         throw new CloudflareApiError(res.status, `GraphQL HTTP ${res.status}`);
     }
     if (body?.errors?.length) {
-        throw new CloudflareApiError(200, body.errors[0]?.message || "GraphQL error", body.errors);
+        throw new CloudflareApiError(
+            200,
+            body.errors[0]?.message || "GraphQL error",
+            body.errors,
+        );
     }
     return body?.data as T;
 }
@@ -133,11 +153,17 @@ export async function cfGraphQL<T = any>(
  */
 export async function safe<T>(
     fn: () => Promise<T>,
-): Promise<{ ok: true; data: T } | { ok: false; error: string; status?: number }> {
+): Promise<
+    { ok: true; data: T } | { ok: false; error: string; status?: number }
+> {
     try {
         return { ok: true, data: await fn() };
     } catch (e) {
         const err = e as CloudflareApiError;
-        return { ok: false, error: err.message || String(e), status: err.status };
+        return {
+            ok: false,
+            error: err.message || String(e),
+            status: err.status,
+        };
     }
 }

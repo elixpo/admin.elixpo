@@ -1,5 +1,17 @@
 "use client";
 
+import MetricChart from "@/components/metric-chart";
+import {
+    Empty,
+    PageHeader,
+    Panel,
+    SectionError,
+    StatCard,
+    StatusChip,
+} from "@/components/ui";
+import type { Inventory } from "@/lib/discovery";
+import { autoLabel, metaFor } from "@/lib/enrich";
+import type { MetricSeries } from "@/lib/metrics";
 import {
     AccountTree,
     Bolt,
@@ -15,11 +27,6 @@ import {
 } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
-import MetricChart from "@/components/metric-chart";
-import { Empty, PageHeader, Panel, SectionError, StatCard, StatusChip } from "@/components/ui";
-import { autoLabel, metaFor } from "@/lib/enrich";
-import type { Inventory } from "@/lib/discovery";
-import type { MetricSeries } from "@/lib/metrics";
 
 const grid = (min: number) => ({
     display: "grid",
@@ -49,15 +56,33 @@ function ResourceRow({
                 px: 1,
                 borderRadius: "8px",
                 transition: "background 0.15s",
-                "&:hover": href ? { bgcolor: "rgba(255,255,255,0.04)" } : undefined,
+                "&:hover": href
+                    ? { bgcolor: "rgba(255,255,255,0.04)" }
+                    : undefined,
             }}
         >
             <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ color: "#f5f5f4", fontSize: "0.85rem", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <Typography
+                    sx={{
+                        color: "#f5f5f4",
+                        fontSize: "0.85rem",
+                        fontWeight: 500,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
                     {primary}
                 </Typography>
                 {secondary && (
-                    <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.72rem" }}>{secondary}</Typography>
+                    <Typography
+                        sx={{
+                            color: "rgba(255,255,255,0.4)",
+                            fontSize: "0.72rem",
+                        }}
+                    >
+                        {secondary}
+                    </Typography>
                 )}
             </Box>
             {chip}
@@ -83,8 +108,12 @@ export default function OverviewView({
     traffic: MetricSeries | null;
     primaryZoneName?: string;
 }) {
-    const deadQueues = inv.queues.filter((q) => (q.consumers_total_count ?? 0) === 0);
-    const failedSections = Object.entries(inv.errors).filter(([, e]) => e !== null) as [string, { error: string }][];
+    const deadQueues = inv.queues.filter(
+        (q) => (q.consumers_total_count ?? 0) === 0,
+    );
+    const failedSections = Object.entries(inv.errors).filter(
+        ([, e]) => e !== null,
+    ) as [string, { error: string }][];
 
     return (
         <Box>
@@ -92,7 +121,10 @@ export default function OverviewView({
                 title="Overview"
                 subtitle={`Live inventory of the Elixpo Cloudflare account · ${new Date(inv.fetchedAt).toLocaleTimeString()}`}
                 action={
-                    <Link href="/dashboard?ts=refresh" style={{ textDecoration: "none" }}>
+                    <Link
+                        href="/dashboard?ts=refresh"
+                        style={{ textDecoration: "none" }}
+                    >
                         <StatusChip label="Refresh" tone="info" />
                     </Link>
                 }
@@ -114,7 +146,9 @@ export default function OverviewView({
                 >
                     <Warning sx={{ color: "#fbbf24" }} />
                     <Typography sx={{ color: "#fbbf24", fontSize: "0.85rem" }}>
-                        {deadQueues.length} queue{deadQueues.length > 1 ? "s have" : " has"} no consumer (messages won't be processed):{" "}
+                        {deadQueues.length} queue
+                        {deadQueues.length > 1 ? "s have" : " has"} no consumer
+                        (messages won't be processed):{" "}
                         <b>{deadQueues.map((q) => q.queue_name).join(", ")}</b>
                     </Typography>
                 </Box>
@@ -122,15 +156,66 @@ export default function OverviewView({
 
             {/* inventory stat tiles */}
             <Box sx={{ ...grid(170), mb: 3 }}>
-                <StatCard icon={Inventory2} label="Pages projects" value={inv.pages.length} color="#9b7bf7" />
-                <StatCard icon={Bolt} label="Workers" value={inv.workers.length} color="#fbbf24" href="/dashboard/workers" />
-                <StatCard icon={Storage} label="D1 databases" value={inv.d1.length} color="#86efac" href="/dashboard/d1" />
-                <StatCard icon={ViewList} label="KV namespaces" value={inv.kv.length} color="#5fb6ff" href="/dashboard/kv" />
-                <StatCard icon={Queue} label="Queues" value={inv.queues.length} color="#ff6a8a" href="/dashboard/queues" />
-                <StatCard icon={Hub} label="Durable Objects" value={inv.durableObjects.length} color="#c4b5fd" href="/dashboard/durable-objects" />
-                <StatCard icon={AccountTree} label="Workflows" value={inv.workflows.length} color="#818cf8" href="/dashboard/workflows" />
-                <StatCard icon={CloudQueue} label="Containers" value={inv.containers.length} color="#34d399" />
-                <StatCard icon={Public} label="Zones" value={inv.zones.length} color="#fb923c" />
+                <StatCard
+                    icon={Inventory2}
+                    label="Pages projects"
+                    value={inv.pages.length}
+                    color="#9b7bf7"
+                />
+                <StatCard
+                    icon={Bolt}
+                    label="Workers"
+                    value={inv.workers.length}
+                    color="#fbbf24"
+                    href="/dashboard/workers"
+                />
+                <StatCard
+                    icon={Storage}
+                    label="D1 databases"
+                    value={inv.d1.length}
+                    color="#86efac"
+                    href="/dashboard/d1"
+                />
+                <StatCard
+                    icon={ViewList}
+                    label="KV namespaces"
+                    value={inv.kv.length}
+                    color="#5fb6ff"
+                    href="/dashboard/kv"
+                />
+                <StatCard
+                    icon={Queue}
+                    label="Queues"
+                    value={inv.queues.length}
+                    color="#ff6a8a"
+                    href="/dashboard/queues"
+                />
+                <StatCard
+                    icon={Hub}
+                    label="Durable Objects"
+                    value={inv.durableObjects.length}
+                    color="#c4b5fd"
+                    href="/dashboard/durable-objects"
+                />
+                <StatCard
+                    icon={AccountTree}
+                    label="Workflows"
+                    value={inv.workflows.length}
+                    color="#818cf8"
+                    href="/dashboard/workflows"
+                />
+                <StatCard
+                    icon={CloudQueue}
+                    label="Containers"
+                    value={inv.containers.length}
+                    color="#34d399"
+                />
+                <StatCard
+                    icon={Public}
+                    label="Zones"
+                    value={inv.zones.length}
+                    color="#fb923c"
+                />
             </Box>
 
             {/* charts */}
@@ -140,20 +225,43 @@ export default function OverviewView({
                         <MetricChart
                             points={workers.points}
                             series={[
-                                { key: "requests", label: "Requests", color: "#9b7bf7" },
-                                { key: "errors", label: "Errors", color: "#f87171" },
+                                {
+                                    key: "requests",
+                                    label: "Requests",
+                                    color: "#9b7bf7",
+                                },
+                                {
+                                    key: "errors",
+                                    label: "Errors",
+                                    color: "#f87171",
+                                },
                             ]}
                         />
                     ) : (
-                        <SectionError message={`Metrics unavailable: ${workers.error}`} />
+                        <SectionError
+                            message={`Metrics unavailable: ${workers.error}`}
+                        />
                     )}
                 </Panel>
-                <Panel title={`Traffic · 24h${primaryZoneName ? ` · ${primaryZoneName}` : ""}`}>
+                <Panel
+                    title={`Traffic · 24h${primaryZoneName ? ` · ${primaryZoneName}` : ""}`}
+                >
                     {traffic ? (
                         traffic.available ? (
-                            <MetricChart points={traffic.points} series={[{ key: "requests", label: "Requests", color: "#86efac" }]} />
+                            <MetricChart
+                                points={traffic.points}
+                                series={[
+                                    {
+                                        key: "requests",
+                                        label: "Requests",
+                                        color: "#86efac",
+                                    },
+                                ]}
+                            />
                         ) : (
-                            <SectionError message={`Zone analytics unavailable: ${traffic.error}`} />
+                            <SectionError
+                                message={`Zone analytics unavailable: ${traffic.error}`}
+                            />
                         )
                     ) : (
                         <Empty message="No zones discovered." />
@@ -167,13 +275,18 @@ export default function OverviewView({
                     {inv.pages.length ? (
                         inv.pages.map((p) => {
                             const m = metaFor(p.name);
-                            const domain = p.domains?.find((d) => !d.endsWith(".pages.dev")) || p.domains?.[0];
+                            const domain =
+                                p.domains?.find(
+                                    (d) => !d.endsWith(".pages.dev"),
+                                ) || p.domains?.[0];
                             return (
                                 <ResourceRow
                                     key={p.name}
                                     primary={m.label}
                                     secondary={domain || p.name}
-                                    href={domain ? `https://${domain}` : undefined}
+                                    href={
+                                        domain ? `https://${domain}` : undefined
+                                    }
                                 />
                             );
                         })
@@ -185,7 +298,12 @@ export default function OverviewView({
                 <Panel title={`Workers (${inv.workers.length})`}>
                     {inv.workers.length ? (
                         inv.workers.map((w) => (
-                            <ResourceRow key={w.id} primary={autoLabel(w.id)} secondary={w.id} href="/dashboard/workers" />
+                            <ResourceRow
+                                key={w.id}
+                                primary={autoLabel(w.id)}
+                                secondary={w.id}
+                                href="/dashboard/workers"
+                            />
                         ))
                     ) : (
                         <Empty message="No Workers." />
@@ -198,7 +316,11 @@ export default function OverviewView({
                             <ResourceRow
                                 key={d.uuid}
                                 primary={d.name}
-                                secondary={d.num_tables != null ? `${d.num_tables} tables` : d.uuid}
+                                secondary={
+                                    d.num_tables != null
+                                        ? `${d.num_tables} tables`
+                                        : d.uuid
+                                }
                                 href={`/dashboard/d1/${d.uuid}`}
                             />
                         ))
@@ -210,7 +332,12 @@ export default function OverviewView({
                 <Panel title={`KV namespaces (${inv.kv.length})`}>
                     {inv.kv.length ? (
                         inv.kv.map((k) => (
-                            <ResourceRow key={k.id} primary={k.title} secondary={k.id} href="/dashboard/kv" />
+                            <ResourceRow
+                                key={k.id}
+                                primary={k.title}
+                                secondary={k.id}
+                                href="/dashboard/kv"
+                            />
                         ))
                     ) : (
                         <Empty message="No KV namespaces." />
@@ -227,9 +354,15 @@ export default function OverviewView({
                                 href="/dashboard/queues"
                                 chip={
                                     (q.consumers_total_count ?? 0) === 0 ? (
-                                        <StatusChip label="no consumer" tone="warning" />
+                                        <StatusChip
+                                            label="no consumer"
+                                            tone="warning"
+                                        />
                                     ) : (
-                                        <StatusChip label="active" tone="success" />
+                                        <StatusChip
+                                            label="active"
+                                            tone="success"
+                                        />
                                     )
                                 }
                             />
@@ -242,7 +375,12 @@ export default function OverviewView({
                 <Panel title={`Durable Objects (${inv.durableObjects.length})`}>
                     {inv.durableObjects.length ? (
                         inv.durableObjects.map((d) => (
-                            <ResourceRow key={d.id} primary={d.class || d.name || d.id} secondary={d.script || d.id} href="/dashboard/durable-objects" />
+                            <ResourceRow
+                                key={d.id}
+                                primary={d.class || d.name || d.id}
+                                secondary={d.script || d.id}
+                                href="/dashboard/durable-objects"
+                            />
                         ))
                     ) : (
                         <Empty message="No Durable Object namespaces." />
@@ -251,7 +389,13 @@ export default function OverviewView({
 
                 <Panel title={`Workflows (${inv.workflows.length})`}>
                     {inv.workflows.length ? (
-                        inv.workflows.map((w) => <ResourceRow key={w.name} primary={w.name} secondary={w.class_name || w.script_name} />)
+                        inv.workflows.map((w) => (
+                            <ResourceRow
+                                key={w.name}
+                                primary={w.name}
+                                secondary={w.class_name || w.script_name}
+                            />
+                        ))
                     ) : (
                         <Empty message="No Workflows yet." />
                     )}
@@ -264,7 +408,16 @@ export default function OverviewView({
                                 key={z.id}
                                 primary={z.name}
                                 secondary={z.id}
-                                chip={<StatusChip label={z.status || "?"} tone={z.status === "active" ? "success" : "neutral"} />}
+                                chip={
+                                    <StatusChip
+                                        label={z.status || "?"}
+                                        tone={
+                                            z.status === "active"
+                                                ? "success"
+                                                : "neutral"
+                                        }
+                                    />
+                                }
                             />
                         ))
                     ) : (
@@ -276,12 +429,25 @@ export default function OverviewView({
             {/* discovery section errors (missing scopes / unentitled products) */}
             {failedSections.length > 0 && (
                 <Box sx={{ mt: 3 }}>
-                    <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.8rem", mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
-                        <Dns sx={{ fontSize: "1rem" }} /> Some resource types couldn't be listed (token scope or product not enabled):
+                    <Typography
+                        sx={{
+                            color: "rgba(255,255,255,0.5)",
+                            fontSize: "0.8rem",
+                            mb: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                        }}
+                    >
+                        <Dns sx={{ fontSize: "1rem" }} /> Some resource types
+                        couldn't be listed (token scope or product not enabled):
                     </Typography>
                     <Box sx={grid(300)}>
                         {failedSections.map(([name, e]) => (
-                            <SectionError key={name} message={`${name}: ${e.error}`} />
+                            <SectionError
+                                key={name}
+                                message={`${name}: ${e.error}`}
+                            />
                         ))}
                     </Box>
                 </Box>
