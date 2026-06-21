@@ -9,6 +9,10 @@
  */
 
 import { cfGraphQL, getAccountId } from "./cloudflare-api";
+import { cached } from "./kv";
+
+/** ~45s read-through cache window for analytics calls. */
+const METRIC_TTL = 45;
 
 export interface MetricPoint {
     ts: string;
@@ -319,6 +323,7 @@ export async function zoneTraffic(
     zoneTag: string,
     w = lastHours(),
 ): Promise<MetricSeries> {
+    return cached(`zt:${zoneTag}:${w.since}:${w.until}`, METRIC_TTL, async () => {
     try {
         const data = await run<any>(
             `query($z:String!,$s:Time!,$u:Time!){
@@ -348,6 +353,7 @@ export async function zoneTraffic(
     } catch (e) {
         return EMPTY((e as Error).message);
     }
+    });
 }
 
 /** Traffic for a single host (e.g. blogs.elixpo.com) within its zone. Used by
@@ -357,6 +363,7 @@ export async function hostTraffic(
     host: string,
     w = lastHours(),
 ): Promise<MetricSeries> {
+    return cached(`ht:${zoneTag}:${host}:${w.since}:${w.until}`, METRIC_TTL, async () => {
     try {
         const data = await run<any>(
             `query($z:String!,$s:Time!,$u:Time!,$h:string!){
@@ -384,6 +391,7 @@ export async function hostTraffic(
     } catch (e) {
         return EMPTY((e as Error).message);
     }
+    });
 }
 
 /* --------------------------------------------------------------- DNS / zone */
@@ -446,6 +454,16 @@ export interface ZoneBreakdown {
 export async function zoneBreakdown(
     zoneTag: string,
     w = lastHours(),
+    host?: string,
+): Promise<ZoneBreakdown> {
+    return cached(`zb:${zoneTag}:${host || "*"}:${w.since}:${w.until}`, METRIC_TTL, () =>
+        zoneBreakdownUncached(zoneTag, w, host),
+    );
+}
+
+async function zoneBreakdownUncached(
+    zoneTag: string,
+    w: Window,
     host?: string,
 ): Promise<ZoneBreakdown> {
     const empty: ZoneBreakdown = {
