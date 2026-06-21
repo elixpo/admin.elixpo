@@ -218,22 +218,18 @@ export default function ProjectDetailView({
                     <Panel title="Top paths">
                         <TopList
                             color="#86efac"
-                            items={breakdown.path
-                                .slice(0, 10)
-                                .map((p) => ({
-                                    label: p.label,
-                                    value: p.count,
-                                }))}
+                            items={breakdown.path.slice(0, 10).map((p) => ({
+                                label: p.label,
+                                value: p.count,
+                            }))}
                         />
                     </Panel>
                     <Panel title="Top browsers">
                         <TopList
-                            items={breakdown.browser
-                                .slice(0, 10)
-                                .map((x) => ({
-                                    label: x.label || "—",
-                                    value: x.count,
-                                }))}
+                            items={breakdown.browser.slice(0, 10).map((x) => ({
+                                label: x.label || "—",
+                                value: x.count,
+                            }))}
                         />
                     </Panel>
                 </Box>

@@ -519,35 +519,72 @@ const STATUS_CLASSES = [
     { key: "5xx", color: "#a855f7", test: (n: number) => n >= 500 },
 ];
 
-export function StatusBar({ status }: { status: { label: string; count: number }[] }) {
+export function StatusBar({
+    status,
+}: { status: { label: string; count: number }[] }) {
     const groups = STATUS_CLASSES.map((c) => ({
         ...c,
-        count: status.filter((s) => c.test(Number(s.label))).reduce((a, s) => a + s.count, 0),
+        count: status
+            .filter((s) => c.test(Number(s.label)))
+            .reduce((a, s) => a + s.count, 0),
     }));
     const total = groups.reduce((a, g) => a + g.count, 0) || 1;
     return (
         <Box>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 1.25 }}>
                 {groups.map((g) => (
-                    <Box key={g.key} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                        <Box sx={{ width: 9, height: 9, borderRadius: "50%", bgcolor: g.color }} />
-                        <Typography sx={{ fontSize: "0.78rem", color: C.textDim }}>
+                    <Box
+                        key={g.key}
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.75,
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: 9,
+                                height: 9,
+                                borderRadius: "50%",
+                                bgcolor: g.color,
+                            }}
+                        />
+                        <Typography
+                            sx={{ fontSize: "0.78rem", color: C.textDim }}
+                        >
                             {g.key}{" "}
-                            <Box component="span" sx={{ color: C.text, fontWeight: 600 }}>
-                                {g.count >= 1000 ? `${(g.count / 1000).toFixed(2)}k` : g.count}
+                            <Box
+                                component="span"
+                                sx={{ color: C.text, fontWeight: 600 }}
+                            >
+                                {g.count >= 1000
+                                    ? `${(g.count / 1000).toFixed(2)}k`
+                                    : g.count}
                             </Box>
                         </Typography>
                     </Box>
                 ))}
             </Box>
-            <Box sx={{ display: "flex", height: 30, borderRadius: "6px", overflow: "hidden", bgcolor: "rgba(255,255,255,0.04)" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    height: 30,
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    bgcolor: "rgba(255,255,255,0.04)",
+                }}
+            >
                 {groups
                     .filter((g) => g.count > 0)
                     .map((g) => (
                         <Box
                             key={g.key}
                             title={`${g.key}: ${g.count.toLocaleString()}`}
-                            sx={{ width: `${(g.count / total) * 100}%`, bgcolor: g.color, transition: "width 0.3s" }}
+                            sx={{
+                                width: `${(g.count / total) * 100}%`,
+                                bgcolor: g.color,
+                                transition: "width 0.3s",
+                            }}
                         />
                     ))}
             </Box>

@@ -184,38 +184,127 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                             </Box>
 
                             {/* Top Paths | Top Hosts | Top IPs */}
-                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5, mb: 1.5 }}>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fit, minmax(320px, 1fr))",
+                                    gap: 1.5,
+                                    mb: 1.5,
+                                }}
+                            >
                                 <Panel title="Top Paths" dense>
-                                    <TopList color={C.accent} items={b.path.slice(0, 12).map((p) => ({ label: p.label, value: p.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.path
+                                            .slice(0, 12)
+                                            .map((p) => ({
+                                                label: p.label,
+                                                value: p.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="Top Hosts" dense>
-                                    <TopList color={C.accent} items={b.host.slice(0, 12).map((h) => ({ label: h.label, value: h.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.host
+                                            .slice(0, 12)
+                                            .map((h) => ({
+                                                label: h.label,
+                                                value: h.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="Top IPs" dense>
-                                    <TopList color={C.accent} items={b.ip.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.ip
+                                            .slice(0, 12)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                             </Box>
 
                             {/* Top Browsers | Top Operating Systems | Top User Agents */}
-                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5, mb: 1.5 }}>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fit, minmax(320px, 1fr))",
+                                    gap: 1.5,
+                                    mb: 1.5,
+                                }}
+                            >
                                 <Panel title="Top Browsers" dense>
-                                    <TopList color={C.accent} items={b.browser.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.browser
+                                            .slice(0, 12)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="Top Operating Systems" dense>
-                                    <TopList color={C.accent} items={b.os.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.os
+                                            .slice(0, 12)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="Top User Agents" dense>
-                                    <TopList color={C.accent} items={b.userAgent.slice(0, 12).map((x) => ({ label: x.label || "(empty user agent)", value: x.count }))} />
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.userAgent
+                                            .slice(0, 12)
+                                            .map((x) => ({
+                                                label:
+                                                    x.label ||
+                                                    "(empty user agent)",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                             </Box>
 
                             {/* HTTP & TLS versions */}
-                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5 }}>
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fit, minmax(320px, 1fr))",
+                                    gap: 1.5,
+                                }}
+                            >
                                 <Panel title="HTTP versions" dense>
-                                    <TopList color={C.accentLight} items={b.httpProtocol.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accentLight}
+                                        items={b.httpProtocol
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="TLS versions" dense>
-                                    <TopList color={C.accentDeep} items={b.tls.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accentDeep}
+                                        items={b.tls
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                             </Box>
                         </>
