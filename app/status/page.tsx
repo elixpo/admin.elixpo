@@ -55,7 +55,9 @@ export default async function StatusPage() {
     const zone = inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
 
     const [uptime, changelogs] = await Promise.all([
-        zone ? zoneDailyUptime(zone.id, 90) : Promise.resolve({ available: false, days: [], uptimePct: 100 }),
+        zone
+            ? zoneDailyUptime(zone.id, 90)
+            : Promise.resolve({ available: false, days: [], uptimePct: 100 }),
         fetchChangelogs(6),
     ]);
 
