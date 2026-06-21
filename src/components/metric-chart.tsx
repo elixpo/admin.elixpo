@@ -6,6 +6,7 @@
  */
 
 import { C, CHART } from "@/components/ui";
+import { fmt } from "@/lib/format";
 import { Box, Typography } from "@mui/material";
 import { useMemo } from "react";
 
@@ -37,7 +38,7 @@ export default function MetricChart({
     const H = height;
     const PAD = { top: 10, right: 4, bottom: 18, left: 4 };
 
-    const { paths, max, labels, gridY } = useMemo(() => {
+    const { paths, max, labels, gridLevels } = useMemo(() => {
         const innerW = W - PAD.left - PAD.right;
         const innerH = H - PAD.top - PAD.bottom;
         const n = points.length;
@@ -138,6 +139,7 @@ export default function MetricChart({
                     </Box>
                 ))}
             </Box>
+            <Box sx={{ position: "relative" }}>
             <svg
                 viewBox={`0 0 ${W} ${H}`}
                 width="100%"
@@ -169,15 +171,17 @@ export default function MetricChart({
                         </linearGradient>
                     ))}
                 </defs>
-                {gridY.map((gy, i) => (
+                {gridLevels.map((g, i) => (
                     <line
                         key={i}
                         x1={PAD.left}
-                        y1={gy}
+                        y1={g.y}
                         x2={W - PAD.right}
-                        y2={gy}
+                        y2={g.y}
                         stroke={C.border}
                         strokeWidth="1"
+                        strokeDasharray="2 5"
+                        vectorEffect="non-scaling-stroke"
                     />
                 ))}
                 {paths.map((p, i) => (
@@ -197,6 +201,27 @@ export default function MetricChart({
                     </g>
                 ))}
             </svg>
+            {/* y-axis numeric levels (HTML overlay — svg is x-stretched so text can't live inside) */}
+            {gridLevels.map((g, i) => (
+                <Typography
+                    key={i}
+                    sx={{
+                        position: "absolute",
+                        right: 2,
+                        top: `${g.y}px`,
+                        transform: "translateY(-50%)",
+                        fontSize: "0.6rem",
+                        color: C.textMuted,
+                        bgcolor: "rgba(11,13,18,0.5)",
+                        px: 0.5,
+                        borderRadius: "3px",
+                        pointerEvents: "none",
+                    }}
+                >
+                    {fmt(g.val)}
+                </Typography>
+            ))}
+            </Box>
             <Box
                 sx={{
                     display: "flex",
