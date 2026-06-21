@@ -4,20 +4,21 @@
  */
 
 import { discoverAccount } from "@/lib/discovery";
-import {
-    lastHours,
-    workersMetricsAll,
-    zoneBreakdown,
-    zoneTraffic,
-} from "@/lib/metrics";
+import { workersMetricsAll, zoneBreakdown, zoneTraffic } from "@/lib/metrics";
+import { rangeWindow } from "@/lib/range";
 import OverviewView from "./overview-view";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-export default async function OverviewPage() {
+export default async function OverviewPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ range?: string }>;
+}) {
     const inv = await discoverAccount();
-    const w = lastHours(24);
+    const { range } = await searchParams;
+    const w = rangeWindow(range);
     const primaryZone =
         inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
 

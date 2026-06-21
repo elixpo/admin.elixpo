@@ -19,8 +19,49 @@ export const metadata: Metadata = {
     },
     description:
         "The admin control plane for the Elixpo Cloudflare account. Auto-discovers every Pages project, Worker, D1, KV, Queue, Durable Object and Workflow with full observability. Admins only.",
+    applicationName: "Elixpo Admin",
+    keywords: [
+        "Elixpo",
+        "Cloudflare",
+        "admin",
+        "dashboard",
+        "observability",
+        "status",
+        "analytics",
+        "D1",
+        "KV",
+        "Workers",
+    ],
+    authors: [{ name: "Elixpo", url: "https://elixpo.com" }],
+    creator: "Elixpo",
+    publisher: "Elixpo",
     metadataBase: new URL("https://admin.elixpo.com"),
+    alternates: { canonical: "/" },
+    // App is admin-gated → default noindex; the public /status page overrides this.
     robots: { index: false, follow: false },
+    openGraph: {
+        type: "website",
+        siteName: "Elixpo Admin",
+        title: "Elixpo Admin — Cloudflare Control Plane",
+        description:
+            "Auto-discovered observability for the entire Elixpo Cloudflare account.",
+        url: "https://admin.elixpo.com",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Elixpo Admin",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Elixpo Admin — Cloudflare Control Plane",
+        description:
+            "Auto-discovered observability for the entire Elixpo Cloudflare account.",
+        images: ["/og-image.png"],
+    },
     icons: {
         icon: [
             { url: "/favicon.ico", sizes: "any" },

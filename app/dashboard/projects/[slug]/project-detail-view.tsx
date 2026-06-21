@@ -1,16 +1,15 @@
 "use client";
 
+import BarChart, { statusBars } from "@/components/bar-chart";
 import ExpandableGlobe from "@/components/expandable-globe";
 import MetricChart from "@/components/metric-chart";
 import {
     C,
-    Donut,
     Empty,
     KpiTile,
     PageHeader,
     Panel,
     SectionError,
-    StatusBar,
     StatusChip,
     TopList,
     fmt,
@@ -188,15 +187,16 @@ export default function ProjectDetailView({
                         </Box>
                     </Panel>
                     <Panel title="Status Codes">
-                        <StatusBar status={breakdown.status} />
+                        <BarChart data={statusBars(breakdown.status)} height={180} />
                     </Panel>
                     <Panel title="Devices">
                         {breakdown.device.length ? (
-                            <Donut
+                            <BarChart
                                 data={breakdown.device.map((d) => ({
                                     label: d.label || "unknown",
                                     value: d.count,
                                 }))}
+                                height={180}
                             />
                         ) : (
                             <Empty message="No device data." />

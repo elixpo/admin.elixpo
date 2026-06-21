@@ -1,16 +1,15 @@
 "use client";
 
+import BarChart, { statusBars } from "@/components/bar-chart";
 import ExpandableGlobe from "@/components/expandable-globe";
 import MetricChart from "@/components/metric-chart";
 import {
     C,
-    Donut,
     Empty,
     KpiTile,
     PageHeader,
     Panel,
     SectionError,
-    StatusBar,
     StatusChip,
     TopList,
     fmt,
@@ -120,6 +119,7 @@ export default function OverviewView({
             <PageHeader
                 title="Overview"
                 subtitle={`Elixpo Cloudflare account · refreshed ${new Date(inv.fetchedAt).toLocaleTimeString()}`}
+                timeRange
             />
 
             {deadQueues.length > 0 && (
@@ -319,15 +319,16 @@ export default function OverviewView({
                         </Box>
                     </Panel>
                     <Panel title="Status Codes">
-                        <StatusBar status={breakdown.status} />
+                        <BarChart data={statusBars(breakdown.status)} height={190} />
                     </Panel>
                     <Panel title="Requests by device">
                         {breakdown.device.length ? (
-                            <Donut
+                            <BarChart
                                 data={breakdown.device.map((d) => ({
                                     label: d.label || "unknown",
                                     value: d.count,
                                 }))}
+                                height={190}
                             />
                         ) : (
                             <Empty message="No device data." />

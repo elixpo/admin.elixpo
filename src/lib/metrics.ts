@@ -323,10 +323,13 @@ export async function zoneTraffic(
     zoneTag: string,
     w = lastHours(),
 ): Promise<MetricSeries> {
-    return cached(`zt:${zoneTag}:${w.since}:${w.until}`, METRIC_TTL, async () => {
-    try {
-        const data = await run<any>(
-            `query($z:String!,$s:Time!,$u:Time!){
+    return cached(
+        `zt:${zoneTag}:${w.since}:${w.until}`,
+        METRIC_TTL,
+        async () => {
+            try {
+                const data = await run<any>(
+                    `query($z:String!,$s:Time!,$u:Time!){
               viewer{zones(filter:{zoneTag:$z}){
                 httpRequestsAdaptiveGroups(limit:10000,
                   filter:{datetime_geq:$s,datetime_leq:$u},
@@ -337,23 +340,25 @@ export async function zoneTraffic(
                 }
               }}
             }`,
-            { z: zoneTag, s: w.since, u: w.until },
-        );
-        const rows = data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups ?? [];
-        const points: MetricPoint[] = rows.map((r: any) => ({
-            ts: r.dimensions.datetimeHour,
-            requests: r.count ?? 0,
-            bytes: r.sum?.edgeResponseBytes ?? 0,
-        }));
-        return {
-            available: true,
-            points,
-            totals: sumTotals(points, ["requests", "bytes"]),
-        };
-    } catch (e) {
-        return EMPTY((e as Error).message);
-    }
-    });
+                    { z: zoneTag, s: w.since, u: w.until },
+                );
+                const rows =
+                    data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups ?? [];
+                const points: MetricPoint[] = rows.map((r: any) => ({
+                    ts: r.dimensions.datetimeHour,
+                    requests: r.count ?? 0,
+                    bytes: r.sum?.edgeResponseBytes ?? 0,
+                }));
+                return {
+                    available: true,
+                    points,
+                    totals: sumTotals(points, ["requests", "bytes"]),
+                };
+            } catch (e) {
+                return EMPTY((e as Error).message);
+            }
+        },
+    );
 }
 
 /** Traffic for a single host (e.g. blogs.elixpo.com) within its zone. Used by
@@ -363,10 +368,13 @@ export async function hostTraffic(
     host: string,
     w = lastHours(),
 ): Promise<MetricSeries> {
-    return cached(`ht:${zoneTag}:${host}:${w.since}:${w.until}`, METRIC_TTL, async () => {
-    try {
-        const data = await run<any>(
-            `query($z:String!,$s:Time!,$u:Time!,$h:string!){
+    return cached(
+        `ht:${zoneTag}:${host}:${w.since}:${w.until}`,
+        METRIC_TTL,
+        async () => {
+            try {
+                const data = await run<any>(
+                    `query($z:String!,$s:Time!,$u:Time!,$h:string!){
               viewer{zones(filter:{zoneTag:$z}){
                 httpRequestsAdaptiveGroups(limit:10000,
                   filter:{datetime_geq:$s,datetime_leq:$u,clientRequestHTTPHost:$h},
@@ -375,23 +383,25 @@ export async function hostTraffic(
                 }
               }}
             }`,
-            { z: zoneTag, s: w.since, u: w.until, h: host },
-        );
-        const rows = data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups ?? [];
-        const points: MetricPoint[] = rows.map((r: any) => ({
-            ts: r.dimensions.datetimeHour,
-            requests: r.count ?? 0,
-            bytes: r.sum?.edgeResponseBytes ?? 0,
-        }));
-        return {
-            available: true,
-            points,
-            totals: sumTotals(points, ["requests", "bytes"]),
-        };
-    } catch (e) {
-        return EMPTY((e as Error).message);
-    }
-    });
+                    { z: zoneTag, s: w.since, u: w.until, h: host },
+                );
+                const rows =
+                    data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups ?? [];
+                const points: MetricPoint[] = rows.map((r: any) => ({
+                    ts: r.dimensions.datetimeHour,
+                    requests: r.count ?? 0,
+                    bytes: r.sum?.edgeResponseBytes ?? 0,
+                }));
+                return {
+                    available: true,
+                    points,
+                    totals: sumTotals(points, ["requests", "bytes"]),
+                };
+            } catch (e) {
+                return EMPTY((e as Error).message);
+            }
+        },
+    );
 }
 
 /* --------------------------------------------------------------- DNS / zone */
@@ -449,6 +459,8 @@ export interface ZoneBreakdown {
     httpProtocol: Dim[];
     tls: Dim[];
     ip: Dim[];
+    cacheStatus: Dim[];
+    originStatus: Dim[];
 }
 
 export async function zoneBreakdown(
@@ -456,8 +468,10 @@ export async function zoneBreakdown(
     w = lastHours(),
     host?: string,
 ): Promise<ZoneBreakdown> {
-    return cached(`zb:${zoneTag}:${host || "*"}:${w.since}:${w.until}`, METRIC_TTL, () =>
-        zoneBreakdownUncached(zoneTag, w, host),
+    return cached(
+        `zb:${zoneTag}:${host || "*"}:${w.since}:${w.until}`,
+        METRIC_TTL,
+        () => zoneBreakdownUncached(zoneTag, w, host),
     );
 }
 
@@ -479,6 +493,8 @@ async function zoneBreakdownUncached(
         httpProtocol: [],
         tls: [],
         ip: [],
+        cacheStatus: [],
+        originStatus: [],
     };
     try {
         // Optional host filter lets per-project pages scope breakdowns to one domain.
@@ -498,6 +514,8 @@ async function zoneBreakdownUncached(
                 ${grp("proto", "clientRequestHTTPProtocol")}
                 ${grp("tls", "clientSSLProtocol")}
                 ${grp("ip", "clientIP")}
+                ${grp("cache", "cacheStatus")}
+                ${grp("origin", "originResponseStatus")}
             }}}`,
             {
                 z: zoneTag,
@@ -525,6 +543,8 @@ async function zoneBreakdownUncached(
             httpProtocol: map(z.proto, "clientRequestHTTPProtocol"),
             tls: map(z.tls, "clientSSLProtocol"),
             ip: map(z.ip, "clientIP"),
+            cacheStatus: map(z.cache, "cacheStatus"),
+            originStatus: map(z.origin, "originResponseStatus"),
         };
     } catch (e) {
         return { ...empty, error: (e as Error).message };

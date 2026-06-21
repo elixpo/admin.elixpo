@@ -31,6 +31,7 @@ import {
 import Link from "next/link";
 import type React from "react";
 import { useMemo, useRef, useState } from "react";
+import TimeRange from "@/components/time-range";
 
 // Re-export pure helpers so client code can keep importing from "@/components/ui".
 // Server code should import these from "@/lib/format" directly.
@@ -78,10 +79,13 @@ export function PageHeader({
     title,
     subtitle,
     action,
+    timeRange,
 }: {
     title: string;
     subtitle?: string;
     action?: React.ReactNode;
+    /** Show the global time-range picker (analytics pages). */
+    timeRange?: boolean;
 }) {
     return (
         <Box
@@ -118,18 +122,7 @@ export function PageHeader({
                 )}
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Chip
-                    label="Last 24 hours"
-                    size="small"
-                    sx={{
-                        height: 28,
-                        fontSize: "0.76rem",
-                        color: C.accentLight,
-                        bgcolor: C.accentDim,
-                        border: `1px solid ${C.accent}44`,
-                        borderRadius: "8px",
-                    }}
-                />
+                {timeRange && <TimeRange />}
                 {action}
             </Box>
         </Box>
@@ -215,7 +208,9 @@ function PanelMenu({
 }) {
     const [anchor, setAnchor] = useState<null | HTMLElement>(null);
     const close = () => setAnchor(null);
-    const slug = (exportName || title || "panel").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    const slug = (exportName || title || "panel")
+        .replace(/[^a-z0-9]+/gi, "-")
+        .toLowerCase();
 
     const copyLink = async () => {
         try {
@@ -232,7 +227,10 @@ function PanelMenu({
         if (!targetRef.current) return;
         try {
             const { toPng } = await import("html-to-image");
-            const url = await toPng(targetRef.current, { backgroundColor: "#11151f", pixelRatio: 2 });
+            const url = await toPng(targetRef.current, {
+                backgroundColor: "#11151f",
+                pixelRatio: 2,
+            });
             const a = document.createElement("a");
             a.href = url;
             a.download = `${slug}.png`;
@@ -242,8 +240,15 @@ function PanelMenu({
     const downloadCsv = () => {
         close();
         if (!exportData?.length) return;
-        const rows = [["label", "value"], ...exportData.map((d) => [d.label, String(d.value)])];
-        const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+        const rows = [
+            ["label", "value"],
+            ...exportData.map((d) => [d.label, String(d.value)]),
+        ];
+        const csv = rows
+            .map((r) =>
+                r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","),
+            )
+            .join("\n");
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
         const a = document.createElement("a");
         a.href = url;
@@ -254,28 +259,78 @@ function PanelMenu({
 
     return (
         <>
-            <IconButton size="small" onClick={(e) => setAnchor(e.currentTarget)} sx={{ color: C.textMuted, p: 0.25, "&:hover": { color: C.text } }}>
+            <IconButton
+                size="small"
+                onClick={(e) => setAnchor(e.currentTarget)}
+                sx={{
+                    color: C.textMuted,
+                    p: 0.25,
+                    "&:hover": { color: C.text },
+                }}
+            >
                 <MoreHoriz sx={{ fontSize: "1.1rem" }} />
             </IconButton>
             <Menu
                 anchorEl={anchor}
                 open={Boolean(anchor)}
                 onClose={close}
-                slotProps={{ paper: { sx: { bgcolor: "rgba(20,22,34,0.97)", backdropFilter: "blur(16px)", border: `1px solid ${C.border}`, borderRadius: "10px", minWidth: 190 } } }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            bgcolor: "rgba(20,22,34,0.97)",
+                            backdropFilter: "blur(16px)",
+                            border: `1px solid ${C.border}`,
+                            borderRadius: "10px",
+                            minWidth: 190,
+                        },
+                    },
+                }}
             >
-                <PanelMenuItem icon={<ContentCopy fontSize="small" />} label="Copy link" onClick={copyLink} />
-                <PanelMenuItem icon={<ImageOutlined fontSize="small" />} label="Save as image" onClick={saveImage} />
-                {exportData && exportData.length > 0 && <PanelMenuItem icon={<DownloadOutlined fontSize="small" />} label="Download CSV" onClick={downloadCsv} />}
-                <PanelMenuItem icon={<PrintOutlined fontSize="small" />} label="Print" onClick={print} />
+                <PanelMenuItem
+                    icon={<ContentCopy fontSize="small" />}
+                    label="Copy link"
+                    onClick={copyLink}
+                />
+                <PanelMenuItem
+                    icon={<ImageOutlined fontSize="small" />}
+                    label="Save as image"
+                    onClick={saveImage}
+                />
+                {exportData && exportData.length > 0 && (
+                    <PanelMenuItem
+                        icon={<DownloadOutlined fontSize="small" />}
+                        label="Download CSV"
+                        onClick={downloadCsv}
+                    />
+                )}
+                <PanelMenuItem
+                    icon={<PrintOutlined fontSize="small" />}
+                    label="Print"
+                    onClick={print}
+                />
             </Menu>
         </>
     );
 }
 
-function PanelMenuItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+function PanelMenuItem({
+    icon,
+    label,
+    onClick,
+}: { icon: React.ReactNode; label: string; onClick: () => void }) {
     return (
-        <MenuItem onClick={onClick} sx={{ py: 0.85, color: C.textDim, fontSize: "0.82rem", "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: C.text } }}>
-            <ListItemIcon sx={{ color: "inherit", minWidth: 32 }}>{icon}</ListItemIcon>
+        <MenuItem
+            onClick={onClick}
+            sx={{
+                py: 0.85,
+                color: C.textDim,
+                fontSize: "0.82rem",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.05)", color: C.text },
+            }}
+        >
+            <ListItemIcon sx={{ color: "inherit", minWidth: 32 }}>
+                {icon}
+            </ListItemIcon>
             {label}
         </MenuItem>
     );
@@ -453,7 +508,9 @@ export function TopList({
             const q = filter.toLowerCase();
             r = r.filter((i) => i.label.toLowerCase().includes(q));
         }
-        return [...r].sort((a, b) => (desc ? b.value - a.value : a.value - b.value));
+        return [...r].sort((a, b) =>
+            desc ? b.value - a.value : a.value - b.value,
+        );
     }, [items, filter, desc]);
 
     if (!items.length) return <Empty message="No data." />;
@@ -461,17 +518,54 @@ export function TopList({
     return (
         <Box>
             {controls && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1, py: 0.75, borderBottom: `1px solid ${C.border}` }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flex: 1, bgcolor: "rgba(255,255,255,0.04)", borderRadius: "6px", px: 1 }}>
-                        <SearchIcon sx={{ fontSize: "0.95rem", color: C.textMuted }} />
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        px: 1,
+                        py: 0.75,
+                        borderBottom: `1px solid ${C.border}`,
+                    }}
+                >
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            flex: 1,
+                            bgcolor: "rgba(255,255,255,0.04)",
+                            borderRadius: "6px",
+                            px: 1,
+                        }}
+                    >
+                        <SearchIcon
+                            sx={{ fontSize: "0.95rem", color: C.textMuted }}
+                        />
                         <InputBase
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             placeholder="Filter…"
-                            sx={{ flex: 1, fontSize: "0.78rem", color: C.text, "& input::placeholder": { color: C.textMuted, opacity: 1 } }}
+                            sx={{
+                                flex: 1,
+                                fontSize: "0.78rem",
+                                color: C.text,
+                                "& input::placeholder": {
+                                    color: C.textMuted,
+                                    opacity: 1,
+                                },
+                            }}
                         />
                     </Box>
-                    <IconButton size="small" onClick={() => setDesc((d) => !d)} title={desc ? "Sort ascending" : "Sort descending"} sx={{ color: C.textMuted, "&:hover": { color: C.text } }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => setDesc((d) => !d)}
+                        title={desc ? "Sort ascending" : "Sort descending"}
+                        sx={{
+                            color: C.textMuted,
+                            "&:hover": { color: C.text },
+                        }}
+                    >
                         <SwapVert sx={{ fontSize: "1rem" }} />
                     </IconButton>
                 </Box>
@@ -802,4 +896,3 @@ export function Empty({ message }: { message: string }) {
         </Typography>
     );
 }
-

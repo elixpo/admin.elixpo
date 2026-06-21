@@ -31,7 +31,8 @@ export default function TrafficView({ zones }: { zones: ZoneData[] }) {
         <Box>
             <PageHeader
                 title="Traffic"
-                subtitle="HTTP analytics across all zones · last 24 hours"
+                subtitle="HTTP analytics across all zones"
+                timeRange
             />
             {zones.length === 0 && <Empty message="No zones found." />}
             {zones.map((z) => (
@@ -92,13 +93,15 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                         <KpiTile
                             label="Peak / hr"
                             value={fmt(peak)}
+                            spark={reqSpark}
                             color={C.accentDeep}
                         />
                         <KpiTile
                             label="Countries"
                             value={b.country.length}
                             sub="distinct in window"
-                            color="#86efac"
+                            spark={b.country.slice(0, 12).map((c) => c.count)}
+                            color="#5fb6ff"
                         />
                     </Box>
 
@@ -110,12 +113,12 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                     {
                                         key: "requests",
                                         label: "Requests",
-                                        color: C.accent,
+                                        color: "#9b7bf7",
                                     },
                                     {
                                         key: "bytes",
                                         label: "Bytes",
-                                        color: C.accentLight,
+                                        color: "#5fb6ff",
                                     },
                                 ]}
                                 height={220}
@@ -165,6 +168,7 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 <Panel title="Requests by device">
                                     {b.device.length ? (
                                         <Donut
+                                            size={180}
                                             data={b.device.map((d) => ({
                                                 label: d.label || "unknown",
                                                 value: d.count,
@@ -196,34 +200,28 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 <Panel title="Top Paths" dense>
                                     <TopList
                                         color={C.accent}
-                                        items={b.path
-                                            .slice(0, 12)
-                                            .map((p) => ({
-                                                label: p.label,
-                                                value: p.count,
-                                            }))}
+                                        items={b.path.slice(0, 12).map((p) => ({
+                                            label: p.label,
+                                            value: p.count,
+                                        }))}
                                     />
                                 </Panel>
                                 <Panel title="Top Hosts" dense>
                                     <TopList
                                         color={C.accent}
-                                        items={b.host
-                                            .slice(0, 12)
-                                            .map((h) => ({
-                                                label: h.label,
-                                                value: h.count,
-                                            }))}
+                                        items={b.host.slice(0, 12).map((h) => ({
+                                            label: h.label,
+                                            value: h.count,
+                                        }))}
                                     />
                                 </Panel>
                                 <Panel title="Top IPs" dense>
                                     <TopList
                                         color={C.accent}
-                                        items={b.ip
-                                            .slice(0, 12)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
+                                        items={b.ip.slice(0, 12).map((x) => ({
+                                            label: x.label || "—",
+                                            value: x.count,
+                                        }))}
                                     />
                                 </Panel>
                             </Box>
@@ -252,12 +250,10 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 <Panel title="Top Operating Systems" dense>
                                     <TopList
                                         color={C.accent}
-                                        items={b.os
-                                            .slice(0, 12)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
+                                        items={b.os.slice(0, 12).map((x) => ({
+                                            label: x.label || "—",
+                                            value: x.count,
+                                        }))}
                                     />
                                 </Panel>
                                 <Panel title="Top User Agents" dense>
@@ -298,13 +294,37 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 <Panel title="TLS versions" dense>
                                     <TopList
                                         color={C.accentDeep}
-                                        items={b.tls
+                                        items={b.tls.slice(0, 8).map((x) => ({
+                                            label: x.label || "—",
+                                            value: x.count,
+                                        }))}
+                                    />
+                                </Panel>
+                            </Box>
+
+                            {/* Cache status + Origin status codes */}
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fit, minmax(320px, 1fr))",
+                                    gap: 1.5,
+                                    mt: 1.5,
+                                }}
+                            >
+                                <Panel title="Cache status" dense>
+                                    <TopList
+                                        color={C.accent}
+                                        items={b.cacheStatus
                                             .slice(0, 8)
                                             .map((x) => ({
                                                 label: x.label || "—",
                                                 value: x.count,
                                             }))}
                                     />
+                                </Panel>
+                                <Panel title="Origin status codes">
+                                    <StatusBar status={b.originStatus} />
                                 </Panel>
                             </Box>
                         </>

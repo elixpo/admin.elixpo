@@ -11,9 +11,8 @@ import {
     Hub,
     Inventory2,
     Launch,
-    MenuBook,
-    VpnKey,
     Logout,
+    MenuBook,
     Menu as MenuIcon,
     OpenInNew,
     Public,
@@ -22,6 +21,7 @@ import {
     Speed,
     Storage,
     ViewList,
+    VpnKey,
 } from "@mui/icons-material";
 import {
     AppBar,
@@ -521,7 +521,13 @@ function Avatar({ user, size }: { user: ChromeUser; size: number }) {
                 src={user.avatar}
                 alt={user.name || user.email}
                 referrerPolicy="no-referrer"
-                sx={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: `1px solid ${C.border}` }}
+                sx={{
+                    width: size,
+                    height: size,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    border: `1px solid ${C.border}`,
+                }}
             />
         );
     }

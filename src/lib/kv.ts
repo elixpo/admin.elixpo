@@ -133,7 +133,11 @@ export async function cacheSet(
  * Read-through cache for expensive (GraphQL) calls — cuts repeat-load latency.
  * Best-effort: any KV hiccup falls back to calling the function directly.
  */
-export async function cached<T>(key: string, ttlSeconds: number, fn: () => Promise<T>): Promise<T> {
+export async function cached<T>(
+    key: string,
+    ttlSeconds: number,
+    fn: () => Promise<T>,
+): Promise<T> {
     try {
         const hit = await cacheGet<T>(key);
         if (hit !== null) return hit;

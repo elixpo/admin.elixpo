@@ -140,87 +140,87 @@ export default function MetricChart({
                 ))}
             </Box>
             <Box sx={{ position: "relative" }}>
-            <svg
-                viewBox={`0 0 ${W} ${H}`}
-                width="100%"
-                height={H}
-                preserveAspectRatio="none"
-                role="img"
-                aria-label="metric chart"
-            >
-                <defs>
-                    {paths.map((p, i) => (
-                        <linearGradient
-                            key={i}
-                            id={`mc-${i}-${p.color.replace("#", "")}`}
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop
-                                offset="0%"
-                                stopColor={p.color}
-                                stopOpacity="0.22"
-                            />
-                            <stop
-                                offset="100%"
-                                stopColor={p.color}
-                                stopOpacity="0"
-                            />
-                        </linearGradient>
-                    ))}
-                </defs>
-                {gridLevels.map((g, i) => (
-                    <line
-                        key={i}
-                        x1={PAD.left}
-                        y1={g.y}
-                        x2={W - PAD.right}
-                        y2={g.y}
-                        stroke={C.border}
-                        strokeWidth="1"
-                        strokeDasharray="2 5"
-                        vectorEffect="non-scaling-stroke"
-                    />
-                ))}
-                {paths.map((p, i) => (
-                    <g key={i}>
-                        <path
-                            d={p.area}
-                            fill={`url(#mc-${i}-${p.color.replace("#", "")})`}
-                        />
-                        <path
-                            d={p.line}
-                            fill="none"
-                            stroke={p.color}
-                            strokeWidth="1.6"
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                        />
-                    </g>
-                ))}
-            </svg>
-            {/* y-axis numeric levels (HTML overlay — svg is x-stretched so text can't live inside) */}
-            {gridLevels.map((g, i) => (
-                <Typography
-                    key={i}
-                    sx={{
-                        position: "absolute",
-                        right: 2,
-                        top: `${g.y}px`,
-                        transform: "translateY(-50%)",
-                        fontSize: "0.6rem",
-                        color: C.textMuted,
-                        bgcolor: "rgba(11,13,18,0.5)",
-                        px: 0.5,
-                        borderRadius: "3px",
-                        pointerEvents: "none",
-                    }}
+                <svg
+                    viewBox={`0 0 ${W} ${H}`}
+                    width="100%"
+                    height={H}
+                    preserveAspectRatio="none"
+                    role="img"
+                    aria-label="metric chart"
                 >
-                    {fmt(g.val)}
-                </Typography>
-            ))}
+                    <defs>
+                        {paths.map((p, i) => (
+                            <linearGradient
+                                key={i}
+                                id={`mc-${i}-${p.color.replace("#", "")}`}
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="1"
+                            >
+                                <stop
+                                    offset="0%"
+                                    stopColor={p.color}
+                                    stopOpacity="0.22"
+                                />
+                                <stop
+                                    offset="100%"
+                                    stopColor={p.color}
+                                    stopOpacity="0"
+                                />
+                            </linearGradient>
+                        ))}
+                    </defs>
+                    {gridLevels.map((g, i) => (
+                        <line
+                            key={i}
+                            x1={PAD.left}
+                            y1={g.y}
+                            x2={W - PAD.right}
+                            y2={g.y}
+                            stroke={C.border}
+                            strokeWidth="1"
+                            strokeDasharray="2 5"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    ))}
+                    {paths.map((p, i) => (
+                        <g key={i}>
+                            <path
+                                d={p.area}
+                                fill={`url(#mc-${i}-${p.color.replace("#", "")})`}
+                            />
+                            <path
+                                d={p.line}
+                                fill="none"
+                                stroke={p.color}
+                                strokeWidth="1.6"
+                                strokeLinejoin="round"
+                                strokeLinecap="round"
+                            />
+                        </g>
+                    ))}
+                </svg>
+                {/* y-axis numeric levels (HTML overlay — svg is x-stretched so text can't live inside) */}
+                {gridLevels.map((g, i) => (
+                    <Typography
+                        key={i}
+                        sx={{
+                            position: "absolute",
+                            right: 2,
+                            top: `${g.y}px`,
+                            transform: "translateY(-50%)",
+                            fontSize: "0.6rem",
+                            color: C.textMuted,
+                            bgcolor: "rgba(11,13,18,0.5)",
+                            px: 0.5,
+                            borderRadius: "3px",
+                            pointerEvents: "none",
+                        }}
+                    >
+                        {fmt(g.val)}
+                    </Typography>
+                ))}
             </Box>
             <Box
                 sx={{
