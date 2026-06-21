@@ -1,7 +1,7 @@
 "use client";
 
+import { KpiTile, PageHeader, fmt, trend } from "@/components/ui";
 import { Box } from "@mui/material";
-import { fmt, KpiTile, PageHeader, trend } from "@/components/ui";
 
 export interface ProjItem {
     name: string;
@@ -15,8 +15,17 @@ export interface ProjItem {
 export default function ProjectsView({ projects }: { projects: ProjItem[] }) {
     return (
         <Box>
-            <PageHeader title="Projects" subtitle="Every Cloudflare project, with its 24h traffic. Click through for bindings & full monitoring." />
-            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 1.5 }}>
+            <PageHeader
+                title="Projects"
+                subtitle="Every Cloudflare project, with its 24h traffic. Click through for bindings & full monitoring."
+            />
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                    gap: 1.5,
+                }}
+            >
                 {projects.map((p) => (
                     <KpiTile
                         key={p.name}

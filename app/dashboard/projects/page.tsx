@@ -14,9 +14,15 @@ export default async function ProjectsPage() {
     const projects: ProjItem[] = await Promise.all(
         inv.pages.map(async (p) => {
             const meta = metaFor(p.name);
-            const domain = p.domains?.find((d) => !d.endsWith(".pages.dev")) || p.domains?.[0];
-            const traffic = zone && domain && !domain.endsWith(".pages.dev") ? await hostTraffic(zone.id, domain, w) : null;
-            const spark = traffic?.points.map((pt) => Number(pt.requests) || 0) || [];
+            const domain =
+                p.domains?.find((d) => !d.endsWith(".pages.dev")) ||
+                p.domains?.[0];
+            const traffic =
+                zone && domain && !domain.endsWith(".pages.dev")
+                    ? await hostTraffic(zone.id, domain, w)
+                    : null;
+            const spark =
+                traffic?.points.map((pt) => Number(pt.requests) || 0) || [];
             return {
                 name: p.name,
                 label: meta.label,

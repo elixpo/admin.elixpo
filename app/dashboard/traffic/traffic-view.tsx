@@ -156,7 +156,10 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <ExpandableGlobe country={b.country} size={300} />
+                                        <ExpandableGlobe
+                                            country={b.country}
+                                            size={300}
+                                        />
                                         <TopList
                                             items={b.country
                                                 .slice(0, 9)
@@ -211,23 +214,19 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 <Panel title="Top hosts">
                                     <TopList
                                         color={C.accentDeep}
-                                        items={b.host
-                                            .slice(0, 10)
-                                            .map((h) => ({
-                                                label: h.label,
-                                                value: h.count,
-                                            }))}
+                                        items={b.host.slice(0, 10).map((h) => ({
+                                            label: h.label,
+                                            value: h.count,
+                                        }))}
                                     />
                                 </Panel>
                                 <Panel title="Top paths">
                                     <TopList
                                         color="#86efac"
-                                        items={b.path
-                                            .slice(0, 10)
-                                            .map((p) => ({
-                                                label: p.label,
-                                                value: p.count,
-                                            }))}
+                                        items={b.path.slice(0, 10).map((p) => ({
+                                            label: p.label,
+                                            value: p.count,
+                                        }))}
                                     />
                                 </Panel>
                             </Box>
@@ -242,16 +241,47 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 }}
                             >
                                 <Panel title="Top browsers">
-                                    <TopList items={b.browser.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        items={b.browser
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="HTTP versions">
-                                    <TopList color={C.accentLight} items={b.httpProtocol.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accentLight}
+                                        items={b.httpProtocol
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="TLS versions">
-                                    <TopList color={C.accentDeep} items={b.tls.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color={C.accentDeep}
+                                        items={b.tls
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                                 <Panel title="Top IPs">
-                                    <TopList color="#86efac" items={b.ip.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                    <TopList
+                                        color="#86efac"
+                                        items={b.ip
+                                            .slice(0, 8)
+                                            .map((x) => ({
+                                                label: x.label || "—",
+                                                value: x.count,
+                                            }))}
+                                    />
                                 </Panel>
                             </Box>
                         </>

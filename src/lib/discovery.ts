@@ -224,24 +224,33 @@ export interface PagesDetail {
 }
 
 /** Full Pages project detail incl. production bindings (D1/KV/DO/queues/services). */
-export async function pagesProjectDetail(name: string): Promise<PagesDetail | null> {
+export async function pagesProjectDetail(
+    name: string,
+): Promise<PagesDetail | null> {
     const r = await safe(async () => {
-        const env = await cfRest<any>(await acctPath(`/pages/projects/${name}`));
+        const env = await cfRest<any>(
+            await acctPath(`/pages/projects/${name}`),
+        );
         const res = env.result || {};
         const dc = res.deployment_configs?.production || {};
-        const d1 = Object.entries(dc.d1_databases || {}).map(([binding, v]: [string, any]) => ({
-            binding,
-            id: v?.id || v?.database_id || "",
-        }));
-        const kv = Object.entries(dc.kv_namespaces || {}).map(([binding, v]: [string, any]) => ({
-            binding,
-            id: v?.namespace_id || v?.id || "",
-        }));
+        const d1 = Object.entries(dc.d1_databases || {}).map(
+            ([binding, v]: [string, any]) => ({
+                binding,
+                id: v?.id || v?.database_id || "",
+            }),
+        );
+        const kv = Object.entries(dc.kv_namespaces || {}).map(
+            ([binding, v]: [string, any]) => ({
+                binding,
+                id: v?.namespace_id || v?.id || "",
+            }),
+        );
         const domains: string[] = res.domains || [];
         return {
             name,
             domains,
-            productionDomain: domains.find((d) => !d.endsWith(".pages.dev")) || domains[0],
+            productionDomain:
+                domains.find((d) => !d.endsWith(".pages.dev")) || domains[0],
             d1,
             kv,
             durableObjects: Object.keys(dc.durable_object_namespaces || {}),

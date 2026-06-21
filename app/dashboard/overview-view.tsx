@@ -310,7 +310,10 @@ export default function OverviewView({
                                 alignItems: "center",
                             }}
                         >
-                            <ExpandableGlobe country={breakdown.country} size={300} />
+                            <ExpandableGlobe
+                                country={breakdown.country}
+                                size={300}
+                            />
                             <TopList
                                 color={C.accent}
                                 items={breakdown.country
@@ -358,23 +361,19 @@ export default function OverviewView({
                     <Panel title="Top hosts">
                         <TopList
                             color={C.accentDeep}
-                            items={breakdown.host
-                                .slice(0, 8)
-                                .map((h) => ({
-                                    label: h.label,
-                                    value: h.count,
-                                }))}
+                            items={breakdown.host.slice(0, 8).map((h) => ({
+                                label: h.label,
+                                value: h.count,
+                            }))}
                         />
                     </Panel>
                     <Panel title="Top paths">
                         <TopList
                             color="#86efac"
-                            items={breakdown.path
-                                .slice(0, 8)
-                                .map((p) => ({
-                                    label: p.label,
-                                    value: p.count,
-                                }))}
+                            items={breakdown.path.slice(0, 8).map((p) => ({
+                                label: p.label,
+                                value: p.count,
+                            }))}
                         />
                     </Panel>
                 </Box>
