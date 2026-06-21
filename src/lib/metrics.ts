@@ -93,6 +93,40 @@ export async function workersMetrics(scriptName: string, w = lastHours()): Promi
     }
 }
 
+/** Account-wide Workers invocations (all scripts), bucketed hourly. */
+export async function workersMetricsAll(w = lastHours()): Promise<MetricSeries> {
+    try {
+        const account = await getAccountId();
+        const data = await run<any>(
+            `query($a:String!,$s:Time!,$u:Time!){
+              viewer{accounts(filter:{accountTag:$a}){
+                workersInvocationsAdaptive(limit:10000,
+                  filter:{datetime_geq:$s,datetime_leq:$u},
+                  orderBy:[datetimeHour_ASC]){
+                  sum{requests errors}
+                  dimensions{datetimeHour}
+                }
+              }}
+            }`,
+            { a: account, s: w.since, u: w.until },
+        );
+        const rows = data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive ?? [];
+        // Multiple script rows can share an hour — fold them together.
+        const byHour = new Map<string, MetricPoint>();
+        for (const r of rows) {
+            const ts = r.dimensions.datetimeHour;
+            const p = byHour.get(ts) || { ts, requests: 0, errors: 0 };
+            p.requests = (p.requests as number) + (r.sum.requests ?? 0);
+            p.errors = (p.errors as number) + (r.sum.errors ?? 0);
+            byHour.set(ts, p);
+        }
+        const points = Array.from(byHour.values()).sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+        return { available: true, points, totals: sumTotals(points, ["requests", "errors"]) };
+    } catch (e) {
+        return EMPTY((e as Error).message);
+    }
+}
+
 /* ----------------------------------------------------------------------- D1 */
 
 export async function d1Metrics(databaseId: string, w = lastHours()): Promise<MetricSeries> {
