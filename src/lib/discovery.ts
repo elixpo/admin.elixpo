@@ -204,3 +204,58 @@ export async function pagesDeployments(
     );
     return r.ok ? r.data.slice(0, max) : [];
 }
+
+export interface Binding {
+    binding: string;
+    id: string;
+}
+
+export interface PagesDetail {
+    name: string;
+    domains: string[];
+    productionDomain?: string;
+    d1: Binding[];
+    kv: Binding[];
+    durableObjects: string[];
+    queues: string[];
+    services: string[];
+    vars: string[];
+    latestDeployment?: { id?: string; created_on?: string; url?: string };
+}
+
+/** Full Pages project detail incl. production bindings (D1/KV/DO/queues/services). */
+export async function pagesProjectDetail(name: string): Promise<PagesDetail | null> {
+    const r = await safe(async () => {
+        const env = await cfRest<any>(await acctPath(`/pages/projects/${name}`));
+        const res = env.result || {};
+        const dc = res.deployment_configs?.production || {};
+        const d1 = Object.entries(dc.d1_databases || {}).map(([binding, v]: [string, any]) => ({
+            binding,
+            id: v?.id || v?.database_id || "",
+        }));
+        const kv = Object.entries(dc.kv_namespaces || {}).map(([binding, v]: [string, any]) => ({
+            binding,
+            id: v?.namespace_id || v?.id || "",
+        }));
+        const domains: string[] = res.domains || [];
+        return {
+            name,
+            domains,
+            productionDomain: domains.find((d) => !d.endsWith(".pages.dev")) || domains[0],
+            d1,
+            kv,
+            durableObjects: Object.keys(dc.durable_object_namespaces || {}),
+            queues: Object.keys(dc.queue_producers || {}),
+            services: Object.keys(dc.services || {}),
+            vars: Object.keys(dc.env_vars || {}),
+            latestDeployment: res.latest_deployment
+                ? {
+                      id: res.latest_deployment.id,
+                      created_on: res.latest_deployment.created_on,
+                      url: res.latest_deployment.url,
+                  }
+                : undefined,
+        };
+    });
+    return r.ok ? r.data : null;
+}

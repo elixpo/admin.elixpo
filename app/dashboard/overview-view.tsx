@@ -1,5 +1,6 @@
 "use client";
 
+import ExpandableGlobe from "@/components/expandable-globe";
 import MetricChart from "@/components/metric-chart";
 import {
     C,
@@ -20,10 +21,7 @@ import { autoLabel, metaFor } from "@/lib/enrich";
 import type { MetricSeries, ZoneBreakdown } from "@/lib/metrics";
 import { Warning } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-
-const Globe = dynamic(() => import("@/components/globe"), { ssr: false });
 
 const grid = (min: number) => ({
     display: "grid",
@@ -312,7 +310,7 @@ export default function OverviewView({
                                 alignItems: "center",
                             }}
                         >
-                            <Globe country={breakdown.country} size={300} />
+                            <ExpandableGlobe country={breakdown.country} size={300} />
                             <TopList
                                 color={C.accent}
                                 items={breakdown.country

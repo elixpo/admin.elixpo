@@ -1,5 +1,6 @@
 "use client";
 
+import ExpandableGlobe from "@/components/expandable-globe";
 import MetricChart from "@/components/metric-chart";
 import {
     C,
@@ -17,9 +18,6 @@ import {
 } from "@/components/ui";
 import type { MetricSeries, ZoneBreakdown } from "@/lib/metrics";
 import { Box, Typography } from "@mui/material";
-import dynamic from "next/dynamic";
-
-const Globe = dynamic(() => import("@/components/globe"), { ssr: false });
 
 export interface ZoneData {
     name: string;
@@ -158,7 +156,7 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                             alignItems: "center",
                                         }}
                                     >
-                                        <Globe country={b.country} size={300} />
+                                        <ExpandableGlobe country={b.country} size={300} />
                                         <TopList
                                             items={b.country
                                                 .slice(0, 9)
@@ -231,6 +229,29 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                                 value: p.count,
                                             }))}
                                     />
+                                </Panel>
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fit, minmax(280px, 1fr))",
+                                    gap: 1.5,
+                                    mt: 1.5,
+                                }}
+                            >
+                                <Panel title="Top browsers">
+                                    <TopList items={b.browser.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="HTTP versions">
+                                    <TopList color={C.accentLight} items={b.httpProtocol.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="TLS versions">
+                                    <TopList color={C.accentDeep} items={b.tls.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="Top IPs">
+                                    <TopList color="#86efac" items={b.ip.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
                                 </Panel>
                             </Box>
                         </>

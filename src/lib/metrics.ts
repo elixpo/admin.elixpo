@@ -350,6 +350,34 @@ export async function zoneTraffic(
     }
 }
 
+/** Traffic for a single host (e.g. blogs.elixpo.com) within its zone. Used by
+ * per-project pages to show that project's slice of the zone's traffic. */
+export async function hostTraffic(zoneTag: string, host: string, w = lastHours()): Promise<MetricSeries> {
+    try {
+        const data = await run<any>(
+            `query($z:String!,$s:Time!,$u:Time!,$h:string!){
+              viewer{zones(filter:{zoneTag:$z}){
+                httpRequestsAdaptiveGroups(limit:10000,
+                  filter:{datetime_geq:$s,datetime_leq:$u,clientRequestHTTPHost:$h},
+                  orderBy:[datetimeHour_ASC]){
+                  count sum{edgeResponseBytes} dimensions{datetimeHour}
+                }
+              }}
+            }`,
+            { z: zoneTag, s: w.since, u: w.until, h: host },
+        );
+        const rows = data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups ?? [];
+        const points: MetricPoint[] = rows.map((r: any) => ({
+            ts: r.dimensions.datetimeHour,
+            requests: r.count ?? 0,
+            bytes: r.sum?.edgeResponseBytes ?? 0,
+        }));
+        return { available: true, points, totals: sumTotals(points, ["requests", "bytes"]) };
+    } catch (e) {
+        return EMPTY((e as Error).message);
+    }
+}
+
 /* --------------------------------------------------------------- DNS / zone */
 
 export async function dnsAnalytics(
@@ -399,11 +427,16 @@ export interface ZoneBreakdown {
     device: Dim[];
     host: Dim[];
     path: Dim[];
+    browser: Dim[];
+    httpProtocol: Dim[];
+    tls: Dim[];
+    ip: Dim[];
 }
 
 export async function zoneBreakdown(
     zoneTag: string,
     w = lastHours(),
+    host?: string,
 ): Promise<ZoneBreakdown> {
     const empty: ZoneBreakdown = {
         available: false,
@@ -412,19 +445,29 @@ export async function zoneBreakdown(
         device: [],
         host: [],
         path: [],
+        browser: [],
+        httpProtocol: [],
+        tls: [],
+        ip: [],
     };
     try {
+        // Optional host filter lets per-project pages scope breakdowns to one domain.
+        const hf = host ? `,clientRequestHTTPHost:$h` : "";
         const grp = (alias: string, dim: string, limit = 10) =>
-            `${alias}:httpRequestsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u},orderBy:[count_DESC]){count dimensions{${dim}}}`;
+            `${alias}:httpRequestsAdaptiveGroups(limit:${limit},filter:{datetime_geq:$s,datetime_leq:$u${hf}},orderBy:[count_DESC]){count dimensions{${dim}}}`;
         const data = await run<any>(
-            `query($z:String!,$s:Time!,$u:Time!){viewer{zones(filter:{zoneTag:$z}){
+            `query($z:String!,$s:Time!,$u:Time!${host ? ",$h:string!" : ""}){viewer{zones(filter:{zoneTag:$z}){
                 ${grp("country", "clientCountryName")}
                 ${grp("status", "edgeResponseStatus")}
                 ${grp("device", "clientDeviceType", 6)}
                 ${grp("host", "clientRequestHTTPHost")}
                 ${grp("path", "clientRequestPath")}
+                ${grp("browser", "userAgentBrowser")}
+                ${grp("proto", "clientRequestHTTPProtocol")}
+                ${grp("tls", "clientSSLProtocol")}
+                ${grp("ip", "clientIP")}
             }}}`,
-            { z: zoneTag, s: w.since, u: w.until },
+            { z: zoneTag, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
         );
         const z = data?.viewer?.zones?.[0] || {};
         const map = (rows: any[], key: string): Dim[] =>
@@ -439,6 +482,10 @@ export async function zoneBreakdown(
             device: map(z.device, "clientDeviceType"),
             host: map(z.host, "clientRequestHTTPHost"),
             path: map(z.path, "clientRequestPath"),
+            browser: map(z.browser, "userAgentBrowser"),
+            httpProtocol: map(z.proto, "clientRequestHTTPProtocol"),
+            tls: map(z.tls, "clientSSLProtocol"),
+            ip: map(z.ip, "clientIP"),
         };
     } catch (e) {
         return { ...empty, error: (e as Error).message };

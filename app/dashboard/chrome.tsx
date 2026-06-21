@@ -8,6 +8,7 @@ import {
     Dns,
     History,
     Hub,
+    Inventory2,
     Launch,
     Logout,
     Menu as MenuIcon,
@@ -59,6 +60,7 @@ const theme = createTheme({
 
 const navItems = [
     { label: "Overview", icon: Speed, href: "/dashboard" },
+    { label: "Projects", icon: Inventory2, href: "/dashboard/projects" },
     { label: "Traffic", icon: Public, href: "/dashboard/traffic" },
     { label: "Workers", icon: Bolt, href: "/dashboard/workers" },
     { label: "D1", icon: Storage, href: "/dashboard/d1" },
