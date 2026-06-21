@@ -67,12 +67,6 @@ export interface DurableObjectNamespace {
     use_sqlite?: boolean;
 }
 
-export interface ContainerApp {
-    id?: string;
-    name?: string;
-    [k: string]: unknown;
-}
-
 export interface WorkflowInfo {
     name: string;
     id?: string;
@@ -107,7 +101,6 @@ export interface Inventory {
     kv: KvNamespace[];
     queues: QueueInfo[];
     durableObjects: DurableObjectNamespace[];
-    containers: ContainerApp[];
     workflows: WorkflowInfo[];
     zones: ZoneInfo[];
     logpush: LogpushJob[];
