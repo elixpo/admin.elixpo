@@ -6,7 +6,7 @@
 
 import { discoverAccount } from "@/lib/discovery";
 import { metaFor } from "@/lib/enrich";
-import { lastHours, zoneBreakdown } from "@/lib/metrics";
+import { lastHours, zoneBreakdown, zoneDailyUptime } from "@/lib/metrics";
 import type { Metadata } from "next";
 import StatusView, { type Health, type ProductStatus } from "./status-view";
 
@@ -53,6 +53,10 @@ export default async function StatusPage() {
     const w = lastHours(24);
     const zone = inv.zones.find((z) => z.name === "elixpo.com") || inv.zones[0];
 
+    const uptime = zone
+        ? await zoneDailyUptime(zone.id, 90)
+        : { available: false, days: [], uptimePct: 100 };
+
     const products: ProductStatus[] = zone
         ? await Promise.all(
               inv.pages
@@ -85,5 +89,11 @@ export default async function StatusPage() {
     // Show the busiest first.
     products.sort((a, b) => b.total - a.total);
 
-    return <StatusView products={products} fetchedAt={inv.fetchedAt} />;
+    return (
+        <StatusView
+            products={products}
+            uptime={uptime}
+            fetchedAt={inv.fetchedAt}
+        />
+    );
 }

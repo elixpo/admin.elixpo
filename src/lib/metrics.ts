@@ -413,6 +413,65 @@ export async function hostTraffic(
     );
 }
 
+/* ---------------------------------------------------- Daily uptime (status page) */
+
+export interface DayPoint {
+    date: string;
+    total: number;
+    errors: number; // 5xx
+}
+export interface DailyUptime {
+    available: boolean;
+    error?: string;
+    days: DayPoint[];
+    uptimePct: number;
+}
+
+/** Zone-wide daily uptime history (httpRequests1dGroups, up to ~90 days). */
+export async function zoneDailyUptime(
+    zoneTag: string,
+    days = 90,
+): Promise<DailyUptime> {
+    return cached(`du:${zoneTag}:${days}`, 600, async () => {
+        try {
+            const since = new Date(Date.now() - days * 86400_000)
+                .toISOString()
+                .slice(0, 10);
+            const data = await run<any>(
+                `query($z:String!,$d:String!){viewer{zones(filter:{zoneTag:$z}){
+                    httpRequests1dGroups(limit:200,filter:{date_geq:$d},orderBy:[date_ASC]){
+                        dimensions{date}
+                        sum{requests responseStatusMap{edgeResponseStatus requests}}
+                    }
+                }}}`,
+                { z: zoneTag, d: since },
+            );
+            const rows = data?.viewer?.zones?.[0]?.httpRequests1dGroups ?? [];
+            const out: DayPoint[] = rows.map((r: any) => {
+                const total = r.sum?.requests ?? 0;
+                const errors = (r.sum?.responseStatusMap || [])
+                    .filter((m: any) => Number(m.edgeResponseStatus) >= 500)
+                    .reduce((a: number, m: any) => a + (m.requests ?? 0), 0);
+                return { date: r.dimensions.date, total, errors };
+            });
+            const t = out.reduce((a, d) => a + d.total, 0);
+            const e = out.reduce((a, d) => a + d.errors, 0);
+            return {
+                available: true,
+                days: out,
+                uptimePct: t > 0 ? ((t - e) / t) * 100 : 100,
+            };
+        } catch (err) {
+            return {
+                available: false,
+                error: (err as Error).message,
+                days: [],
+                uptimePct: 100,
+            };
+        }
+    });
+}
+
 /* --------------------------------------------------------------- DNS / zone */
 
 export async function dnsAnalytics(
