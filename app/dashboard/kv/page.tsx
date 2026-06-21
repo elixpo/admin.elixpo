@@ -1,0 +1,25 @@
+import ListView, { type ListItem } from "@/components/list-view";
+import { metaFor } from "@/lib/enrich";
+import { discoverAccount } from "@/lib/discovery";
+
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
+export default async function KvListPage() {
+    const inv = await discoverAccount();
+    const items: ListItem[] = inv.kv.map((k) => ({
+        id: k.id,
+        primary: k.title,
+        secondary: `${metaFor(k.title).label} · ${k.id}`,
+    }));
+    return (
+        <ListView
+            title="KV namespaces"
+            subtitle="Key-value stores across the account"
+            panelTitle={`${items.length} namespaces`}
+            items={items}
+            emptyMessage="No KV namespaces found."
+            error={inv.errors.kv?.error}
+        />
+    );
+}
