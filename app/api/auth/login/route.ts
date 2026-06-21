@@ -13,7 +13,8 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const state = randomToken(24);
-    const authorizeUrl = await buildAuthorizeUrl(state);
+    const redirect = new URL("/api/auth/callback", request.url).toString();
+    const authorizeUrl = await buildAuthorizeUrl(state, redirect);
 
     const res = NextResponse.redirect(authorizeUrl);
     res.cookies.set(STATE_COOKIE, state, {

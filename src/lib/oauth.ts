@@ -31,18 +31,28 @@ export interface AccountsProfile {
 
 export const OAUTH_SCOPE = "openid profile email";
 
-export async function buildAuthorizeUrl(state: string): Promise<string> {
+/**
+ * The OAuth redirect URI. Prefer an explicit value (derived from the request
+ * origin by the caller) so local dev and prod each get the right callback
+ * without a per-environment env var; falls back to NEXT_PUBLIC_REDIRECT_URL /
+ * NEXT_PUBLIC_APP_URL.
+ */
+async function resolveRedirect(explicit?: string): Promise<string> {
+    return explicit || (await redirectUri());
+}
+
+export async function buildAuthorizeUrl(state: string, redirect?: string): Promise<string> {
     const clientId = await requireEnv("ELIXPO_CLIENT_ID");
     const url = new URL(`${await accountsUrl()}/oauth/authorize`);
     url.searchParams.set("response_type", "code");
     url.searchParams.set("client_id", clientId);
-    url.searchParams.set("redirect_uri", await redirectUri());
+    url.searchParams.set("redirect_uri", await resolveRedirect(redirect));
     url.searchParams.set("state", state);
     url.searchParams.set("scope", OAUTH_SCOPE);
     return url.toString();
 }
 
-export async function exchangeCode(code: string): Promise<TokenResponse> {
+export async function exchangeCode(code: string, redirect?: string): Promise<TokenResponse> {
     const res = await fetch(`${await accountsUrl()}/api/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,7 +61,7 @@ export async function exchangeCode(code: string): Promise<TokenResponse> {
             code,
             client_id: await requireEnv("ELIXPO_CLIENT_ID"),
             client_secret: await requireEnv("ELIXPO_CLIENT_SECRET"),
-            redirect_uri: await redirectUri(),
+            redirect_uri: await resolveRedirect(redirect),
         }),
     });
     if (!res.ok) {
