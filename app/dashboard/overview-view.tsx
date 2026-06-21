@@ -171,6 +171,50 @@ export default function OverviewView({
                 </Panel>
             </Box>
 
+            {/* geo + breakdowns — fills the row Cloudflare uses for the globe */}
+            {breakdown?.available && (
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1.4fr 1fr 1fr" }, gap: 1.5, mb: 2 }}>
+                    <Panel title={`Requests by country · ${primaryZoneName || ""}`}>
+                        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "auto 1fr" }, gap: 2, alignItems: "center" }}>
+                            <Globe country={breakdown.country} size={300} />
+                            <TopList
+                                color={C.accent}
+                                items={breakdown.country.slice(0, 8).map((c) => ({ label: c.label, value: c.count }))}
+                            />
+                        </Box>
+                    </Panel>
+                    <Panel title="Status codes">
+                        <TopList
+                            color={C.accentLight}
+                            items={breakdown.status.slice(0, 8).map((s) => ({
+                                label: s.label,
+                                value: s.count,
+                                chip: <StatusChip label={s.label} tone={statusTone(s.label)} />,
+                            }))}
+                        />
+                    </Panel>
+                    <Panel title="Requests by device">
+                        {breakdown.device.length ? (
+                            <Donut data={breakdown.device.map((d) => ({ label: d.label || "unknown", value: d.count }))} />
+                        ) : (
+                            <Empty message="No device data." />
+                        )}
+                    </Panel>
+                </Box>
+            )}
+
+            {/* top hosts + paths */}
+            {breakdown?.available && (
+                <Box sx={{ ...grid(360), mb: 2 }}>
+                    <Panel title="Top hosts">
+                        <TopList color={C.accentDeep} items={breakdown.host.slice(0, 8).map((h) => ({ label: h.label, value: h.count }))} />
+                    </Panel>
+                    <Panel title="Top paths">
+                        <TopList color="#86efac" items={breakdown.path.slice(0, 8).map((p) => ({ label: p.label, value: p.count }))} />
+                    </Panel>
+                </Box>
+            )}
+
             {/* discovery-driven resource lists */}
             <Box sx={grid(340)}>
                 <Panel title={`Pages projects · ${inv.pages.length}`} dense>
