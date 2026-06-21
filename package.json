@@ -28,6 +28,7 @@
         "@mui/icons-material": "7.0.2",
         "@mui/material": "7.0.2",
         "@mui/system": "7.0.2",
+        "cobe": "^2.0.1",
         "jose": "^5.9.6",
         "next": "15.2.4",
         "react": "19.2.3",
