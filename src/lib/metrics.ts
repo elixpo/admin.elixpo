@@ -436,6 +436,8 @@ export interface ZoneBreakdown {
     host: Dim[];
     path: Dim[];
     browser: Dim[];
+    os: Dim[];
+    userAgent: Dim[];
     httpProtocol: Dim[];
     tls: Dim[];
     ip: Dim[];
@@ -454,6 +456,8 @@ export async function zoneBreakdown(
         host: [],
         path: [],
         browser: [],
+        os: [],
+        userAgent: [],
         httpProtocol: [],
         tls: [],
         ip: [],
@@ -471,6 +475,8 @@ export async function zoneBreakdown(
                 ${grp("host", "clientRequestHTTPHost")}
                 ${grp("path", "clientRequestPath")}
                 ${grp("browser", "userAgentBrowser")}
+                ${grp("os", "userAgentOS")}
+                ${grp("ua", "userAgent")}
                 ${grp("proto", "clientRequestHTTPProtocol")}
                 ${grp("tls", "clientSSLProtocol")}
                 ${grp("ip", "clientIP")}
@@ -496,6 +502,8 @@ export async function zoneBreakdown(
             host: map(z.host, "clientRequestHTTPHost"),
             path: map(z.path, "clientRequestPath"),
             browser: map(z.browser, "userAgentBrowser"),
+            os: map(z.os, "userAgentOS"),
+            userAgent: map(z.ua, "userAgent"),
             httpProtocol: map(z.proto, "clientRequestHTTPProtocol"),
             tls: map(z.tls, "clientSSLProtocol"),
             ip: map(z.ip, "clientIP"),

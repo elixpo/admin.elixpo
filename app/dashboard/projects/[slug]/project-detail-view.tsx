@@ -10,6 +10,7 @@ import {
     PageHeader,
     Panel,
     SectionError,
+    StatusBar,
     StatusChip,
     TopList,
     fmt,
@@ -28,14 +29,6 @@ export interface BindingMetric {
     name: string;
     metrics: MetricSeries;
 }
-
-const statusTone = (code: string): "success" | "info" | "warning" | "error" => {
-    const n = Number(code);
-    if (n >= 500) return "error";
-    if (n >= 400) return "warning";
-    if (n >= 300) return "info";
-    return "success";
-};
 
 const sumTotals = (t: Record<string, number>) =>
     Object.values(t).reduce((a, b) => a + b, 0);
@@ -194,22 +187,8 @@ export default function ProjectDetailView({
                             />
                         </Box>
                     </Panel>
-                    <Panel title="Status codes">
-                        <TopList
-                            color={C.accentLight}
-                            items={breakdown.status
-                                .slice(0, 8)
-                                .map((s) => ({
-                                    label: s.label,
-                                    value: s.count,
-                                    chip: (
-                                        <StatusChip
-                                            label={s.label}
-                                            tone={statusTone(s.label)}
-                                        />
-                                    ),
-                                }))}
-                        />
+                    <Panel title="Status Codes">
+                        <StatusBar status={breakdown.status} />
                     </Panel>
                     <Panel title="Devices">
                         {breakdown.device.length ? (

@@ -10,7 +10,7 @@ import {
     PageHeader,
     Panel,
     SectionError,
-    StatusChip,
+    StatusBar,
     TopList,
     fmt,
     fmtBytes,
@@ -25,14 +25,6 @@ export interface ZoneData {
     traffic: MetricSeries;
     breakdown: ZoneBreakdown;
 }
-
-const statusTone = (code: string): "success" | "info" | "warning" | "error" => {
-    const n = Number(code);
-    if (n >= 500) return "error";
-    if (n >= 400) return "warning";
-    if (n >= 300) return "info";
-    return "success";
-};
 
 export default function TrafficView({ zones }: { zones: ZoneData[] }) {
     return (
@@ -138,7 +130,7 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                     display: "grid",
                                     gridTemplateColumns: {
                                         xs: "1fr",
-                                        lg: "1.4fr 1fr 1fr",
+                                        lg: "1.7fr 1fr",
                                     },
                                     gap: 1.5,
                                     mb: 1.5,
@@ -170,25 +162,6 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                         />
                                     </Box>
                                 </Panel>
-                                <Panel title="Status codes">
-                                    <TopList
-                                        color={C.accentLight}
-                                        items={b.status
-                                            .slice(0, 9)
-                                            .map((s) => ({
-                                                label: s.label,
-                                                value: s.count,
-                                                chip: (
-                                                    <StatusChip
-                                                        label={s.label}
-                                                        tone={statusTone(
-                                                            s.label,
-                                                        )}
-                                                    />
-                                                ),
-                                            }))}
-                                    />
-                                </Panel>
                                 <Panel title="Requests by device">
                                     {b.device.length ? (
                                         <Donut
@@ -203,85 +176,46 @@ function ZoneBlock({ z }: { z: ZoneData }) {
                                 </Panel>
                             </Box>
 
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        "repeat(auto-fit, minmax(360px, 1fr))",
-                                    gap: 1.5,
-                                }}
-                            >
-                                <Panel title="Top hosts">
-                                    <TopList
-                                        color={C.accentDeep}
-                                        items={b.host.slice(0, 10).map((h) => ({
-                                            label: h.label,
-                                            value: h.count,
-                                        }))}
-                                    />
-                                </Panel>
-                                <Panel title="Top paths">
-                                    <TopList
-                                        color="#86efac"
-                                        items={b.path.slice(0, 10).map((p) => ({
-                                            label: p.label,
-                                            value: p.count,
-                                        }))}
-                                    />
+                            {/* Status Codes — grouped stacked bar (full width) */}
+                            <Box sx={{ mb: 1.5 }}>
+                                <Panel title="Status Codes">
+                                    <StatusBar status={b.status} />
                                 </Panel>
                             </Box>
 
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                        "repeat(auto-fit, minmax(280px, 1fr))",
-                                    gap: 1.5,
-                                    mt: 1.5,
-                                }}
-                            >
-                                <Panel title="Top browsers">
-                                    <TopList
-                                        items={b.browser
-                                            .slice(0, 8)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
-                                    />
+                            {/* Top Paths | Top Hosts | Top IPs */}
+                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5, mb: 1.5 }}>
+                                <Panel title="Top Paths" dense>
+                                    <TopList color={C.accent} items={b.path.slice(0, 12).map((p) => ({ label: p.label, value: p.count }))} />
                                 </Panel>
-                                <Panel title="HTTP versions">
-                                    <TopList
-                                        color={C.accentLight}
-                                        items={b.httpProtocol
-                                            .slice(0, 8)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
-                                    />
+                                <Panel title="Top Hosts" dense>
+                                    <TopList color={C.accent} items={b.host.slice(0, 12).map((h) => ({ label: h.label, value: h.count }))} />
                                 </Panel>
-                                <Panel title="TLS versions">
-                                    <TopList
-                                        color={C.accentDeep}
-                                        items={b.tls
-                                            .slice(0, 8)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
-                                    />
+                                <Panel title="Top IPs" dense>
+                                    <TopList color={C.accent} items={b.ip.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
                                 </Panel>
-                                <Panel title="Top IPs">
-                                    <TopList
-                                        color="#86efac"
-                                        items={b.ip
-                                            .slice(0, 8)
-                                            .map((x) => ({
-                                                label: x.label || "—",
-                                                value: x.count,
-                                            }))}
-                                    />
+                            </Box>
+
+                            {/* Top Browsers | Top Operating Systems | Top User Agents */}
+                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5, mb: 1.5 }}>
+                                <Panel title="Top Browsers" dense>
+                                    <TopList color={C.accent} items={b.browser.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="Top Operating Systems" dense>
+                                    <TopList color={C.accent} items={b.os.slice(0, 12).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="Top User Agents" dense>
+                                    <TopList color={C.accent} items={b.userAgent.slice(0, 12).map((x) => ({ label: x.label || "(empty user agent)", value: x.count }))} />
+                                </Panel>
+                            </Box>
+
+                            {/* HTTP & TLS versions */}
+                            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 1.5 }}>
+                                <Panel title="HTTP versions" dense>
+                                    <TopList color={C.accentLight} items={b.httpProtocol.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
+                                </Panel>
+                                <Panel title="TLS versions" dense>
+                                    <TopList color={C.accentDeep} items={b.tls.slice(0, 8).map((x) => ({ label: x.label || "—", value: x.count }))} />
                                 </Panel>
                             </Box>
                         </>

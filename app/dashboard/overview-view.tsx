@@ -10,6 +10,7 @@ import {
     PageHeader,
     Panel,
     SectionError,
+    StatusBar,
     StatusChip,
     TopList,
     fmt,
@@ -28,14 +29,6 @@ const grid = (min: number) => ({
     gridTemplateColumns: `repeat(auto-fit, minmax(${min}px, 1fr))`,
     gap: 1.5,
 });
-
-const statusTone = (code: string): "success" | "info" | "warning" | "error" => {
-    const n = Number(code);
-    if (n >= 500) return "error";
-    if (n >= 400) return "warning";
-    if (n >= 300) return "info";
-    return "success";
-};
 
 function CompactRow({
     primary,
@@ -325,20 +318,8 @@ export default function OverviewView({
                             />
                         </Box>
                     </Panel>
-                    <Panel title="Status codes">
-                        <TopList
-                            color={C.accentLight}
-                            items={breakdown.status.slice(0, 8).map((s) => ({
-                                label: s.label,
-                                value: s.count,
-                                chip: (
-                                    <StatusChip
-                                        label={s.label}
-                                        tone={statusTone(s.label)}
-                                    />
-                                ),
-                            }))}
-                        />
+                    <Panel title="Status Codes">
+                        <StatusBar status={breakdown.status} />
                     </Panel>
                     <Panel title="Requests by device">
                         {breakdown.device.length ? (
