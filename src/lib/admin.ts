@@ -11,20 +11,26 @@ import { getEnv } from "./env";
 // elixpo_auth database id (overridable via env for other environments).
 const DEFAULT_AUTH_DB_ID = "f7455042-ed14-466a-9461-5fd36f628746";
 
-export async function isAdminByRole(opts: { id?: string; email?: string }): Promise<boolean> {
+export async function isAdminByRole(opts: {
+    id?: string;
+    email?: string;
+}): Promise<boolean> {
     const id = (opts.id || "").trim();
     const email = (opts.email || "").trim();
     if (!id && !email) return false;
 
     const dbId = (await getEnv("ELIXPO_AUTH_DB_ID")) || DEFAULT_AUTH_DB_ID;
     try {
-        const env = await cfRest<any>(await acctPath(`/d1/database/${dbId}/query`), {
-            method: "POST",
-            body: JSON.stringify({
-                sql: "SELECT role FROM users WHERE id = ? OR lower(email) = lower(?) LIMIT 1;",
-                params: [id, email],
-            }),
-        });
+        const env = await cfRest<any>(
+            await acctPath(`/d1/database/${dbId}/query`),
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    sql: "SELECT role FROM users WHERE id = ? OR lower(email) = lower(?) LIMIT 1;",
+                    params: [id, email],
+                }),
+            },
+        );
         const row = env.result?.[0]?.results?.[0];
         return String(row?.role || "").toLowerCase() === "admin";
     } catch {
