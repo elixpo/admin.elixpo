@@ -1,5 +1,9 @@
 import "../landing.css";
-import { REPO_URL, SiteFooter, SiteHeader } from "@/components/landing/site-chrome";
+import {
+    REPO_URL,
+    SiteFooter,
+    SiteHeader,
+} from "@/components/landing/site-chrome";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -168,9 +172,7 @@ export default async function Denied({
                             rel="noopener noreferrer"
                         >
                             Request admin access ↗
-                            <span>
-                                Pre-filled issue on elixpo/admin.elixpo
-                            </span>
+                            <span>Pre-filled issue on elixpo/admin.elixpo</span>
                         </a>
                         <a href="https://status.elixpo.com">
                             Public status page ↗

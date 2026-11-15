@@ -3,7 +3,11 @@
 /** "Why it's not 2xx" — ranked, collapsible finding cards. */
 
 import { C, eyebrow } from "@/components/ui";
-import { type Finding, type Severity, statusInfo } from "@/lib/diagnostics-core";
+import {
+    type Finding,
+    type Severity,
+    statusInfo,
+} from "@/lib/diagnostics-core";
 import { ArrowOutward, ExpandMore } from "@mui/icons-material";
 import { Box, Collapse, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
@@ -24,7 +28,11 @@ export default function Findings({
     const [limit, setLimit] = useState(PAGE);
 
     const counts = useMemo(() => {
-        const c: Record<Severity, number> = { critical: 0, warning: 0, info: 0 };
+        const c: Record<Severity, number> = {
+            critical: 0,
+            warning: 0,
+            info: 0,
+        };
         for (const f of findings) c[f.severity]++;
         return c;
     }, [findings]);
@@ -35,7 +43,9 @@ export default function Findings({
                 <Typography sx={{ fontWeight: 650, color: C.green }}>
                     Nothing to explain.
                 </Typography>
-                <Typography sx={{ color: C.textMuted, fontSize: "0.8rem", mt: 0.5 }}>
+                <Typography
+                    sx={{ color: C.textMuted, fontSize: "0.8rem", mt: 0.5 }}
+                >
                     No non-2xx responses match the current filters.
                 </Typography>
             </Box>
@@ -152,7 +162,10 @@ export default function Findings({
                                         {f.host}
                                     </Typography>
                                     <Typography
-                                        sx={{ color: C.textMuted, fontSize: "0.82rem" }}
+                                        sx={{
+                                            color: C.textMuted,
+                                            fontSize: "0.82rem",
+                                        }}
                                     >
                                         {info.name}
                                     </Typography>
@@ -177,7 +190,10 @@ export default function Findings({
                                     gridColumn: { xs: "1 / 2", md: "auto" },
                                     display: "flex",
                                     gap: 1.5,
-                                    justifyContent: { xs: "flex-start", md: "flex-end" },
+                                    justifyContent: {
+                                        xs: "flex-start",
+                                        md: "flex-end",
+                                    },
                                 }}
                             >
                                 <Box>
@@ -191,7 +207,13 @@ export default function Findings({
                                     >
                                         {num(f.count)}
                                     </Typography>
-                                    <Typography sx={{ ...eyebrow, color: C.textMuted, fontSize: "0.56rem" }}>
+                                    <Typography
+                                        sx={{
+                                            ...eyebrow,
+                                            color: C.textMuted,
+                                            fontSize: "0.56rem",
+                                        }}
+                                    >
                                         requests
                                     </Typography>
                                 </Box>
@@ -207,7 +229,13 @@ export default function Findings({
                                     >
                                         {pct(f.share)}
                                     </Typography>
-                                    <Typography sx={{ ...eyebrow, color: C.textMuted, fontSize: "0.56rem" }}>
+                                    <Typography
+                                        sx={{
+                                            ...eyebrow,
+                                            color: C.textMuted,
+                                            fontSize: "0.56rem",
+                                        }}
+                                    >
                                         of host
                                     </Typography>
                                 </Box>
@@ -242,7 +270,12 @@ export default function Findings({
                                     </Typography>
                                     <Box
                                         component="ol"
-                                        sx={{ m: 0, pl: 2.25, display: "grid", gap: 0.6 }}
+                                        sx={{
+                                            m: 0,
+                                            pl: 2.25,
+                                            display: "grid",
+                                            gap: 0.6,
+                                        }}
                                     >
                                         {f.reasons.map((r, i) => (
                                             <Typography
@@ -269,16 +302,29 @@ export default function Findings({
                                                     color: C.textMuted,
                                                 }}
                                             >
-                                                visitors {num(f.visitorCount ?? 0)} · internal{" "}
-                                                {num(f.internalCount)}
+                                                visitors{" "}
+                                                {num(f.visitorCount ?? 0)} ·
+                                                internal {num(f.internalCount)}
                                             </Typography>
                                         )}
-                                    <Typography sx={{ ...eyebrow, mt: 2, mb: 0.75, color: C.green }}>
+                                    <Typography
+                                        sx={{
+                                            ...eyebrow,
+                                            mt: 2,
+                                            mb: 0.75,
+                                            color: C.green,
+                                        }}
+                                    >
                                         Suggested fixes
                                     </Typography>
                                     <Box
                                         component="ul"
-                                        sx={{ m: 0, pl: 2.25, display: "grid", gap: 0.5 }}
+                                        sx={{
+                                            m: 0,
+                                            pl: 2.25,
+                                            display: "grid",
+                                            gap: 0.5,
+                                        }}
                                     >
                                         {f.fixes.map((x, i) => (
                                             <Typography
@@ -312,13 +358,15 @@ export default function Findings({
                                                     key={p.path}
                                                     sx={{
                                                         display: "flex",
-                                                        justifyContent: "space-between",
+                                                        justifyContent:
+                                                            "space-between",
                                                         gap: 1,
                                                         px: 1.25,
                                                         py: 0.6,
                                                         borderBottom: `1px solid ${C.border}`,
                                                         "&:last-of-type": {
-                                                            borderBottom: "none",
+                                                            borderBottom:
+                                                                "none",
                                                         },
                                                     }}
                                                 >
@@ -328,8 +376,10 @@ export default function Findings({
                                                             fontFamily: C.mono,
                                                             fontSize: "0.72rem",
                                                             overflow: "hidden",
-                                                            textOverflow: "ellipsis",
-                                                            whiteSpace: "nowrap",
+                                                            textOverflow:
+                                                                "ellipsis",
+                                                            whiteSpace:
+                                                                "nowrap",
                                                         }}
                                                     >
                                                         {p.path}
@@ -338,7 +388,8 @@ export default function Findings({
                                                         sx={{
                                                             fontSize: "0.72rem",
                                                             color: C.textMuted,
-                                                            fontVariantNumeric: "tabular-nums",
+                                                            fontVariantNumeric:
+                                                                "tabular-nums",
                                                         }}
                                                     >
                                                         {num(p.count)}
@@ -347,19 +398,36 @@ export default function Findings({
                                             ))}
                                         </Box>
                                     ) : (
-                                        <Typography sx={{ fontSize: "0.78rem", color: C.textMuted }}>
-                                            No path sample for this code (outside the top
-                                            request groups).
+                                        <Typography
+                                            sx={{
+                                                fontSize: "0.78rem",
+                                                color: C.textMuted,
+                                            }}
+                                        >
+                                            No path sample for this code
+                                            (outside the top request groups).
                                         </Typography>
                                     )}
-                                    <Box sx={{ display: "flex", gap: 1, mt: 1.5, flexWrap: "wrap" }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                            mt: 1.5,
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
                                         <PillButton
                                             dark
                                             href={`/dashboard/services/${encodeURIComponent(f.host)}?tab=status`}
                                         >
-                                            Open service <ArrowOutward sx={{ fontSize: "0.85rem" }} />
+                                            Open service{" "}
+                                            <ArrowOutward
+                                                sx={{ fontSize: "0.85rem" }}
+                                            />
                                         </PillButton>
-                                        <PillButton onClick={() => onCode(f.status)}>
+                                        <PillButton
+                                            onClick={() => onCode(f.status)}
+                                        >
                                             {activeCodes.includes(f.status)
                                                 ? `Clear ${f.status} filter`
                                                 : `Filter to ${f.status}`}
@@ -372,7 +440,9 @@ export default function Findings({
                 );
             })}
             {findings.length > limit && (
-                <Box sx={{ display: "flex", justifyContent: "center", py: 1.5 }}>
+                <Box
+                    sx={{ display: "flex", justifyContent: "center", py: 1.5 }}
+                >
                     <PillButton onClick={() => setLimit((l) => l + PAGE * 2)}>
                         Show more ({findings.length - limit} left)
                     </PillButton>

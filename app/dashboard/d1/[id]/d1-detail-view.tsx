@@ -2,7 +2,14 @@
 
 import MetricChart from "@/components/metric-chart";
 import QueryConsole from "@/components/query-console";
-import { C, CHART, KpiTile, PageHeader, Panel, SectionError } from "@/components/ui";
+import {
+    C,
+    CHART,
+    KpiTile,
+    PageHeader,
+    Panel,
+    SectionError,
+} from "@/components/ui";
 import type { MetricSeries } from "@/lib/metrics";
 import { Box } from "@mui/material";
 

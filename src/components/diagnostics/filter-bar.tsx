@@ -81,7 +81,8 @@ export function PillMulti<V extends string | number>({
     const summary = !active
         ? allLabel
         : value.length === 1
-          ? options.find((o) => o.value === value[0])?.label ?? String(value[0])
+          ? (options.find((o) => o.value === value[0])?.label ??
+            String(value[0]))
           : `${value.length} selected`;
 
     const toggle = (v: V) =>
@@ -136,7 +137,9 @@ export function PillMulti<V extends string | number>({
                         placeItems: "center",
                     }}
                 >
-                    {on && <Check sx={{ fontSize: "0.75rem", color: "#fff" }} />}
+                    {on && (
+                        <Check sx={{ fontSize: "0.75rem", color: "#fff" }} />
+                    )}
                 </Box>
                 {o.color && (
                     <Box
@@ -307,7 +310,12 @@ export function PillMulti<V extends string | number>({
                     items
                 ) : (
                     <Typography
-                        sx={{ px: 2, py: 1, fontSize: "0.78rem", color: C.textMuted }}
+                        sx={{
+                            px: 2,
+                            py: 1,
+                            fontSize: "0.78rem",
+                            color: C.textMuted,
+                        }}
                     >
                         No matches
                     </Typography>

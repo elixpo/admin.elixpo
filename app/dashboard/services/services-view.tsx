@@ -20,7 +20,11 @@ import {
     glass,
 } from "@/components/ui";
 import type { Service } from "@/lib/services";
-import { GridViewOutlined, Search, ViewListOutlined } from "@mui/icons-material";
+import {
+    GridViewOutlined,
+    Search,
+    ViewListOutlined,
+} from "@mui/icons-material";
 import { Box, InputBase, Typography } from "@mui/material";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -35,9 +39,21 @@ export interface ServiceRow {
 }
 
 const HEALTH: Record<Health, { label: string; color: string; hint: string }> = {
-    healthy: { label: "Healthy", color: STATUS_COLORS["2xx"], hint: "5xx ≤ 1% and 4xx ≤ 20% of visitor requests" },
-    degraded: { label: "Degraded", color: C.orange, hint: "5xx > 1% or 4xx > 20% of visitor requests" },
-    idle: { label: "No traffic", color: C.borderLight, hint: "No requests in this window" },
+    healthy: {
+        label: "Healthy",
+        color: STATUS_COLORS["2xx"],
+        hint: "5xx ≤ 1% and 4xx ≤ 20% of visitor requests",
+    },
+    degraded: {
+        label: "Degraded",
+        color: C.orange,
+        hint: "5xx > 1% or 4xx > 20% of visitor requests",
+    },
+    idle: {
+        label: "No traffic",
+        color: C.borderLight,
+        hint: "No requests in this window",
+    },
 };
 
 const BACKENDS = [
@@ -114,7 +130,12 @@ export default function ServicesView({
         const out = rows.filter((r) => {
             const s = r.service;
             if (needle) {
-                const hay = [s.host, s.pagesProject, s.workerScript, s.dnsTarget]
+                const hay = [
+                    s.host,
+                    s.pagesProject,
+                    s.workerScript,
+                    s.dnsTarget,
+                ]
                     .filter(Boolean)
                     .join(" ")
                     .toLowerCase();
@@ -122,7 +143,10 @@ export default function ServicesView({
             }
             if (backend === "dns") {
                 if (s.backends.some((b) => b !== "dns")) return false;
-            } else if (backend !== "all" && !s.backends.includes(backend as Service["backends"][number]))
+            } else if (
+                backend !== "all" &&
+                !s.backends.includes(backend as Service["backends"][number])
+            )
                 return false;
             if (health !== "all" && r.health !== health) return false;
             return true;
@@ -139,7 +163,11 @@ export default function ServicesView({
 
     const zones = useMemo(() => {
         const m = new Map<string, ServiceRow[]>();
-        for (const r of filtered) m.set(r.service.zoneName, [...(m.get(r.service.zoneName) || []), r]);
+        for (const r of filtered)
+            m.set(r.service.zoneName, [
+                ...(m.get(r.service.zoneName) || []),
+                r,
+            ]);
         return Array.from(m);
     }, [filtered]);
 
@@ -159,7 +187,9 @@ export default function ServicesView({
 
             {error && (
                 <Box sx={{ mb: 1.5 }}>
-                    <SectionError message={`Traffic data unavailable: ${error}`} />
+                    <SectionError
+                        message={`Traffic data unavailable: ${error}`}
+                    />
                 </Box>
             )}
 
@@ -228,7 +258,9 @@ export default function ServicesView({
                 <Box
                     component="select"
                     value={backend}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setBackend(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setBackend(e.target.value)
+                    }
                     sx={selectSx}
                     aria-label="Backend type"
                 >
@@ -241,7 +273,9 @@ export default function ServicesView({
                 <Box
                     component="select"
                     value={health}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setHealth(e.target.value as "all" | Health)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setHealth(e.target.value as "all" | Health)
+                    }
                     sx={selectSx}
                     aria-label="Health"
                 >
@@ -253,7 +287,9 @@ export default function ServicesView({
                 <Box
                     component="select"
                     value={sort}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSort(e.target.value as typeof sort)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setSort(e.target.value as typeof sort)
+                    }
                     sx={selectSx}
                     aria-label="Sort"
                 >
@@ -262,11 +298,21 @@ export default function ServicesView({
                     <option value="errors">Sort: error rate</option>
                 </Box>
                 <Box sx={{ display: "flex", gap: 0.5 }}>
-                    <FilterPill active={view === "grid"} onClick={() => setView("grid")}>
-                        <GridViewOutlined sx={{ fontSize: "0.9rem", verticalAlign: "middle" }} />
+                    <FilterPill
+                        active={view === "grid"}
+                        onClick={() => setView("grid")}
+                    >
+                        <GridViewOutlined
+                            sx={{ fontSize: "0.9rem", verticalAlign: "middle" }}
+                        />
                     </FilterPill>
-                    <FilterPill active={view === "list"} onClick={() => setView("list")}>
-                        <ViewListOutlined sx={{ fontSize: "0.9rem", verticalAlign: "middle" }} />
+                    <FilterPill
+                        active={view === "list"}
+                        onClick={() => setView("list")}
+                    >
+                        <ViewListOutlined
+                            sx={{ fontSize: "0.9rem", verticalAlign: "middle" }}
+                        />
                     </FilterPill>
                 </Box>
             </Box>
@@ -279,12 +325,28 @@ export default function ServicesView({
 
             {zones.map(([zone, list]) => (
                 <Box key={zone} sx={{ mb: 3 }}>
-                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 1.25 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "baseline",
+                            gap: 1,
+                            mb: 1.25,
+                        }}
+                    >
                         <Typography sx={{ ...eyebrow }}>Zone</Typography>
-                        <Typography sx={{ fontWeight: 650, fontSize: "1.15rem", letterSpacing: "-0.03em", color: C.ink }}>
+                        <Typography
+                            sx={{
+                                fontWeight: 650,
+                                fontSize: "1.15rem",
+                                letterSpacing: "-0.03em",
+                                color: C.ink,
+                            }}
+                        >
                             {zone}
                         </Typography>
-                        <Typography sx={{ fontSize: "0.78rem", color: C.textMuted }}>
+                        <Typography
+                            sx={{ fontSize: "0.78rem", color: C.textMuted }}
+                        >
                             {list.length} service{list.length === 1 ? "" : "s"}
                         </Typography>
                     </Box>
@@ -293,11 +355,16 @@ export default function ServicesView({
                             sx={{
                                 display: "grid",
                                 gap: 1.5,
-                                gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
+                                gridTemplateColumns:
+                                    "repeat(auto-fill, minmax(min(100%, 280px), 1fr))",
                             }}
                         >
                             {list.map((r) => (
-                                <ServiceCard key={r.service.host} r={r} href={hrefFor(r.service.host, range)} />
+                                <ServiceCard
+                                    key={r.service.host}
+                                    r={r}
+                                    href={hrefFor(r.service.host, range)}
+                                />
                             ))}
                         </Box>
                     ) : (
@@ -312,8 +379,21 @@ export default function ServicesView({
                                         render: (r) => (
                                             <Box
                                                 component={Link}
-                                                href={hrefFor(r.service.host, range)}
-                                                sx={{ display: "flex", alignItems: "center", gap: 1, color: C.ink, fontWeight: 650, textDecoration: "none", "&:hover": { color: C.green } }}
+                                                href={hrefFor(
+                                                    r.service.host,
+                                                    range,
+                                                )}
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                    color: C.ink,
+                                                    fontWeight: 650,
+                                                    textDecoration: "none",
+                                                    "&:hover": {
+                                                        color: C.green,
+                                                    },
+                                                }}
                                             >
                                                 <HealthDot h={r.health} />
                                                 {r.service.host}
@@ -324,18 +404,43 @@ export default function ServicesView({
                                         key: "backend",
                                         label: "Backend",
                                         render: (r) => (
-                                            <Box sx={{ fontSize: "0.74rem", color: C.textDim, fontFamily: C.mono, whiteSpace: "nowrap" }}>
+                                            <Box
+                                                sx={{
+                                                    fontSize: "0.74rem",
+                                                    color: C.textDim,
+                                                    fontFamily: C.mono,
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
                                                 {backendSummary(r.service)}
                                             </Box>
                                         ),
                                     },
-                                    { key: "total", label: "Requests", align: "right", mono: true, render: (r) => fmt(r.total) },
+                                    {
+                                        key: "total",
+                                        label: "Requests",
+                                        align: "right",
+                                        mono: true,
+                                        render: (r) => fmt(r.total),
+                                    },
                                     {
                                         key: "mix",
                                         label: "Status mix",
                                         render: (r) => (
                                             <Box sx={{ minWidth: 120 }}>
-                                                <ShareBar parts={CLASS_ORDER.map((k) => ({ label: k, value: r.byClass[k] || 0, color: STATUS_COLORS[k] }))} />
+                                                <ShareBar
+                                                    parts={CLASS_ORDER.map(
+                                                        (k) => ({
+                                                            label: k,
+                                                            value:
+                                                                r.byClass[k] ||
+                                                                0,
+                                                            color: STATUS_COLORS[
+                                                                k
+                                                            ],
+                                                        }),
+                                                    )}
+                                                />
                                             </Box>
                                         ),
                                     },
@@ -344,12 +449,26 @@ export default function ServicesView({
                                         label: "2xx",
                                         align: "right",
                                         mono: true,
-                                        render: (r) => (r.total ? pct(r.byClass["2xx"] / r.total, 0) : "—"),
+                                        render: (r) =>
+                                            r.total
+                                                ? pct(
+                                                      r.byClass["2xx"] /
+                                                          r.total,
+                                                      0,
+                                                  )
+                                                : "—",
                                     },
                                     {
                                         key: "top",
                                         label: "Top non-2xx",
-                                        render: (r) => (r.topNon2xx ? <CodeBadge code={r.topNon2xx.code} /> : "—"),
+                                        render: (r) =>
+                                            r.topNon2xx ? (
+                                                <CodeBadge
+                                                    code={r.topNon2xx.code}
+                                                />
+                                            ) : (
+                                                "—"
+                                            ),
                                     },
                                 ]}
                             />
@@ -376,10 +495,20 @@ function ServiceCard({ r, href }: { r: ServiceRow; href: string }) {
                 textDecoration: "none",
                 color: C.text,
                 transition: "border-color .15s, transform .15s",
-                "&:hover": { borderColor: C.ink, transform: "translateY(-1px)" },
+                "&:hover": {
+                    borderColor: C.ink,
+                    transform: "translateY(-1px)",
+                },
             }}
         >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    minWidth: 0,
+                }}
+            >
                 <HealthDot h={r.health} />
                 <Typography
                     sx={{
@@ -396,17 +525,31 @@ function ServiceCard({ r, href }: { r: ServiceRow; href: string }) {
                 >
                     {s.host}
                 </Typography>
-                <Typography sx={{ fontSize: "0.7rem", color: HEALTH[r.health].color, fontWeight: 700, whiteSpace: "nowrap" }}>
+                <Typography
+                    sx={{
+                        fontSize: "0.7rem",
+                        color: HEALTH[r.health].color,
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                    }}
+                >
                     {HEALTH[r.health].label}
                 </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
                 {s.backends.map((b) => (
-                    <Pill key={b} tone={b === "pages" || b === "worker" ? "blue" : "neutral"}>
+                    <Pill
+                        key={b}
+                        tone={
+                            b === "pages" || b === "worker" ? "blue" : "neutral"
+                        }
+                    >
                         {b}
                     </Pill>
                 ))}
-                {s.proxied === false && s.backends.includes("dns") && <Pill tone="warn">DNS only</Pill>}
+                {s.proxied === false && s.backends.includes("dns") && (
+                    <Pill tone="warn">DNS only</Pill>
+                )}
             </Box>
             <Typography
                 sx={{
@@ -421,31 +564,91 @@ function ServiceCard({ r, href }: { r: ServiceRow; href: string }) {
             >
                 {backendSummary(s)}
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 1, mt: 0.25 }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    justifyContent: "space-between",
+                    gap: 1,
+                    mt: 0.25,
+                }}
+            >
                 <Box>
-                    <Typography sx={{ fontWeight: 750, fontSize: "1.45rem", letterSpacing: "-0.04em", lineHeight: 1 }}>
+                    <Typography
+                        sx={{
+                            fontWeight: 750,
+                            fontSize: "1.45rem",
+                            letterSpacing: "-0.04em",
+                            lineHeight: 1,
+                        }}
+                    >
                         {fmt(r.total)}
                     </Typography>
-                    <Typography sx={{ fontSize: "0.68rem", color: C.textMuted }}>visitor requests</Typography>
+                    <Typography
+                        sx={{ fontSize: "0.68rem", color: C.textMuted }}
+                    >
+                        visitor requests
+                    </Typography>
                 </Box>
                 <Box sx={{ textAlign: "right" }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: "0.95rem", color: C.text }}>
+                    <Typography
+                        sx={{
+                            fontWeight: 700,
+                            fontSize: "0.95rem",
+                            color: C.text,
+                        }}
+                    >
                         {r.total ? pct(r.byClass["2xx"] / r.total, 0) : "—"}
                     </Typography>
-                    <Typography sx={{ fontSize: "0.68rem", color: C.textMuted }}>2xx</Typography>
+                    <Typography
+                        sx={{ fontSize: "0.68rem", color: C.textMuted }}
+                    >
+                        2xx
+                    </Typography>
                 </Box>
             </Box>
-            <ShareBar parts={CLASS_ORDER.map((k) => ({ label: k, value: r.byClass[k] || 0, color: STATUS_COLORS[k] }))} />
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: 22 }}>
+            <ShareBar
+                parts={CLASS_ORDER.map((k) => ({
+                    label: k,
+                    value: r.byClass[k] || 0,
+                    color: STATUS_COLORS[k],
+                }))}
+            />
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    minHeight: 22,
+                }}
+            >
                 {r.topNon2xx ? (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, fontSize: "0.72rem", color: C.textMuted }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.75,
+                            fontSize: "0.72rem",
+                            color: C.textMuted,
+                        }}
+                    >
                         <CodeBadge code={r.topNon2xx.code} />
-                        {fmt(r.topNon2xx.count)} · {pct(r.topNon2xx.count / (r.total || 1), 1)}
+                        {fmt(r.topNon2xx.count)} ·{" "}
+                        {pct(r.topNon2xx.count / (r.total || 1), 1)}
                     </Box>
                 ) : (
-                    <Box sx={{ fontSize: "0.72rem", color: C.textMuted }}>{r.total ? "Only 2xx" : "—"}</Box>
+                    <Box sx={{ fontSize: "0.72rem", color: C.textMuted }}>
+                        {r.total ? "Only 2xx" : "—"}
+                    </Box>
                 )}
-                <Box component="span" sx={{ fontSize: "0.75rem", color: C.green, fontWeight: 650 }}>
+                <Box
+                    component="span"
+                    sx={{
+                        fontSize: "0.75rem",
+                        color: C.green,
+                        fontWeight: 650,
+                    }}
+                >
                     Open →
                 </Box>
             </Box>

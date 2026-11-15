@@ -97,7 +97,14 @@ export default function HealthMatrix({
 
     const exportCsv = () =>
         downloadCsv("service-health-matrix", [
-            ["host", "total", ...CLASSES, "error_rate", "avg_origin_ms", "worst"],
+            [
+                "host",
+                "total",
+                ...CLASSES,
+                "error_rate",
+                "avg_origin_ms",
+                "worst",
+            ],
             ...rows.map(({ h, worst }) => [
                 h.host,
                 h.total,
@@ -134,7 +141,13 @@ export default function HealthMatrix({
                         bgcolor: C.paperDeep,
                     }}
                 />
-                <Typography sx={{ fontFamily: C.mono, fontSize: "0.68rem", color: C.textMuted }}>
+                <Typography
+                    sx={{
+                        fontFamily: C.mono,
+                        fontSize: "0.68rem",
+                        color: C.textMuted,
+                    }}
+                >
                     {rows.length} hosts
                 </Typography>
                 <PillButton onClick={exportCsv}>CSV</PillButton>
@@ -143,22 +156,61 @@ export default function HealthMatrix({
                 <thead>
                     <tr>
                         <th style={{ width: 28 }} />
-                        <SortTh label="Host" k="host" sort={sort} onSort={onSort} />
-                        <SortTh label="Total" k="total" sort={sort} onSort={onSort} num />
+                        <SortTh
+                            label="Host"
+                            k="host"
+                            sort={sort}
+                            onSort={onSort}
+                        />
+                        <SortTh
+                            label="Total"
+                            k="total"
+                            sort={sort}
+                            onSort={onSort}
+                            num
+                        />
                         {CLASSES.map((c) => (
-                            <SortTh key={c} label={c} k={c} sort={sort} onSort={onSort} num />
+                            <SortTh
+                                key={c}
+                                label={c}
+                                k={c}
+                                sort={sort}
+                                onSort={onSort}
+                                num
+                            />
                         ))}
                         <th>Mix</th>
-                        <SortTh label="Error rate" k="err" sort={sort} onSort={onSort} num title="4xx + 5xx share" />
-                        <SortTh label="Origin ms" k="ms" sort={sort} onSort={onSort} num title="Average origin response time" />
-                        <SortTh label="Worst" k="worst" sort={sort} onSort={onSort} />
+                        <SortTh
+                            label="Error rate"
+                            k="err"
+                            sort={sort}
+                            onSort={onSort}
+                            num
+                            title="4xx + 5xx share"
+                        />
+                        <SortTh
+                            label="Origin ms"
+                            k="ms"
+                            sort={sort}
+                            onSort={onSort}
+                            num
+                            title="Average origin response time"
+                        />
+                        <SortTh
+                            label="Worst"
+                            k="worst"
+                            sort={sort}
+                            onSort={onSort}
+                        />
                         <th />
                     </tr>
                 </thead>
                 <tbody>
                     {rows.slice(0, limit).map(({ h, worst }) => {
                         const o = !!open[h.host];
-                        const codes = h.byStatus.filter((s) => codeOk(s.status));
+                        const codes = h.byStatus.filter((s) =>
+                            codeOk(s.status),
+                        );
                         return (
                             <Fragment key={h.host}>
                                 <Box
@@ -176,14 +228,22 @@ export default function HealthMatrix({
                                             sx={{
                                                 fontSize: "1rem",
                                                 color: C.textMuted,
-                                                transform: o ? "rotate(90deg)" : "none",
+                                                transform: o
+                                                    ? "rotate(90deg)"
+                                                    : "none",
                                                 transition: "transform .15s",
                                                 display: "block",
                                             }}
                                         />
                                     </td>
                                     <td>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 0.75,
+                                            }}
+                                        >
                                             <Typography
                                                 sx={{
                                                     fontWeight: 600,
@@ -201,7 +261,8 @@ export default function HealthMatrix({
                                                         fontFamily: C.mono,
                                                         fontSize: "0.56rem",
                                                         letterSpacing: "0.1em",
-                                                        textTransform: "uppercase",
+                                                        textTransform:
+                                                            "uppercase",
                                                         color: C.textMuted,
                                                         border: `1px solid ${C.line}`,
                                                         borderRadius: "999px",
@@ -213,7 +274,10 @@ export default function HealthMatrix({
                                             )}
                                         </Box>
                                     </td>
-                                    <td className="num" style={{ fontWeight: 700 }}>
+                                    <td
+                                        className="num"
+                                        style={{ fontWeight: 700 }}
+                                    >
                                         {num(h.total)}
                                     </td>
                                     {CLASSES.map((c) => {
@@ -223,7 +287,9 @@ export default function HealthMatrix({
                                                 key={c}
                                                 className="num"
                                                 style={{
-                                                    color: v ? C.text : C.borderLight,
+                                                    color: v
+                                                        ? C.text
+                                                        : C.borderLight,
                                                 }}
                                             >
                                                 {v ? num(v) : "·"}
@@ -233,7 +299,9 @@ export default function HealthMatrix({
                                                         sx={{
                                                             display: "block",
                                                             fontSize: "0.64rem",
-                                                            color: STATUS_COLORS[c],
+                                                            color: STATUS_COLORS[
+                                                                c
+                                                            ],
                                                             fontWeight: 700,
                                                         }}
                                                     >
@@ -244,7 +312,10 @@ export default function HealthMatrix({
                                         );
                                     })}
                                     <td style={{ minWidth: 120 }}>
-                                        <ClassBar byClass={h.byClass} total={h.total} />
+                                        <ClassBar
+                                            byClass={h.byClass}
+                                            total={h.total}
+                                        />
                                     </td>
                                     <td
                                         className="num"
@@ -261,12 +332,22 @@ export default function HealthMatrix({
                                         {pct(h.errorRate)}
                                     </td>
                                     <td className="num">
-                                        {h.avgOriginMs != null && h.avgOriginMs > 0
+                                        {h.avgOriginMs != null &&
+                                        h.avgOriginMs > 0
                                             ? num(h.avgOriginMs)
                                             : "—"}
                                     </td>
-                                    <td>{worst ? <CodeChip code={worst} /> : "—"}</td>
-                                    <td onClick={(e) => e.stopPropagation()}>
+                                    <td>
+                                        {worst ? (
+                                            <CodeChip code={worst} />
+                                        ) : (
+                                            "—"
+                                        )}
+                                    </td>
+                                    <td
+                                        onClick={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => e.stopPropagation()}
+                                    >
                                         <Box
                                             component={Link}
                                             href={`/dashboard/services/${encodeURIComponent(h.host)}?tab=status`}
@@ -276,16 +357,23 @@ export default function HealthMatrix({
                                                 display: "inline-flex",
                                                 p: 0.4,
                                                 borderRadius: "999px",
-                                                "&:hover": { bgcolor: C.paperDeep },
+                                                "&:hover": {
+                                                    bgcolor: C.paperDeep,
+                                                },
                                             }}
                                         >
-                                            <ArrowOutward sx={{ fontSize: "0.95rem" }} />
+                                            <ArrowOutward
+                                                sx={{ fontSize: "0.95rem" }}
+                                            />
                                         </Box>
                                     </td>
                                 </Box>
                                 {o && (
                                     <tr>
-                                        <td colSpan={13} style={{ background: C.paper }}>
+                                        <td
+                                            colSpan={13}
+                                            style={{ background: C.paper }}
+                                        >
                                             <Box
                                                 sx={{
                                                     display: "grid",
@@ -300,56 +388,84 @@ export default function HealthMatrix({
                                                         key={s.status}
                                                         sx={{
                                                             display: "flex",
-                                                            alignItems: "center",
+                                                            alignItems:
+                                                                "center",
                                                             gap: 1,
                                                             px: 1,
                                                             py: 0.6,
-                                                            borderRadius: "12px",
+                                                            borderRadius:
+                                                                "12px",
                                                             bgcolor: C.panel,
                                                             border: `1px solid ${C.border}`,
                                                         }}
                                                     >
                                                         <CodeChip
                                                             code={s.status}
-                                                            onClick={() => onCode(s.status)}
-                                                            active={activeCodes.includes(s.status)}
+                                                            onClick={() =>
+                                                                onCode(s.status)
+                                                            }
+                                                            active={activeCodes.includes(
+                                                                s.status,
+                                                            )}
                                                         />
                                                         <Typography
                                                             sx={{
-                                                                fontSize: "0.76rem",
+                                                                fontSize:
+                                                                    "0.76rem",
                                                                 flex: 1,
                                                                 color: C.textDim,
-                                                                overflow: "hidden",
-                                                                textOverflow: "ellipsis",
-                                                                whiteSpace: "nowrap",
+                                                                overflow:
+                                                                    "hidden",
+                                                                textOverflow:
+                                                                    "ellipsis",
+                                                                whiteSpace:
+                                                                    "nowrap",
                                                             }}
                                                         >
-                                                            {statusInfo(s.status).name}
+                                                            {
+                                                                statusInfo(
+                                                                    s.status,
+                                                                ).name
+                                                            }
                                                         </Typography>
                                                         <Typography
                                                             sx={{
-                                                                fontSize: "0.76rem",
+                                                                fontSize:
+                                                                    "0.76rem",
                                                                 fontWeight: 700,
-                                                                fontVariantNumeric: "tabular-nums",
+                                                                fontVariantNumeric:
+                                                                    "tabular-nums",
                                                             }}
                                                         >
                                                             {num(s.count)}
                                                         </Typography>
                                                         <Typography
                                                             sx={{
-                                                                fontSize: "0.68rem",
+                                                                fontSize:
+                                                                    "0.68rem",
                                                                 color: C.textMuted,
                                                                 minWidth: 38,
-                                                                textAlign: "right",
+                                                                textAlign:
+                                                                    "right",
                                                             }}
                                                         >
-                                                            {pct(s.count / h.total, 0)}
+                                                            {pct(
+                                                                s.count /
+                                                                    h.total,
+                                                                0,
+                                                            )}
                                                         </Typography>
                                                     </Box>
                                                 ))}
                                                 {!codes.length && (
-                                                    <Typography sx={{ fontSize: "0.76rem", color: C.textMuted }}>
-                                                        No codes match the current filters.
+                                                    <Typography
+                                                        sx={{
+                                                            fontSize: "0.76rem",
+                                                            color: C.textMuted,
+                                                        }}
+                                                    >
+                                                        No codes match the
+                                                        current filters.
                                                     </Typography>
                                                 )}
                                             </Box>
@@ -362,7 +478,14 @@ export default function HealthMatrix({
                 </tbody>
             </TableBox>
             {rows.length > limit && (
-                <Box sx={{ display: "flex", justifyContent: "center", py: 1.25, borderTop: `1px solid ${C.border}` }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        py: 1.25,
+                        borderTop: `1px solid ${C.border}`,
+                    }}
+                >
                     <PillButton onClick={() => setLimit((l) => l + 60)}>
                         Show more hosts ({rows.length - limit} left)
                     </PillButton>

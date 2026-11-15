@@ -13,9 +13,9 @@ import {
     SectionError,
     StatusChip,
     TopList,
+    eyebrow,
     fmt,
     fmtBytes,
-    eyebrow,
     trend,
 } from "@/components/ui";
 import type { PagesDetail } from "@/lib/discovery";
@@ -69,7 +69,9 @@ export default function ProjectDetailView({
                                 gap: 1,
                             }}
                         >
-                            {!detail.productionDomain.endsWith(".pages.dev") && (
+                            {!detail.productionDomain.endsWith(
+                                ".pages.dev",
+                            ) && (
                                 <ServiceLink
                                     host={detail.productionDomain}
                                     label="Service dashboard"
@@ -509,7 +511,12 @@ function ChipRow({ label, items }: { label: string; items: string[] }) {
     return (
         <Box sx={{ mb: 1.25 }}>
             <Typography
-                sx={{ ...eyebrow, color: C.textMuted, fontSize: "0.6rem", mb: 0.6 }}
+                sx={{
+                    ...eyebrow,
+                    color: C.textMuted,
+                    fontSize: "0.6rem",
+                    mb: 0.6,
+                }}
             >
                 {label}
             </Typography>

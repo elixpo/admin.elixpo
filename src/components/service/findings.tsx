@@ -14,9 +14,14 @@ const SEV = {
 } as const;
 
 /** Compact one-line-per-finding list (overview). */
-export function FindingList({ findings, href }: { findings: Finding[]; href: string }) {
+export function FindingList({
+    findings,
+    href,
+}: { findings: Finding[]; href: string }) {
     if (!findings.length)
-        return <Empty message="No non-2xx findings for this host in this window." />;
+        return (
+            <Empty message="No non-2xx findings for this host in this window." />
+        );
     return (
         <Box>
             {findings.slice(0, 6).map((f) => (
@@ -70,14 +75,29 @@ export function FindingList({ findings, href }: { findings: Finding[]; href: str
                             {f.reasons[0]}
                         </Typography>
                     </Box>
-                    <Typography sx={{ fontSize: "0.75rem", color: C.textDim, fontFamily: C.mono, whiteSpace: "nowrap" }}>
+                    <Typography
+                        sx={{
+                            fontSize: "0.75rem",
+                            color: C.textDim,
+                            fontFamily: C.mono,
+                            whiteSpace: "nowrap",
+                        }}
+                    >
                         {f.count.toLocaleString()} · {pct(f.share)}
                     </Typography>
                 </Box>
             ))}
             {findings.length > 6 && (
                 <Box sx={{ px: 1.5, py: 1, fontSize: "0.76rem" }}>
-                    <Box component={Link} href={href} sx={{ color: C.green, fontWeight: 650, textDecoration: "none" }}>
+                    <Box
+                        component={Link}
+                        href={href}
+                        sx={{
+                            color: C.green,
+                            fontWeight: 650,
+                            textDecoration: "none",
+                        }}
+                    >
                         {findings.length - 6} more →
                     </Box>
                 </Box>
@@ -118,11 +138,20 @@ export function FindingCard({ f }: { f: Finding }) {
             >
                 <CodeBadge code={f.status} />
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                    <Typography sx={{ fontSize: "0.88rem", fontWeight: 650, color: C.text }}>
+                    <Typography
+                        sx={{
+                            fontSize: "0.88rem",
+                            fontWeight: 650,
+                            color: C.text,
+                        }}
+                    >
                         {f.title}
                     </Typography>
-                    <Typography sx={{ fontSize: "0.72rem", color: C.textMuted }}>
-                        {f.count.toLocaleString()} requests · {pct(f.share)} of host traffic
+                    <Typography
+                        sx={{ fontSize: "0.72rem", color: C.textMuted }}
+                    >
+                        {f.count.toLocaleString()} requests · {pct(f.share)} of
+                        host traffic
                     </Typography>
                 </Box>
                 <Pill tone={sev.tone}>{sev.label}</Pill>
@@ -139,18 +168,47 @@ export function FindingCard({ f }: { f: Finding }) {
                     }}
                 >
                     <Box>
-                        <Typography sx={{ ...eyebrow, color: C.textMuted, mb: 0.75 }}>Why</Typography>
-                        <Box component="ul" sx={{ m: 0, pl: 2.25, fontSize: "0.8rem", color: C.text, lineHeight: 1.55 }}>
+                        <Typography
+                            sx={{ ...eyebrow, color: C.textMuted, mb: 0.75 }}
+                        >
+                            Why
+                        </Typography>
+                        <Box
+                            component="ul"
+                            sx={{
+                                m: 0,
+                                pl: 2.25,
+                                fontSize: "0.8rem",
+                                color: C.text,
+                                lineHeight: 1.55,
+                            }}
+                        >
                             {f.reasons.map((r) => (
                                 <li key={r}>{r}</li>
                             ))}
                         </Box>
                         {f.fixes.length > 0 && (
                             <>
-                                <Typography sx={{ ...eyebrow, color: C.green, mt: 1.5, mb: 0.75 }}>
+                                <Typography
+                                    sx={{
+                                        ...eyebrow,
+                                        color: C.green,
+                                        mt: 1.5,
+                                        mb: 0.75,
+                                    }}
+                                >
                                     What to do
                                 </Typography>
-                                <Box component="ul" sx={{ m: 0, pl: 2.25, fontSize: "0.8rem", color: C.textDim, lineHeight: 1.55 }}>
+                                <Box
+                                    component="ul"
+                                    sx={{
+                                        m: 0,
+                                        pl: 2.25,
+                                        fontSize: "0.8rem",
+                                        color: C.textDim,
+                                        lineHeight: 1.55,
+                                    }}
+                                >
                                     {f.fixes.map((r) => (
                                         <li key={r}>{r}</li>
                                     ))}
@@ -160,7 +218,15 @@ export function FindingCard({ f }: { f: Finding }) {
                     </Box>
                     {f.topPaths.length > 0 && (
                         <Box sx={{ minWidth: 0 }}>
-                            <Typography sx={{ ...eyebrow, color: C.textMuted, mb: 0.75 }}>Top paths</Typography>
+                            <Typography
+                                sx={{
+                                    ...eyebrow,
+                                    color: C.textMuted,
+                                    mb: 0.75,
+                                }}
+                            >
+                                Top paths
+                            </Typography>
                             {f.topPaths.map((p) => (
                                 <Box
                                     key={p.path}
@@ -186,7 +252,13 @@ export function FindingCard({ f }: { f: Finding }) {
                                     >
                                         {p.path}
                                     </Box>
-                                    <Box component="span" sx={{ color: C.textDim, fontFamily: C.mono }}>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            color: C.textDim,
+                                            fontFamily: C.mono,
+                                        }}
+                                    >
                                         {p.count.toLocaleString()}
                                     </Box>
                                 </Box>

@@ -34,7 +34,9 @@ export default function ServiceView({
                         message={`${host} is not served by any zone on this Cloudflare account.`}
                     />
                     <Box sx={{ fontSize: "0.85rem", color: C.textMuted }}>
-                        <TextLink href="/dashboard/services">← All services</TextLink>
+                        <TextLink href="/dashboard/services">
+                            ← All services
+                        </TextLink>
                     </Box>
                 </Box>
             </Box>
@@ -46,7 +48,9 @@ export default function ServiceView({
             {data.tab === "overview" && <OverviewTab ctx={ctx} data={data} />}
             {data.tab === "analytics" && <AnalyticsTab ctx={ctx} data={data} />}
             {data.tab === "status" && <StatusTab ctx={ctx} data={data} />}
-            {data.tab === "performance" && <PerformanceTab ctx={ctx} data={data} />}
+            {data.tab === "performance" && (
+                <PerformanceTab ctx={ctx} data={data} />
+            )}
             {data.tab === "cache" && <CacheTab ctx={ctx} data={data} />}
             {data.tab === "security" && <SecurityTab ctx={ctx} data={data} />}
             {data.tab === "functions" && <FunctionsTab ctx={ctx} data={data} />}

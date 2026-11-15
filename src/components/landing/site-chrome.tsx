@@ -15,7 +15,6 @@ export function SiteHeader({
     return (
         <header className="site-header">
             <Link className="brand" href="/">
-                {/* biome-ignore lint/performance/noImgElement: static logo */}
                 <img src="/icon.png" width={34} height={34} alt="" />
                 <span>
                     <b>Elixpo</b>
@@ -48,7 +47,6 @@ export function SiteFooter() {
     return (
         <footer className="lx-footer">
             <div className="footer-brand">
-                {/* biome-ignore lint/performance/noImgElement: static logo */}
                 <img src="/icon.png" width={42} height={42} alt="" />
                 <div>
                     <strong>Elixpo Admin</strong>

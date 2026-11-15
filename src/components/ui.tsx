@@ -798,9 +798,21 @@ export function Donut({
 /* ---------------------------------------------------------- status code bar */
 
 const STATUS_CLASSES = [
-    { key: "2xx", color: STATUS_COLORS["2xx"], test: (n: number) => n >= 200 && n < 300 },
-    { key: "3xx", color: STATUS_COLORS["3xx"], test: (n: number) => n >= 300 && n < 400 },
-    { key: "4xx", color: STATUS_COLORS["4xx"], test: (n: number) => n >= 400 && n < 500 },
+    {
+        key: "2xx",
+        color: STATUS_COLORS["2xx"],
+        test: (n: number) => n >= 200 && n < 300,
+    },
+    {
+        key: "3xx",
+        color: STATUS_COLORS["3xx"],
+        test: (n: number) => n >= 300 && n < 400,
+    },
+    {
+        key: "4xx",
+        color: STATUS_COLORS["4xx"],
+        test: (n: number) => n >= 400 && n < 500,
+    },
     { key: "5xx", color: STATUS_COLORS["5xx"], test: (n: number) => n >= 500 },
 ];
 

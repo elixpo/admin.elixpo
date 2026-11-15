@@ -537,7 +537,8 @@ export function AttentionRow({ f }: { f: AttentionItem }) {
                         px: 0.8,
                         py: 0.2,
                         borderRadius: "999px",
-                        bgcolor: f.severity === "critical" ? C.errorBg : C.warnBg,
+                        bgcolor:
+                            f.severity === "critical" ? C.errorBg : C.warnBg,
                         color: f.severity === "critical" ? C.error : C.warn,
                         fontFamily: C.mono,
                         fontSize: "0.66rem",

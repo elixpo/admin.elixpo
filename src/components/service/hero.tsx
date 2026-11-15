@@ -1,7 +1,7 @@
 "use client";
 
 import { Pill } from "@/components/service/kit";
-import { TABS, type ServiceCtx, type Tab } from "@/components/service/types";
+import { type ServiceCtx, TABS, type Tab } from "@/components/service/types";
 import TimeRange from "@/components/time-range";
 import { C, eyebrow } from "@/components/ui";
 import { Launch, OpenInNew } from "@mui/icons-material";
@@ -43,7 +43,10 @@ const btn = {
     whiteSpace: "nowrap",
 } as const;
 
-export default function ServiceHero({ ctx, tab }: { ctx: ServiceCtx; tab: Tab }) {
+export default function ServiceHero({
+    ctx,
+    tab,
+}: { ctx: ServiceCtx; tab: Tab }) {
     const s = ctx.service;
     const cfUrl = ctx.accountId
         ? `https://dash.cloudflare.com/${ctx.accountId}/${s.zoneName}`
@@ -77,7 +80,11 @@ export default function ServiceHero({ ctx, tab }: { ctx: ServiceCtx; tab: Tab })
                         component="h1"
                         sx={{
                             fontWeight: 650,
-                            fontSize: { xs: "2rem", sm: "2.6rem", md: "3.2rem" },
+                            fontSize: {
+                                xs: "2rem",
+                                sm: "2.6rem",
+                                md: "3.2rem",
+                            },
                             lineHeight: 0.98,
                             letterSpacing: "-0.06em",
                             color: C.ink,
@@ -86,20 +93,38 @@ export default function ServiceHero({ ctx, tab }: { ctx: ServiceCtx; tab: Tab })
                     >
                         {s.host}
                     </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1.25 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 0.75,
+                            mt: 1.25,
+                        }}
+                    >
                         {s.backends.length ? (
                             s.backends.map((b) => (
-                                <Pill key={b} tone={b === "pages" || b === "worker" ? "blue" : "neutral"}>
+                                <Pill
+                                    key={b}
+                                    tone={
+                                        b === "pages" || b === "worker"
+                                            ? "blue"
+                                            : "neutral"
+                                    }
+                                >
                                     {BACKEND_LABEL[b] || b}
                                 </Pill>
                             ))
                         ) : (
-                            <Pill tone="warn">Not in catalog — traffic only</Pill>
+                            <Pill tone="warn">
+                                Not in catalog — traffic only
+                            </Pill>
                         )}
                         {s.pagesProject && (
                             <Pill mono>pages: {s.pagesProject}</Pill>
                         )}
-                        {s.workerScript && <Pill mono>worker: {s.workerScript}</Pill>}
+                        {s.workerScript && (
+                            <Pill mono>worker: {s.workerScript}</Pill>
+                        )}
                         {s.dnsType && (
                             <Pill mono>
                                 {s.dnsType} → {s.dnsTarget}
@@ -125,7 +150,12 @@ export default function ServiceHero({ ctx, tab }: { ctx: ServiceCtx; tab: Tab })
                         href={`https://${s.host}`}
                         target="_blank"
                         rel="noreferrer"
-                        sx={{ ...btn, bgcolor: C.ink, color: "#fff", "&:hover": { bgcolor: "#000" } }}
+                        sx={{
+                            ...btn,
+                            bgcolor: C.ink,
+                            color: "#fff",
+                            "&:hover": { bgcolor: "#000" },
+                        }}
                     >
                         Visit site <OpenInNew sx={{ fontSize: "0.9rem" }} />
                     </Box>
@@ -141,7 +171,8 @@ export default function ServiceHero({ ctx, tab }: { ctx: ServiceCtx; tab: Tab })
                             "&:hover": { bgcolor: C.paperDeep },
                         }}
                     >
-                        Open in Cloudflare <Launch sx={{ fontSize: "0.9rem" }} />
+                        Open in Cloudflare{" "}
+                        <Launch sx={{ fontSize: "0.9rem" }} />
                     </Box>
                     <TimeRange />
                 </Box>

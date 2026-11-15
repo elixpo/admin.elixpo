@@ -65,22 +65,31 @@ export default async function SettingsPage() {
 
     const [token, account, zones, envs, kvBound] = await Promise.all([
         safe(async () => {
-            const r = await cfRest<{ id: string; status: string; expires_on?: string; not_before?: string }>(
-                "/user/tokens/verify",
-            );
+            const r = await cfRest<{
+                id: string;
+                status: string;
+                expires_on?: string;
+                not_before?: string;
+            }>("/user/tokens/verify");
             return r.result;
         }),
         safe(async () => {
-            const r = await cfRest<{ name?: string; type?: string; created_on?: string }>(
-                `/accounts/${accountId}`,
-            );
+            const r = await cfRest<{
+                name?: string;
+                type?: string;
+                created_on?: string;
+            }>(`/accounts/${accountId}`);
             return r.result;
         }),
         safe(() => cfList<RawZone>(`/zones?account.id=${accountId}`)),
         Promise.all(
-            [...SECRET_NAMES, "ENVIRONMENT", "NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_ACCOUNTS_URL", "NEXT_PUBLIC_REDIRECT_URL"].map(
-                async (n) => [n, await getEnv(n)] as const,
-            ),
+            [
+                ...SECRET_NAMES,
+                "ENVIRONMENT",
+                "NEXT_PUBLIC_APP_URL",
+                "NEXT_PUBLIC_ACCOUNTS_URL",
+                "NEXT_PUBLIC_REDIRECT_URL",
+            ].map(async (n) => [n, await getEnv(n)] as const),
         ),
         (async () => {
             try {
@@ -130,7 +139,12 @@ export default async function SettingsPage() {
         now: Date.now(),
         accountId,
         account: account.ok
-            ? { ok: true, name: account.data.name, type: account.data.type, createdOn: account.data.created_on }
+            ? {
+                  ok: true,
+                  name: account.data.name,
+                  type: account.data.type,
+                  createdOn: account.data.created_on,
+              }
             : { ok: false, error: account.error },
         session: session
             ? {
@@ -145,7 +159,13 @@ export default async function SettingsPage() {
               }
             : null,
         token: token.ok
-            ? { ok: true, id: token.data.id, status: token.data.status, expiresOn: token.data.expires_on, notBefore: token.data.not_before }
+            ? {
+                  ok: true,
+                  id: token.data.id,
+                  status: token.data.status,
+                  expiresOn: token.data.expires_on,
+                  notBefore: token.data.not_before,
+              }
             : { ok: false, error: token.error },
         discovery: {
             fetchedAt: inv.fetchedAt,
@@ -167,17 +187,30 @@ export default async function SettingsPage() {
             nameServers: z.name_servers || [],
             services: services.filter((s) => s.zoneId === z.id).length,
             settings: zoneSettings[i]?.ok ? zoneSettings[i].data : {},
-            settingsError: zoneSettings[i] && !zoneSettings[i].ok ? zoneSettings[i].error : undefined,
+            settingsError:
+                zoneSettings[i] && !zoneSettings[i].ok
+                    ? zoneSettings[i].error
+                    : undefined,
         })),
         zonesError: zones.ok ? undefined : zones.error,
         runtime: {
-            environment: envMap.ENVIRONMENT || (process.env.NODE_ENV === "development" ? "local dev" : "unknown"),
+            environment:
+                envMap.ENVIRONMENT ||
+                (process.env.NODE_ENV === "development"
+                    ? "local dev"
+                    : "unknown"),
             appUrl: envMap.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-            accountsUrl: envMap.NEXT_PUBLIC_ACCOUNTS_URL || "https://accounts.elixpo.com",
-            redirectUri: envMap.NEXT_PUBLIC_REDIRECT_URL || "(derived from app URL)",
+            accountsUrl:
+                envMap.NEXT_PUBLIC_ACCOUNTS_URL ||
+                "https://accounts.elixpo.com",
+            redirectUri:
+                envMap.NEXT_PUBLIC_REDIRECT_URL || "(derived from app URL)",
             kvBinding: kvBound,
             // Presence only — values never leave the server.
-            secrets: SECRET_NAMES.map((name) => ({ name, set: !!envMap[name] })),
+            secrets: SECRET_NAMES.map((name) => ({
+                name,
+                set: !!envMap[name],
+            })),
         },
     };
 

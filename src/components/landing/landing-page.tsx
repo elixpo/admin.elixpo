@@ -109,9 +109,9 @@ export default function LandingPage({ authed }: { authed: boolean }) {
                             The gated operations console for the Elixpo
                             Cloudflare account. It discovers every Pages
                             project, Worker, D1 database, KV namespace, Queue,
-                            Durable Object and Workflow, gives each
-                            *.elixpo.com service its own analytics, and explains
-                            every response that wasn&apos;t a 2xx.
+                            Durable Object and Workflow, gives each *.elixpo.com
+                            service its own analytics, and explains every
+                            response that wasn&apos;t a 2xx.
                         </p>
                         <div className="actions">
                             <a href={primary.href}>{primary.label}</a>
@@ -152,10 +152,10 @@ export default function LandingPage({ authed }: { authed: boolean }) {
                             <h2>One account, every service behind it.</h2>
                         </div>
                         <p>
-                            Elixpo is a family of apps sharing one account.
-                            This is where the team keeps every one of them
-                            fast, healthy and online — read straight from
-                            Cloudflare, with no agents to install.
+                            Elixpo is a family of apps sharing one account. This
+                            is where the team keeps every one of them fast,
+                            healthy and online — read straight from Cloudflare,
+                            with no agents to install.
                         </p>
                     </header>
                     <div className="leading-grid">
@@ -237,6 +237,7 @@ export default function LandingPage({ authed }: { authed: boolean }) {
                                     <h3>{title}</h3>
                                     <p>{body}</p>
                                 </div>
+                                {/* biome-ignore lint/a11y/noAriaHiddenOnFocusable: decorative arrow; <b> is not focusable */}
                                 <b aria-hidden="true">→</b>
                             </div>
                         ))}

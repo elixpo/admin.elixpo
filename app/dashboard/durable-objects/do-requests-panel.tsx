@@ -5,7 +5,9 @@ import { C, Panel, SectionError } from "@/components/ui";
 import type { MetricSeries } from "@/lib/metrics";
 
 /** Account-wide Durable Object request/error chart for the DO list page. */
-export default function DoRequestsPanel({ metrics }: { metrics: MetricSeries }) {
+export default function DoRequestsPanel({
+    metrics,
+}: { metrics: MetricSeries }) {
     return (
         <div style={{ marginBottom: 12 }}>
             <Panel title="Durable Object requests (account-wide, last 24h)">

@@ -28,7 +28,14 @@ export function CodeDistribution({
 }) {
     if (!codes.length)
         return (
-            <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", py: 3, textAlign: "center" }}>
+            <Typography
+                sx={{
+                    color: C.textMuted,
+                    fontSize: "0.82rem",
+                    py: 3,
+                    textAlign: "center",
+                }}
+            >
                 No requests in this window.
             </Typography>
         );
@@ -45,7 +52,11 @@ export function CodeDistribution({
                         key={c.status}
                         component="button"
                         onClick={() => onCode(c.status)}
-                        title={active ? "Clear this code filter" : `Filter everything to ${c.status}`}
+                        title={
+                            active
+                                ? "Clear this code filter"
+                                : `Filter everything to ${c.status}`
+                        }
                         sx={{
                             all: "unset",
                             boxSizing: "border-box",
@@ -69,7 +80,9 @@ export function CodeDistribution({
                     >
                         <CodeChip code={c.status} active={active} />
                         <Box sx={{ minWidth: 0 }}>
-                            <Typography sx={{ fontWeight: 650, fontSize: "0.84rem" }}>
+                            <Typography
+                                sx={{ fontWeight: 650, fontSize: "0.84rem" }}
+                            >
                                 {info.name}
                             </Typography>
                             <Typography
@@ -95,7 +108,14 @@ export function CodeDistribution({
                             {info.meaning}
                         </Typography>
                         <Box sx={{ display: { xs: "none", md: "block" } }}>
-                            <Box sx={{ height: 8, borderRadius: "999px", bgcolor: C.paperDeep, overflow: "hidden" }}>
+                            <Box
+                                sx={{
+                                    height: 8,
+                                    borderRadius: "999px",
+                                    bgcolor: C.paperDeep,
+                                    overflow: "hidden",
+                                }}
+                            >
                                 <Box
                                     sx={{
                                         width: `${Math.max(1.5, (c.count / max) * 100)}%`,
@@ -104,15 +124,30 @@ export function CodeDistribution({
                                     }}
                                 />
                             </Box>
-                            <Typography sx={{ fontFamily: C.mono, fontSize: "0.6rem", color: C.textMuted, mt: 0.3 }}>
+                            <Typography
+                                sx={{
+                                    fontFamily: C.mono,
+                                    fontSize: "0.6rem",
+                                    color: C.textMuted,
+                                    mt: 0.3,
+                                }}
+                            >
                                 {c.hosts} host{c.hosts === 1 ? "" : "s"}
                             </Typography>
                         </Box>
                         <Box sx={{ textAlign: "right" }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.84rem", fontVariantNumeric: "tabular-nums" }}>
+                            <Typography
+                                sx={{
+                                    fontWeight: 700,
+                                    fontSize: "0.84rem",
+                                    fontVariantNumeric: "tabular-nums",
+                                }}
+                            >
                                 {num(c.count)}
                             </Typography>
-                            <Typography sx={{ fontSize: "0.68rem", color: C.textMuted }}>
+                            <Typography
+                                sx={{ fontSize: "0.68rem", color: C.textMuted }}
+                            >
                                 {pct(c.count / (total || 1))}
                             </Typography>
                         </Box>
@@ -126,7 +161,14 @@ export function CodeDistribution({
 export function CodeGlossary({ codes }: { codes: number[] }) {
     if (!codes.length)
         return (
-            <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", py: 2, textAlign: "center" }}>
+            <Typography
+                sx={{
+                    color: C.textMuted,
+                    fontSize: "0.82rem",
+                    py: 2,
+                    textAlign: "center",
+                }}
+            >
                 No codes to explain.
             </Typography>
         );
@@ -134,7 +176,11 @@ export function CodeGlossary({ codes }: { codes: number[] }) {
         <Box
             sx={{
                 display: "grid",
-                gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0,1fr))", lg: "repeat(3, minmax(0,1fr))" },
+                gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, minmax(0,1fr))",
+                    lg: "repeat(3, minmax(0,1fr))",
+                },
                 gap: 1.25,
             }}
         >
@@ -152,13 +198,26 @@ export function CodeGlossary({ codes }: { codes: number[] }) {
                             minWidth: 0,
                         }}
                     >
-                        <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "baseline",
+                                gap: 1,
+                            }}
+                        >
                             <Typography
-                                sx={{ fontFamily: C.mono, fontWeight: 700, fontSize: "1.1rem", color: C.text }}
+                                sx={{
+                                    fontFamily: C.mono,
+                                    fontWeight: 700,
+                                    fontSize: "1.1rem",
+                                    color: C.text,
+                                }}
                             >
                                 {code}
                             </Typography>
-                            <Typography sx={{ fontWeight: 650, fontSize: "0.86rem" }}>
+                            <Typography
+                                sx={{ fontWeight: 650, fontSize: "0.86rem" }}
+                            >
                                 {info.name}
                             </Typography>
                             {info.benign && (
@@ -180,17 +239,37 @@ export function CodeGlossary({ codes }: { codes: number[] }) {
                                 </Box>
                             )}
                         </Box>
-                        <Typography sx={{ fontSize: "0.78rem", color: C.textDim, mt: 0.5 }}>
+                        <Typography
+                            sx={{
+                                fontSize: "0.78rem",
+                                color: C.textDim,
+                                mt: 0.5,
+                            }}
+                        >
                             {info.meaning}
                         </Typography>
                         {info.causes.length > 0 && (
                             <>
-                                <Typography sx={{ ...eyebrow, fontSize: "0.56rem", mt: 1, mb: 0.3 }}>
+                                <Typography
+                                    sx={{
+                                        ...eyebrow,
+                                        fontSize: "0.56rem",
+                                        mt: 1,
+                                        mb: 0.3,
+                                    }}
+                                >
                                     Typical causes
                                 </Typography>
                                 <Box component="ul" sx={{ m: 0, pl: 2 }}>
                                     {info.causes.map((c) => (
-                                        <Typography component="li" key={c} sx={{ fontSize: "0.74rem", color: C.textDim }}>
+                                        <Typography
+                                            component="li"
+                                            key={c}
+                                            sx={{
+                                                fontSize: "0.74rem",
+                                                color: C.textDim,
+                                            }}
+                                        >
                                             {c}
                                         </Typography>
                                     ))}
@@ -199,12 +278,27 @@ export function CodeGlossary({ codes }: { codes: number[] }) {
                         )}
                         {info.fixes.length > 0 && (
                             <>
-                                <Typography sx={{ ...eyebrow, color: C.green, fontSize: "0.56rem", mt: 1, mb: 0.3 }}>
+                                <Typography
+                                    sx={{
+                                        ...eyebrow,
+                                        color: C.green,
+                                        fontSize: "0.56rem",
+                                        mt: 1,
+                                        mb: 0.3,
+                                    }}
+                                >
                                     What to do
                                 </Typography>
                                 <Box component="ul" sx={{ m: 0, pl: 2 }}>
                                     {info.fixes.map((c) => (
-                                        <Typography component="li" key={c} sx={{ fontSize: "0.74rem", color: C.textDim }}>
+                                        <Typography
+                                            component="li"
+                                            key={c}
+                                            sx={{
+                                                fontSize: "0.74rem",
+                                                color: C.textDim,
+                                            }}
+                                        >
                                             {c}
                                         </Typography>
                                     ))}
