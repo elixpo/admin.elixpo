@@ -18,6 +18,7 @@ import {
     Dns,
     ExpandMore,
     Functions,
+    Groups,
     History,
     Hub,
     Insights,
@@ -117,6 +118,11 @@ const accountNav: { group: string; items: NavItem[] }[] = [
                 href: "/dashboard/diagnostics",
             },
             { label: "Services", icon: Widgets, href: "/dashboard/services" },
+            {
+                label: "Product insights",
+                icon: Groups,
+                href: "/dashboard/insights",
+            },
             { label: "Traffic", icon: Public, href: "/dashboard/traffic" },
         ],
     },
@@ -548,6 +554,12 @@ function SideNav({
                         onClick={onNavigate}
                     />
                 ))}
+                <NavLink
+                    href={`/dashboard/insights/${encodeURIComponent(host)}`}
+                    label="Audience insights"
+                    icon={Groups}
+                    onClick={onNavigate}
+                />
             </Box>
         );
     }
