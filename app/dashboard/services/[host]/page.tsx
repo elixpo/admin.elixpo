@@ -1,7 +1,7 @@
 import {
-    TABS,
     type DeploymentLite,
     type ServiceCtx,
+    TABS,
     type Tab,
     type TabData,
 } from "@/components/service/types";
@@ -27,6 +27,7 @@ import {
     pagesProjectDetail,
 } from "@/lib/discovery";
 import { zoneBreakdown } from "@/lib/metrics";
+import type { Window } from "@/lib/metrics";
 import { rangeWindow } from "@/lib/range";
 import {
     analyticsExtras,
@@ -39,8 +40,7 @@ import {
     zoneSettings,
     zoneThreats,
 } from "@/lib/service-metrics";
-import type { Window } from "@/lib/metrics";
-import { getService, type Service } from "@/lib/services";
+import { type Service, getService } from "@/lib/services";
 import ServiceView from "./service-view";
 
 export const runtime = "edge";
@@ -114,7 +114,10 @@ export default async function ServicePage({
         if (zone) {
             service = {
                 host,
-                label: host === zone.name ? "@" : host.slice(0, -(zone.name.length + 1)),
+                label:
+                    host === zone.name
+                        ? "@"
+                        : host.slice(0, -(zone.name.length + 1)),
                 zoneId: zone.id,
                 zoneName: zone.name,
                 backends: [],

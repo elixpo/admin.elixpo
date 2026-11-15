@@ -117,7 +117,11 @@ export function CodeChip({
             {label && (
                 <Box
                     component="span"
-                    sx={{ fontWeight: 500, fontFamily: "inherit", opacity: 0.8 }}
+                    sx={{
+                        fontWeight: 500,
+                        fontFamily: "inherit",
+                        opacity: 0.8,
+                    }}
                 >
                     {label}
                 </Box>
@@ -348,7 +352,9 @@ export function PillButton({
     /** Render as a Next link instead of a button. */
     href?: string;
 }) {
-    const linkProps = href ? { component: Link, href } : { component: "button" as const, onClick, disabled };
+    const linkProps = href
+        ? { component: Link, href }
+        : { component: "button" as const, onClick, disabled };
     return (
         <Box
             {...linkProps}
@@ -373,7 +379,10 @@ export function PillButton({
                 transition: "border-color .15s, background .15s",
                 "&:hover": disabled
                     ? undefined
-                    : { borderColor: C.ink, bgcolor: dark ? C.ink : C.paperDeep },
+                    : {
+                          borderColor: C.ink,
+                          bgcolor: dark ? C.ink : C.paperDeep,
+                      },
             }}
         >
             {children}

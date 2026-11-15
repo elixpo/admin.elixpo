@@ -195,7 +195,8 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
         f.visitor;
 
     const baseRows = useMemo(
-        () => (f.visitor ? visitorOnly(data.matrix, data.internal) : data.matrix),
+        () =>
+            f.visitor ? visitorOnly(data.matrix, data.internal) : data.matrix,
         [data.matrix, data.internal, f.visitor],
     );
     const hostRows = useMemo(
@@ -335,8 +336,7 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
             if (f.hideBenign && c === "3xx") return false;
             if (f.cls.length && !f.cls.includes(c)) return false;
             if (f.code.length && !codeClasses.has(c)) return false;
-            if (c === "1xx")
-                return timeline.some((p) => p["1xx"] > 0);
+            if (c === "1xx") return timeline.some((p) => p["1xx"] > 0);
             return true;
         });
     }, [f.code, f.cls, f.hideBenign, timeline]);
@@ -357,7 +357,10 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
     const codes: CodeStat[] = useMemo(() => {
         const by = new Map<number, { count: number; hosts: Set<string> }>();
         for (const r of hostRows) {
-            const x = by.get(r.status) || { count: 0, hosts: new Set<string>() };
+            const x = by.get(r.status) || {
+                count: 0,
+                hosts: new Set<string>(),
+            };
             x.count += r.count;
             x.hosts.add(r.host);
             by.set(r.status, x);
@@ -447,14 +450,15 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
             .filter((e) => e.section === section)
             .map((e) => (
                 <Box key={e.message} sx={{ mb: 1.5 }}>
-                    <SectionError message={`Could not load ${section}: ${e.message}`} />
+                    <SectionError
+                        message={`Could not load ${section}: ${e.message}`}
+                    />
                 </Box>
             ));
 
     const ok2xx = kpi.total ? kpi.byClass["2xx"] / kpi.total : 0;
     const svcPending =
-        pending ||
-        f.svc.slice(0, 8).join(",") !== data.timelineHosts.join(",");
+        pending || f.svc.slice(0, 8).join(",") !== data.timelineHosts.join(",");
 
     return (
         <Box sx={{ minWidth: 0 }}>
@@ -478,7 +482,9 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                     bgcolor: C.panel,
                 }}
             >
-                <Typography sx={{ ...eyebrow, px: 1, color: C.textMuted }}>Filter</Typography>
+                <Typography sx={{ ...eyebrow, px: 1, color: C.textMuted }}>
+                    Filter
+                </Typography>
                 <PillMulti
                     label="Service"
                     allLabel="All services"
@@ -529,63 +535,73 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
             {err("all")}
 
             {/* ------------------------------------- internal-noise callout */}
-            {!f.visitor && internal5xx.all > 0 && internal5xx.n / internal5xx.all > 0.3 && (
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        alignItems: "center",
-                        gap: 2,
-                        p: { xs: 2, md: 2.5 },
-                        mb: 2,
-                        borderRadius: "22px",
-                        bgcolor: C.ink,
-                        color: "#fff",
-                    }}
-                >
-                    <Box sx={{ flex: "1 1 380px", minWidth: 0 }}>
-                        <Typography sx={{ ...eyebrow, color: "#9fb8ff" }}>
-                            Read this first
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontWeight: 650,
-                                fontSize: { xs: "1.1rem", md: "1.3rem" },
-                                letterSpacing: "-0.04em",
-                                mt: 0.5,
-                            }}
-                        >
-                            {pct(internal5xx.n / internal5xx.all, 0)} of the 5xx (
-                            {num(internal5xx.n)} of {num(internal5xx.all)}) never reached a
-                            visitor.
-                        </Typography>
-                        <Typography sx={{ fontSize: "0.82rem", opacity: 0.75, mt: 0.5, maxWidth: 720 }}>
-                            They are Cloudflare's own requests — mostly Early Hints cache
-                            lookups (requestSource = earlyHintsCache) that log 504 / origin
-                            0 when no hints are cached. Switch to visitor requests to see
-                            what people actually got.
-                        </Typography>
-                    </Box>
+            {!f.visitor &&
+                internal5xx.all > 0 &&
+                internal5xx.n / internal5xx.all > 0.3 && (
                     <Box
-                        component="button"
-                        onClick={() => update({ visitor: true })}
                         sx={{
-                            border: "none",
-                            cursor: "pointer",
-                            px: 2,
-                            py: 0.9,
-                            borderRadius: "999px",
-                            bgcolor: "#fff",
-                            color: C.ink,
-                            fontWeight: 700,
-                            fontSize: "0.82rem",
-                            fontFamily: "inherit",
+                            display: "flex",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                            gap: 2,
+                            p: { xs: 2, md: 2.5 },
+                            mb: 2,
+                            borderRadius: "22px",
+                            bgcolor: C.ink,
+                            color: "#fff",
                         }}
                     >
-                        Show visitor requests only
+                        <Box sx={{ flex: "1 1 380px", minWidth: 0 }}>
+                            <Typography sx={{ ...eyebrow, color: "#9fb8ff" }}>
+                                Read this first
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontWeight: 650,
+                                    fontSize: { xs: "1.1rem", md: "1.3rem" },
+                                    letterSpacing: "-0.04em",
+                                    mt: 0.5,
+                                }}
+                            >
+                                {pct(internal5xx.n / internal5xx.all, 0)} of the
+                                5xx ({num(internal5xx.n)} of{" "}
+                                {num(internal5xx.all)}) never reached a visitor.
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: "0.82rem",
+                                    opacity: 0.75,
+                                    mt: 0.5,
+                                    maxWidth: 720,
+                                }}
+                            >
+                                They are Cloudflare's own requests — mostly
+                                Early Hints cache lookups (requestSource =
+                                earlyHintsCache) that log 504 / origin 0 when no
+                                hints are cached. Switch to visitor requests to
+                                see what people actually got.
+                            </Typography>
+                        </Box>
+                        <Box
+                            component="button"
+                            onClick={() => update({ visitor: true })}
+                            sx={{
+                                border: "none",
+                                cursor: "pointer",
+                                px: 2,
+                                py: 0.9,
+                                borderRadius: "999px",
+                                bgcolor: "#fff",
+                                color: C.ink,
+                                fontWeight: 700,
+                                fontSize: "0.82rem",
+                                fontFamily: "inherit",
+                            }}
+                        >
+                            Show visitor requests only
+                        </Box>
                     </Box>
-                </Box>
-            )}
+                )}
 
             {/* ------------------------------------------------------- KPIs */}
             {err("matrix")}
@@ -600,13 +616,65 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                     gap: 1.25,
                 }}
             >
-                <KpiTile label="Requests" value={num(kpi.total)} spark={series.total} color={C.blue} sub={f.visitor ? "visitor requests" : "all requests"} />
-                <KpiTile label="2xx share" value={pct(ok2xx)} spark={series.ok} color={STATUS_COLORS["2xx"]} sub={`${num(kpi.byClass["2xx"])} ok`} />
-                <KpiTile label="Non-2xx" value={num(kpi.non2xx)} spark={series.non2xx} color={C.ink} sub={kpi.total ? `${pct(kpi.non2xx / kpi.total)} of traffic` : undefined} />
-                <KpiTile label="4xx" value={num(kpi.byClass["4xx"])} spark={series["4xx"]} color={STATUS_COLORS["4xx"]} sub={kpi.total ? pct(kpi.byClass["4xx"] / kpi.total) : undefined} />
-                <KpiTile label="5xx" value={num(kpi.byClass["5xx"])} spark={series["5xx"]} color={STATUS_COLORS["5xx"]} sub={kpi.total ? pct(kpi.byClass["5xx"] / kpi.total) : undefined} />
-                <KpiTile label="Critical services" value={criticalHosts} color={C.orange} sub={`${findings.length} findings`} />
-                <KpiTile label="Functions failures" value={num(fnFail.fail)} color={C.orange} sub={`+${num(fnFail.disc)} client disconnects`} />
+                <KpiTile
+                    label="Requests"
+                    value={num(kpi.total)}
+                    spark={series.total}
+                    color={C.blue}
+                    sub={f.visitor ? "visitor requests" : "all requests"}
+                />
+                <KpiTile
+                    label="2xx share"
+                    value={pct(ok2xx)}
+                    spark={series.ok}
+                    color={STATUS_COLORS["2xx"]}
+                    sub={`${num(kpi.byClass["2xx"])} ok`}
+                />
+                <KpiTile
+                    label="Non-2xx"
+                    value={num(kpi.non2xx)}
+                    spark={series.non2xx}
+                    color={C.ink}
+                    sub={
+                        kpi.total
+                            ? `${pct(kpi.non2xx / kpi.total)} of traffic`
+                            : undefined
+                    }
+                />
+                <KpiTile
+                    label="4xx"
+                    value={num(kpi.byClass["4xx"])}
+                    spark={series["4xx"]}
+                    color={STATUS_COLORS["4xx"]}
+                    sub={
+                        kpi.total
+                            ? pct(kpi.byClass["4xx"] / kpi.total)
+                            : undefined
+                    }
+                />
+                <KpiTile
+                    label="5xx"
+                    value={num(kpi.byClass["5xx"])}
+                    spark={series["5xx"]}
+                    color={STATUS_COLORS["5xx"]}
+                    sub={
+                        kpi.total
+                            ? pct(kpi.byClass["5xx"] / kpi.total)
+                            : undefined
+                    }
+                />
+                <KpiTile
+                    label="Critical services"
+                    value={criticalHosts}
+                    color={C.orange}
+                    sub={`${findings.length} findings`}
+                />
+                <KpiTile
+                    label="Functions failures"
+                    value={num(fnFail.fail)}
+                    color={C.orange}
+                    sub={`+${num(fnFail.disc)} client disconnects`}
+                />
             </Box>
 
             {/* -------------------------------------------------- findings */}
@@ -617,10 +685,20 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                 note="One card per host × status code, ranked by what visitors actually felt. Each reason is computed from the evidence (origin status, cache, security action, request source, Functions outcomes, paths)."
                 flush
             >
-                <Box sx={{ p: data.errors.some((e) => e.section === "explorer") ? 1.5 : 0 }}>
+                <Box
+                    sx={{
+                        p: data.errors.some((e) => e.section === "explorer")
+                            ? 1.5
+                            : 0,
+                    }}
+                >
                     {err("explorer")}
                 </Box>
-                <Findings findings={findings} onCode={toggleCode} activeCodes={f.code} />
+                <Findings
+                    findings={findings}
+                    onCode={toggleCode}
+                    activeCodes={f.code}
+                />
             </Section>
 
             {/* ---------------------------------------------------- matrix */}
@@ -654,8 +732,16 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                 }
             >
                 {err("timeline")}
-                <Box sx={{ opacity: svcPending && f.svc.length ? 0.5 : 1, transition: "opacity .2s" }}>
-                    <StatusTimeline points={timeline} classes={timelineClasses} />
+                <Box
+                    sx={{
+                        opacity: svcPending && f.svc.length ? 0.5 : 1,
+                        transition: "opacity .2s",
+                    }}
+                >
+                    <StatusTimeline
+                        points={timeline}
+                        classes={timelineClasses}
+                    />
                 </Box>
             </Section>
 
@@ -684,7 +770,11 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                 note="Top request groups by host, status, origin status, cache, security and source. 'No response' means the origin never answered. Blue sources are Cloudflare-internal, not visitors."
                 flush
             >
-                <RequestExplorer rows={explorerRows} onCode={toggleCode} activeCodes={f.code} />
+                <RequestExplorer
+                    rows={explorerRows}
+                    onCode={toggleCode}
+                    activeCodes={f.code}
+                />
             </Section>
 
             {/* ------------------------------------------------- functions */}
@@ -695,7 +785,13 @@ export default function DiagnosticsView({ data }: { data: DiagPayload }) {
                 note="Invocations by script and outcome. exceededResources and scriptThrewException are failures the visitor sees as Cloudflare errors 1102 (503) and 1101 (500)."
                 flush
             >
-                <Box sx={{ p: data.errors.some((e) => e.section === "functions") ? 1.5 : 0 }}>
+                <Box
+                    sx={{
+                        p: data.errors.some((e) => e.section === "functions")
+                            ? 1.5
+                            : 0,
+                    }}
+                >
                     {err("functions")}
                 </Box>
                 <FunctionsOutcomes rows={fnRows} owners={owners} />

@@ -44,8 +44,7 @@ const fail = <T>(e: unknown, data: T): Result<T> => ({
 
 /* -------------------------------------------------------------- queries */
 
-const hostFilter = (host?: string) =>
-    host ? ",clientRequestHTTPHost:$h" : "";
+const hostFilter = (host?: string) => (host ? ",clientRequestHTTPHost:$h" : "");
 const hostVar = (host?: string) => (host ? ",$h:string!" : "");
 
 /** host × edgeResponseStatus counts for the whole zone (or one host). */
@@ -65,7 +64,12 @@ export async function statusMatrix(
                             count dimensions{clientRequestHTTPHost edgeResponseStatus}
                         }
                     }}}`,
-                    { z: zoneId, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
+                    {
+                        z: zoneId,
+                        s: w.since,
+                        u: w.until,
+                        ...(host ? { h: host } : {}),
+                    },
                 );
                 const rows = d?.viewer?.zones?.[0]?.g ?? [];
                 return ok<HostStatusRow[]>(
@@ -129,7 +133,12 @@ export async function statusTimeline(
                             count dimensions{${bucket} edgeResponseStatus}
                         }
                     }}}`,
-                    { z: zoneId, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
+                    {
+                        z: zoneId,
+                        s: w.since,
+                        u: w.until,
+                        ...(host ? { h: host } : {}),
+                    },
                 );
                 const byTs = new Map<string, TimelinePoint>();
                 for (const r of d?.viewer?.zones?.[0]?.g ?? []) {
@@ -179,7 +188,12 @@ export async function nonOkDetail(
                             count dimensions{clientRequestHTTPHost edgeResponseStatus originResponseStatus cacheStatus securityAction securitySource requestSource clientRequestHTTPMethodName clientRequestPath}
                         }
                     }}}`,
-                    { z: zoneId, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
+                    {
+                        z: zoneId,
+                        s: w.since,
+                        u: w.until,
+                        ...(host ? { h: host } : {}),
+                    },
                 );
                 return ok<NonOkRow[]>(
                     (d?.viewer?.zones?.[0]?.g ?? []).map((r: any) => {
@@ -189,10 +203,16 @@ export async function nonOkDetail(
                             status: Number(x.edgeResponseStatus) || 0,
                             originStatus: Number(x.originResponseStatus) || 0,
                             cacheStatus: String(x.cacheStatus || "unknown"),
-                            securityAction: String(x.securityAction || "unknown"),
-                            securitySource: String(x.securitySource || "unknown"),
+                            securityAction: String(
+                                x.securityAction || "unknown",
+                            ),
+                            securitySource: String(
+                                x.securitySource || "unknown",
+                            ),
                             requestSource: String(x.requestSource || "unknown"),
-                            method: String(x.clientRequestHTTPMethodName || "—"),
+                            method: String(
+                                x.clientRequestHTTPMethodName || "—",
+                            ),
                             path: String(x.clientRequestPath || "/"),
                             count: r.count ?? 0,
                         };
@@ -262,13 +282,20 @@ export async function internalTraffic(
                             count dimensions{clientRequestHTTPHost edgeResponseStatus requestSource}
                         }
                     }}}`,
-                    { z: zoneId, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
+                    {
+                        z: zoneId,
+                        s: w.since,
+                        u: w.until,
+                        ...(host ? { h: host } : {}),
+                    },
                 );
                 return ok<SourceRow[]>(
                     (d?.viewer?.zones?.[0]?.g ?? []).map((r: any) => ({
                         host: String(r.dimensions.clientRequestHTTPHost || "—"),
                         status: Number(r.dimensions.edgeResponseStatus) || 0,
-                        requestSource: String(r.dimensions.requestSource || "unknown"),
+                        requestSource: String(
+                            r.dimensions.requestSource || "unknown",
+                        ),
                         count: r.count ?? 0,
                     })),
                 );
@@ -299,7 +326,12 @@ export async function internalTimeline(
                             count dimensions{${bucket} edgeResponseStatus}
                         }
                     }}}`,
-                    { z: zoneId, s: w.since, u: w.until, ...(host ? { h: host } : {}) },
+                    {
+                        z: zoneId,
+                        s: w.since,
+                        u: w.until,
+                        ...(host ? { h: host } : {}),
+                    },
                 );
                 const byTs = new Map<string, TimelinePoint>();
                 for (const r of d?.viewer?.zones?.[0]?.g ?? []) {

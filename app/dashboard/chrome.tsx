@@ -167,17 +167,20 @@ const accountNav: { group: string; items: NavItem[] }[] = [
 ];
 
 /** Per-service sections — the Cloudflare zone sidebar, scoped to one host. */
-export const SERVICE_TABS: { tab: string; label: string; icon: typeof Speed }[] =
-    [
-        { tab: "overview", label: "Overview", icon: Speed },
-        { tab: "analytics", label: "Analytics", icon: Insights },
-        { tab: "status", label: "Status codes", icon: MedicalServices },
-        { tab: "performance", label: "Performance", icon: Timeline },
-        { tab: "cache", label: "Caching", icon: Cached },
-        { tab: "security", label: "Security", icon: Security },
-        { tab: "functions", label: "Functions", icon: Functions },
-        { tab: "dns", label: "DNS & routing", icon: Dns },
-    ];
+export const SERVICE_TABS: {
+    tab: string;
+    label: string;
+    icon: typeof Speed;
+}[] = [
+    { tab: "overview", label: "Overview", icon: Speed },
+    { tab: "analytics", label: "Analytics", icon: Insights },
+    { tab: "status", label: "Status codes", icon: MedicalServices },
+    { tab: "performance", label: "Performance", icon: Timeline },
+    { tab: "cache", label: "Caching", icon: Cached },
+    { tab: "security", label: "Security", icon: Security },
+    { tab: "functions", label: "Functions", icon: Functions },
+    { tab: "dns", label: "DNS & routing", icon: Dns },
+];
 
 export interface ChromeUser {
     email: string;
@@ -489,7 +492,9 @@ function SideNav({
                         bgcolor: C.panel,
                     }}
                 >
-                    <Typography sx={{ ...eyebrow, mb: 0.75 }}>Service</Typography>
+                    <Typography sx={{ ...eyebrow, mb: 0.75 }}>
+                        Service
+                    </Typography>
                     <Typography
                         sx={{
                             fontWeight: 700,
@@ -551,7 +556,14 @@ function SideNav({
         <Box>
             {accountNav.map((g) => (
                 <Box key={g.group} sx={{ mb: 2 }}>
-                    <Typography sx={{ ...eyebrow, color: C.textMuted, px: 1.25, mb: 0.5 }}>
+                    <Typography
+                        sx={{
+                            ...eyebrow,
+                            color: C.textMuted,
+                            px: 1.25,
+                            mb: 0.5,
+                        }}
+                    >
                         {g.group}
                     </Typography>
                     {g.items.map((item) => (
@@ -608,7 +620,9 @@ function NavLink({
                 "&:hover": { bgcolor: active ? C.ink : C.paperDeep },
             }}
         >
-            {Icon && <Icon sx={{ fontSize: "1.05rem", opacity: active ? 1 : 0.7 }} />}
+            {Icon && (
+                <Icon sx={{ fontSize: "1.05rem", opacity: active ? 1 : 0.7 }} />
+            )}
             {label}
         </Box>
     );
@@ -705,9 +719,16 @@ function ServiceSwitcher({
         setAnchor(null);
         setQ("");
         setKind("all");
-        if (!h) return router.push(range ? `/dashboard?range=${range}` : "/dashboard");
+        if (!h)
+            return router.push(
+                range ? `/dashboard?range=${range}` : "/dashboard",
+            );
         router.push(
-            serviceHref(`${SERVICE_PREFIX}${encodeURIComponent(h)}`, tab, range),
+            serviceHref(
+                `${SERVICE_PREFIX}${encodeURIComponent(h)}`,
+                tab,
+                range,
+            ),
         );
     };
 
@@ -715,7 +736,9 @@ function ServiceSwitcher({
         <>
             <Box
                 component="button"
-                onClick={(e: React.MouseEvent<HTMLElement>) => setAnchor(e.currentTarget)}
+                onClick={(e: React.MouseEvent<HTMLElement>) =>
+                    setAnchor(e.currentTarget)
+                }
                 aria-haspopup="listbox"
                 aria-expanded={Boolean(anchor)}
                 sx={{
@@ -732,7 +755,10 @@ function ServiceSwitcher({
                     cursor: "pointer",
                     fontFamily: "inherit",
                     color: C.text,
-                    "&:hover": { borderColor: C.borderLight, bgcolor: C.paperDeep },
+                    "&:hover": {
+                        borderColor: C.borderLight,
+                        bgcolor: C.paperDeep,
+                    },
                 }}
             >
                 <Widgets sx={{ fontSize: "1rem", color: C.blue }} />
@@ -823,7 +849,18 @@ function ServiceSwitcher({
                         bgcolor: C.paper,
                     }}
                 >
-                    {[{ key: "all" as const, label: "All", n: services.length }, ...KINDS.map((k) => ({ key: k.key, label: k.label, n: counts[k.key] }))].map((t) => {
+                    {[
+                        {
+                            key: "all" as const,
+                            label: "All",
+                            n: services.length,
+                        },
+                        ...KINDS.map((k) => ({
+                            key: k.key,
+                            label: k.label,
+                            n: counts[k.key],
+                        })),
+                    ].map((t) => {
                         const active = kind === t.key;
                         return (
                             <Box
@@ -845,11 +882,16 @@ function ServiceSwitcher({
                                     color: active ? "#fff" : C.textDim,
                                     bgcolor: active ? C.ink : "transparent",
                                     whiteSpace: "nowrap",
-                                    "&:hover": { bgcolor: active ? C.ink : C.paperDeep },
+                                    "&:hover": {
+                                        bgcolor: active ? C.ink : C.paperDeep,
+                                    },
                                 }}
                             >
                                 {t.label}{" "}
-                                <Box component="span" sx={{ fontFamily: C.mono, opacity: 0.7 }}>
+                                <Box
+                                    component="span"
+                                    sx={{ fontFamily: C.mono, opacity: 0.7 }}
+                                >
                                     {t.n}
                                 </Box>
                             </Box>
@@ -867,16 +909,36 @@ function ServiceSwitcher({
                     <ListItemText
                         primary="All services"
                         secondary="Account overview"
-                        primaryTypographyProps={{ fontSize: "0.84rem", fontWeight: 700 }}
+                        primaryTypographyProps={{
+                            fontSize: "0.84rem",
+                            fontWeight: 700,
+                        }}
                         secondaryTypographyProps={{ fontSize: "0.7rem" }}
                     />
                     {!host && <Check fontSize="small" sx={{ color: C.blue }} />}
                 </MenuItem>
                 {groups.map(([k, list]) => (
                     <Box key={k.key}>
-                        <Typography sx={{ ...eyebrow, color: C.textMuted, px: 2, pt: 1.25, pb: 0.5 }}>
+                        <Typography
+                            sx={{
+                                ...eyebrow,
+                                color: C.textMuted,
+                                px: 2,
+                                pt: 1.25,
+                                pb: 0.5,
+                            }}
+                        >
                             {k.label} · {list.length}
-                            <Box component="span" sx={{ textTransform: "none", letterSpacing: 0, fontFamily: "Arial, sans-serif", fontWeight: 400, ml: 0.75 }}>
+                            <Box
+                                component="span"
+                                sx={{
+                                    textTransform: "none",
+                                    letterSpacing: 0,
+                                    fontFamily: "Arial, sans-serif",
+                                    fontWeight: 400,
+                                    ml: 0.75,
+                                }}
+                            >
                                 {k.hint}
                             </Box>
                         </Typography>
@@ -885,7 +947,12 @@ function ServiceSwitcher({
                                 key={s.host}
                                 selected={s.host === host}
                                 onClick={() => go(s.host)}
-                                sx={{ py: 0.8, mx: 0.75, borderRadius: "12px", gap: 1 }}
+                                sx={{
+                                    py: 0.8,
+                                    mx: 0.75,
+                                    borderRadius: "12px",
+                                    gap: 1,
+                                }}
                             >
                                 <Box sx={{ minWidth: 0, flex: 1 }}>
                                     <Typography
@@ -898,11 +965,20 @@ function ServiceSwitcher({
                                     >
                                         {s.host}
                                     </Typography>
-                                    <Typography sx={{ fontSize: "0.68rem", color: C.textMuted }}>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "0.68rem",
+                                            color: C.textMuted,
+                                        }}
+                                    >
                                         {[
-                                            s.pagesProject && `Pages · ${s.pagesProject}`,
-                                            s.workerScript && `Worker · ${s.workerScript}`,
-                                            !s.pagesProject && !s.workerScript && s.dnsType &&
+                                            s.pagesProject &&
+                                                `Pages · ${s.pagesProject}`,
+                                            s.workerScript &&
+                                                `Worker · ${s.workerScript}`,
+                                            !s.pagesProject &&
+                                                !s.workerScript &&
+                                                s.dnsType &&
                                                 `${s.dnsType}${s.proxied ? " · proxied" : ""}${s.dnsTarget ? ` → ${s.dnsTarget}` : ""}`,
                                         ]
                                             .filter(Boolean)
@@ -910,14 +986,19 @@ function ServiceSwitcher({
                                     </Typography>
                                 </Box>
                                 {s.host === host && (
-                                    <Check fontSize="small" sx={{ color: C.blue }} />
+                                    <Check
+                                        fontSize="small"
+                                        sx={{ color: C.blue }}
+                                    />
                                 )}
                             </MenuItem>
                         ))}
                     </Box>
                 ))}
                 {groups.length === 0 && (
-                    <Typography sx={{ p: 2, fontSize: "0.8rem", color: C.textMuted }}>
+                    <Typography
+                        sx={{ p: 2, fontSize: "0.8rem", color: C.textMuted }}
+                    >
                         No services match “{q}”.
                     </Typography>
                 )}
@@ -926,7 +1007,12 @@ function ServiceSwitcher({
                     component={Link}
                     href="/dashboard/services"
                     onClick={() => setAnchor(null)}
-                    sx={{ py: 1, fontSize: "0.78rem", color: C.green, fontWeight: 700 }}
+                    sx={{
+                        py: 1,
+                        fontSize: "0.78rem",
+                        color: C.green,
+                        fontWeight: 700,
+                    }}
                 >
                     View all services →
                 </MenuItem>
@@ -971,19 +1057,58 @@ function ProfileMenu({ user }: { user: ChromeUser }) {
                     <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
                         {user.name || "Admin"}
                     </Typography>
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.78rem" }}>
+                    <Typography
+                        sx={{ color: C.textMuted, fontSize: "0.78rem" }}
+                    >
                         {user.email}
                     </Typography>
-                    <Typography sx={{ ...eyebrow, mt: 1 }}>Administrator</Typography>
+                    <Typography sx={{ ...eyebrow, mt: 1 }}>
+                        Administrator
+                    </Typography>
                 </Box>
                 <Divider />
-                <ProfileLink href="https://dash.cloudflare.com" icon={<Launch fontSize="small" />} label="Cloudflare dashboard" external />
-                <ProfileLink href="https://accounts.elixpo.com/dashboard" icon={<OpenInNew fontSize="small" />} label="Elixpo Accounts" external />
-                <ProfileLink href="https://dash.cloudflare.com/?to=/:account/billing" icon={<CreditCard fontSize="small" />} label="Billing & usage" external />
-                <ProfileLink href="https://dash.cloudflare.com/profile/api-tokens" icon={<VpnKey fontSize="small" />} label="API tokens" external />
-                <ProfileLink href="https://developers.cloudflare.com" icon={<MenuBook fontSize="small" />} label="Documentation" external />
-                <ProfileLink href="/dashboard/audit" icon={<History fontSize="small" />} label="Audit log" onClick={close} />
-                <ProfileLink href="/dashboard/settings" icon={<SettingsIcon fontSize="small" />} label="Settings" onClick={close} />
+                <ProfileLink
+                    href="https://dash.cloudflare.com"
+                    icon={<Launch fontSize="small" />}
+                    label="Cloudflare dashboard"
+                    external
+                />
+                <ProfileLink
+                    href="https://accounts.elixpo.com/dashboard"
+                    icon={<OpenInNew fontSize="small" />}
+                    label="Elixpo Accounts"
+                    external
+                />
+                <ProfileLink
+                    href="https://dash.cloudflare.com/?to=/:account/billing"
+                    icon={<CreditCard fontSize="small" />}
+                    label="Billing & usage"
+                    external
+                />
+                <ProfileLink
+                    href="https://dash.cloudflare.com/profile/api-tokens"
+                    icon={<VpnKey fontSize="small" />}
+                    label="API tokens"
+                    external
+                />
+                <ProfileLink
+                    href="https://developers.cloudflare.com"
+                    icon={<MenuBook fontSize="small" />}
+                    label="Documentation"
+                    external
+                />
+                <ProfileLink
+                    href="/dashboard/audit"
+                    icon={<History fontSize="small" />}
+                    label="Audit log"
+                    onClick={close}
+                />
+                <ProfileLink
+                    href="/dashboard/settings"
+                    icon={<SettingsIcon fontSize="small" />}
+                    label="Settings"
+                    onClick={close}
+                />
                 <Divider />
                 <MenuItem
                     component="a"
@@ -997,7 +1122,9 @@ function ProfileMenu({ user }: { user: ChromeUser }) {
                     <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>
                         <Logout fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>
+                    <ListItemText
+                        primaryTypographyProps={{ fontSize: "0.85rem" }}
+                    >
                         Log out
                     </ListItemText>
                 </MenuItem>
@@ -1020,16 +1147,29 @@ function ProfileLink({
     onClick?: () => void;
 }) {
     const props = external
-        ? { component: "a" as const, href, target: "_blank", rel: "noopener noreferrer" }
+        ? {
+              component: "a" as const,
+              href,
+              target: "_blank",
+              rel: "noopener noreferrer",
+          }
         : { component: Link, href };
     return (
         <MenuItem
             {...props}
             onClick={onClick}
-            sx={{ py: 1, color: C.textDim, "&:hover": { bgcolor: C.paperDeep, color: C.text } }}
+            sx={{
+                py: 1,
+                color: C.textDim,
+                "&:hover": { bgcolor: C.paperDeep, color: C.text },
+            }}
         >
-            <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>{icon}</ListItemIcon>
-            <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>{label}</ListItemText>
+            <ListItemIcon sx={{ color: "inherit", minWidth: 34 }}>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ fontSize: "0.85rem" }}>
+                {label}
+            </ListItemText>
         </MenuItem>
     );
 }

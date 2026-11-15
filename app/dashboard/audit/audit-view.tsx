@@ -1,14 +1,21 @@
 "use client";
 
-import { C, Empty, PageHeader, Panel, StatusChip, eyebrow } from "@/components/ui";
+import {
+    C,
+    Empty,
+    PageHeader,
+    Panel,
+    StatusChip,
+    eyebrow,
+} from "@/components/ui";
 import type { AuditEntry } from "@/lib/audit";
 import {
     Box,
     Table,
     TableBody,
     TableCell,
-    TableHead,
     TableContainer,
+    TableHead,
     TableRow,
 } from "@mui/material";
 

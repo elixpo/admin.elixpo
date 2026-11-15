@@ -52,12 +52,7 @@ export default function KvDetailView({
                     color={C.accent}
                 />
                 {Object.entries(metrics.totals).map(([k, v]) => (
-                    <KpiTile
-                        key={k}
-                        label={k}
-                        value={fmt(v)}
-                        color={C.green}
-                    />
+                    <KpiTile key={k} label={k} value={fmt(v)} color={C.green} />
                 ))}
             </Box>
 
@@ -195,10 +190,7 @@ function KeyBrowser({ id }: { id: string }) {
                                 borderBottom: `1px solid ${C.line}`,
                                 fontFamily: C.mono,
                                 fontSize: "0.78rem",
-                                color:
-                                    active === k.name
-                                        ? C.ink
-                                        : C.textDim,
+                                color: active === k.name ? C.ink : C.textDim,
                                 bgcolor:
                                     active === k.name
                                         ? C.blueWash

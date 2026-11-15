@@ -42,7 +42,9 @@ const grid = (min: number, gap = 1.5) => ({
 });
 
 const pct = (n: number, d: number) =>
-    d > 0 ? `${((n / d) * 100).toFixed(n / d > 0.995 || n / d < 0.1 ? 2 : 1)}%` : "—";
+    d > 0
+        ? `${((n / d) * 100).toFixed(n / d > 0.995 || n / d < 0.1 ? 2 : 1)}%`
+        : "—";
 
 const STATE_WORD = {
     healthy: { lead: "All systems", word: "healthy", color: C.green },
@@ -119,7 +121,11 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                         component="h1"
                         sx={{
                             mt: 1.25,
-                            fontSize: { xs: "2.3rem", sm: "3rem", md: "3.6rem" },
+                            fontSize: {
+                                xs: "2.3rem",
+                                sm: "3rem",
+                                md: "3.6rem",
+                            },
                             fontWeight: 650,
                             lineHeight: 0.95,
                             letterSpacing: "-0.065em",
@@ -255,7 +261,11 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                     />
                     <KpiTile
                         label="Workers invocations"
-                        value={workers.available ? fmt(workers.totals.requests || 0) : "—"}
+                        value={
+                            workers.available
+                                ? fmt(workers.totals.requests || 0)
+                                : "—"
+                        }
                         delta={trend(wReq)}
                         spark={wReq}
                         color={CHART[0]}
@@ -355,7 +365,9 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                         <Empty message="No requests in this window." />
                     )}
                     <Box sx={{ mt: 2 }}>
-                        <Typography sx={{ ...eyebrow, color: C.textMuted, mb: 1 }}>
+                        <Typography
+                            sx={{ ...eyebrow, color: C.textMuted, mb: 1 }}
+                        >
                             Status classes · zone totals
                         </Typography>
                         {data.status.length ? (
@@ -372,7 +384,10 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                 <SectionHead
                     kicker={`Services · ${data.serviceCount}`}
                     title="Service health"
-                    action={{ label: "All services", href: "/dashboard/services" }}
+                    action={{
+                        label: "All services",
+                        href: "/dashboard/services",
+                    }}
                 />
                 <Box
                     sx={{
@@ -394,7 +409,11 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                     ).map(([l, c]) => (
                         <Box
                             key={l}
-                            sx={{ display: "flex", alignItems: "center", gap: 0.75 }}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.75,
+                            }}
                         >
                             <Dot color={c} size={7} />
                             {l}
@@ -417,7 +436,10 @@ export default function OverviewView({ data }: { data: OverviewData }) {
             {/* -------------------------------------- breakdowns */}
             <Box sx={grid(320)}>
                 <Card>
-                    <SectionHead kicker="Top countries" title="Where requests come from" />
+                    <SectionHead
+                        kicker="Top countries"
+                        title="Where requests come from"
+                    />
                     <TopList
                         controls={false}
                         color={C.blue}
@@ -431,7 +453,10 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                     <SectionHead
                         kicker="Top hosts"
                         title="Busiest hostnames"
-                        action={{ label: "Services", href: "/dashboard/services" }}
+                        action={{
+                            label: "Services",
+                            href: "/dashboard/services",
+                        }}
                     />
                     <TopList
                         controls={false}
@@ -446,7 +471,11 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                                 h.errorRate > 0.05 ? (
                                     <StatusChip
                                         label={`${Math.round(h.errorRate * 100)}% err`}
-                                        tone={h.errorRate > 0.25 ? "error" : "warning"}
+                                        tone={
+                                            h.errorRate > 0.25
+                                                ? "error"
+                                                : "warning"
+                                        }
                                     />
                                 ) : undefined,
                         }))}
@@ -463,10 +492,7 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                 }}
             >
                 <Card>
-                    <SectionHead
-                        kicker="Compute & storage"
-                        title="Inventory"
-                    />
+                    <SectionHead kicker="Compute & storage" title="Inventory" />
                     <Box sx={grid(130, 1)}>
                         {INVENTORY.map((it) => (
                             <InventoryTile
@@ -506,7 +532,11 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                             letterSpacing: "0.06em",
                         }}
                     >
-                        Discovered {ago(data.now, new Date(data.inventory.fetchedAt).toISOString())}
+                        Discovered{" "}
+                        {ago(
+                            data.now,
+                            new Date(data.inventory.fetchedAt).toISOString(),
+                        )}
                     </Typography>
                 </Card>
 
@@ -514,7 +544,10 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                     <SectionHead
                         kicker="Recent activity"
                         title="Latest Pages deployments"
-                        action={{ label: "Projects", href: "/dashboard/projects" }}
+                        action={{
+                            label: "Projects",
+                            href: "/dashboard/projects",
+                        }}
                     />
                     {data.deploys.length ? (
                         <Box>
@@ -527,7 +560,8 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                                     <Box
                                         sx={{
                                             display: "grid",
-                                            gridTemplateColumns: "auto 1fr auto",
+                                            gridTemplateColumns:
+                                                "auto 1fr auto",
                                             alignItems: "center",
                                             gap: 1.25,
                                             py: 1,
@@ -535,7 +569,9 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                                             mx: -1,
                                             borderRadius: "12px",
                                             borderBottom: `1px solid ${C.line}`,
-                                            "&:hover": { bgcolor: C.panelHover },
+                                            "&:hover": {
+                                                bgcolor: C.panelHover,
+                                            },
                                         }}
                                     >
                                         <Dot
@@ -607,7 +643,10 @@ export default function OverviewView({ data }: { data: OverviewData }) {
                         <Empty message="No Pages deployments found." />
                     )}
                     <Box sx={{ mt: 1.5 }}>
-                        <TextLink label="Open audit log" href="/dashboard/audit" />
+                        <TextLink
+                            label="Open audit log"
+                            href="/dashboard/audit"
+                        />
                     </Box>
                 </Card>
             </Box>

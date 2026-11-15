@@ -1,4 +1,4 @@
-import { healthOf, type Health } from "@/components/service/types";
+import { type Health, healthOf } from "@/components/service/types";
 import {
     classOf,
     internalTraffic,
@@ -32,7 +32,9 @@ export default async function ServicesPage({
             if (!mx.available) errors.push(mx.error || "status matrix failed");
             // Health is judged on what visitors received; Cloudflare-internal
             // requests (Early Hints lookups etc.) are excluded when available.
-            return internal.available ? visitorOnly(mx.data, internal.data) : mx.data;
+            return internal.available
+                ? visitorOnly(mx.data, internal.data)
+                : mx.data;
         }),
     );
 
@@ -46,7 +48,13 @@ export default async function ServicesPage({
 
     const rows: ServiceRow[] = services.map((s) => {
         const codes = byHost.get(s.host) || new Map<number, number>();
-        const byClass: Record<string, number> = { "1xx": 0, "2xx": 0, "3xx": 0, "4xx": 0, "5xx": 0 };
+        const byClass: Record<string, number> = {
+            "1xx": 0,
+            "2xx": 0,
+            "3xx": 0,
+            "4xx": 0,
+            "5xx": 0,
+        };
         let top: { code: number; count: number } | null = null;
         for (const [code, count] of codes) {
             byClass[classOf(code)] += count;
@@ -59,11 +67,5 @@ export default async function ServicesPage({
         return { service: s, total, byClass, topNon2xx: top, health };
     });
 
-    return (
-        <ServicesView
-            rows={rows}
-            rangeLabel={w.label}
-            error={errors[0]}
-        />
-    );
+    return <ServicesView rows={rows} rangeLabel={w.label} error={errors[0]} />;
 }

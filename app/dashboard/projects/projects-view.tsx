@@ -62,7 +62,10 @@ export default function ProjectsView({ projects }: { projects: ProjItem[] }) {
                                 />
                             </Box>
                             {host && (
-                                <ServiceLink host={host} label="Service dashboard" />
+                                <ServiceLink
+                                    host={host}
+                                    label="Service dashboard"
+                                />
                             )}
                         </Box>
                     );

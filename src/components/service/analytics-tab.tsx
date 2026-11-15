@@ -24,28 +24,40 @@ const items = (d: { label: string; count: number }[]) =>
 const donut = (d: { label: string; count: number }[]) =>
     d.slice(0, 6).map((x) => ({ label: x.label || "(none)", value: x.count }));
 
-export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: AnalyticsData }) {
+export default function AnalyticsTab({
+    ctx,
+    data,
+}: { ctx: ServiceCtx; data: AnalyticsData }) {
     const pts = data.series.data.points;
     const tot = data.series.data.totals;
     const b = data.breakdown;
     const x = data.extras.data;
-    const bwPoints = pts.map((p) => ({ ts: p.ts, mb: +(p.bytes / 1048576).toFixed(2) }));
+    const bwPoints = pts.map((p) => ({
+        ts: p.ts,
+        mb: +(p.bytes / 1048576).toFixed(2),
+    }));
 
     return (
         <Box>
             {!data.series.available && (
                 <Box sx={{ mb: 1.5 }}>
-                    <SectionError message={`Traffic series unavailable: ${data.series.error}`} />
+                    <SectionError
+                        message={`Traffic series unavailable: ${data.series.error}`}
+                    />
                 </Box>
             )}
             {!b.available && (
                 <Box sx={{ mb: 1.5 }}>
-                    <SectionError message={`Breakdowns unavailable: ${b.error}`} />
+                    <SectionError
+                        message={`Breakdowns unavailable: ${b.error}`}
+                    />
                 </Box>
             )}
             {!data.extras.available && (
                 <Box sx={{ mb: 1.5 }}>
-                    <SectionError message={`Extra dimensions unavailable: ${data.extras.error}`} />
+                    <SectionError
+                        message={`Extra dimensions unavailable: ${data.extras.error}`}
+                    />
                 </Box>
             )}
 
@@ -71,7 +83,11 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                 />
                 <KpiTile
                     label="Bytes / request"
-                    value={tot.requests ? fmtBytes(Math.round(tot.bytes / tot.requests)) : "—"}
+                    value={
+                        tot.requests
+                            ? fmtBytes(Math.round(tot.bytes / tot.requests))
+                            : "—"
+                    }
                 />
             </Grid>
 
@@ -80,7 +96,11 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                     <MetricChart
                         points={pts}
                         series={[
-                            { key: "requests", label: "Requests", color: C.blue },
+                            {
+                                key: "requests",
+                                label: "Requests",
+                                color: C.blue,
+                            },
                             { key: "visits", label: "Visits", color: C.green },
                         ]}
                     />
@@ -88,22 +108,43 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                 <Panel title={`Bandwidth (MB) · ${ctx.rangeLabel}`}>
                     <MetricChart
                         points={bwPoints}
-                        series={[{ key: "mb", label: "Data transfer MB", color: "#0e8a8a" }]}
+                        series={[
+                            {
+                                key: "mb",
+                                label: "Data transfer MB",
+                                color: "#0e8a8a",
+                            },
+                        ]}
                     />
                 </Panel>
 
                 <Wide>
                     <Grid cols={3} mb={0}>
                         <Panel title="Visitors by country">
-                            <Box sx={{ display: "flex", justifyContent: "center" }}>
-                                <ExpandableGlobe country={b.country as Dim[]} size={240} />
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <ExpandableGlobe
+                                    country={b.country as Dim[]}
+                                    size={240}
+                                />
                             </Box>
                         </Panel>
                         <Panel title="Countries" dense>
-                            <TopList items={items(b.country)} controls={false} />
+                            <TopList
+                                items={items(b.country)}
+                                controls={false}
+                            />
                         </Panel>
                         <Panel title="Data centers (colo)" dense>
-                            <TopList items={items(x.colo)} color={C.green} controls={false} />
+                            <TopList
+                                items={items(x.colo)}
+                                color={C.green}
+                                controls={false}
+                            />
                         </Panel>
                     </Grid>
                 </Wide>
@@ -126,9 +167,20 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                     <TopList items={items(b.browser)} controls={false} />
                 </Panel>
                 <Panel title="Operating systems" dense>
-                    <TopList items={items(b.os)} color={C.green} controls={false} />
+                    <TopList
+                        items={items(b.os)}
+                        color={C.green}
+                        controls={false}
+                    />
                 </Panel>
-                <Panel title="Top paths" dense exportData={b.path.map((p) => ({ label: p.label, value: p.count }))}>
+                <Panel
+                    title="Top paths"
+                    dense
+                    exportData={b.path.map((p) => ({
+                        label: p.label,
+                        value: p.count,
+                    }))}
+                >
                     <TopList items={items(b.path)} />
                 </Panel>
                 <Panel title="Content types" dense>
@@ -137,7 +189,13 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                             label: r.label,
                             value: r.count,
                             chip: (
-                                <Box component="span" sx={{ fontSize: "0.68rem", color: C.textMuted }}>
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        fontSize: "0.68rem",
+                                        color: C.textMuted,
+                                    }}
+                                >
                                     {fmtBytes(r.bytes || 0)}
                                 </Box>
                             ),
@@ -145,15 +203,27 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                         controls={false}
                     />
                 </Panel>
-                <Panel title="Top client IPs" dense exportData={b.ip.map((p) => ({ label: p.label, value: p.count }))}>
+                <Panel
+                    title="Top client IPs"
+                    dense
+                    exportData={b.ip.map((p) => ({
+                        label: p.label,
+                        value: p.count,
+                    }))}
+                >
                     <TopList items={items(b.ip)} color={C.orange} />
                 </Panel>
                 <Panel title="Verified bot categories" dense>
-                    <TopList items={items(x.botCategory)} color="#0e8a8a" controls={false} />
+                    <TopList
+                        items={items(x.botCategory)}
+                        color="#0e8a8a"
+                        controls={false}
+                    />
                     <Box sx={{ px: 1.5, pb: 1 }}>
                         <Note>
-                            Only bots Cloudflare verifies (search crawlers, link previews…). Bot score is not
-                            available on the Free plan.
+                            Only bots Cloudflare verifies (search crawlers, link
+                            previews…). Bot score is not available on the Free
+                            plan.
                         </Note>
                     </Box>
                 </Panel>
@@ -170,8 +240,9 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                     />
                     <Box sx={{ px: 1.5, pb: 1 }}>
                         <Note>
-                            Non-visitor sources (Early Hints lookups, challenge fetches, Worker subrequests) are
-                            Cloudflare-internal and inflate raw request counts.
+                            Non-visitor sources (Early Hints lookups, challenge
+                            fetches, Worker subrequests) are Cloudflare-internal
+                            and inflate raw request counts.
                         </Note>
                     </Box>
                 </Panel>
@@ -179,7 +250,11 @@ export default function AnalyticsTab({ ctx, data }: { ctx: ServiceCtx; data: Ana
                     <TopList items={items(b.userAgent)} controls={false} />
                 </Panel>
                 <Panel title="Edge cache status" dense>
-                    <TopList items={items(b.cacheStatus)} color={C.green} controls={false} />
+                    <TopList
+                        items={items(b.cacheStatus)}
+                        color={C.green}
+                        controls={false}
+                    />
                 </Panel>
             </Grid>
         </Box>

@@ -25,8 +25,7 @@ export const dynamic = "force-dynamic";
 
 type SP = Record<string, string | string[] | undefined>;
 
-const one = (v: string | string[] | undefined) =>
-    Array.isArray(v) ? v[0] : v;
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 function mergeTimeline(lists: TimelinePoint[][]): TimelinePoint[] {
     const by = new Map<string, TimelinePoint>();
@@ -113,7 +112,11 @@ export default async function DiagnosticsPage({
         Promise.all(
             selected.map(async (host) => {
                 const z = zoneFor(host);
-                if (!z) return { tl: [] as TimelinePoint[], itl: [] as TimelinePoint[] };
+                if (!z)
+                    return {
+                        tl: [] as TimelinePoint[],
+                        itl: [] as TimelinePoint[],
+                    };
                 const [tl, itl] = await Promise.all([
                     statusTimeline(z.id, w, host),
                     internalTimeline(z.id, w, host),

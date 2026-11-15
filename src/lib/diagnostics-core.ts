@@ -12,7 +12,13 @@ import type { Service } from "./services";
 /* ------------------------------------------------------------------ types */
 
 export type StatusClass = "1xx" | "2xx" | "3xx" | "4xx" | "5xx";
-export const STATUS_CLASSES: StatusClass[] = ["1xx", "2xx", "3xx", "4xx", "5xx"];
+export const STATUS_CLASSES: StatusClass[] = [
+    "1xx",
+    "2xx",
+    "3xx",
+    "4xx",
+    "5xx",
+];
 
 export function classOf(code: number): StatusClass {
     if (code >= 500) return "5xx";
@@ -158,39 +164,299 @@ export interface StatusInfo {
 }
 
 const KB: Record<number, Omit<StatusInfo, "code">> = {
-    200: { name: "OK", meaning: "Request succeeded.", causes: [], fixes: [], benign: true },
-    201: { name: "Created", meaning: "A resource was created (POST/PUT succeeded).", causes: [], fixes: [], benign: true },
-    202: { name: "Accepted", meaning: "Accepted for asynchronous processing.", causes: [], fixes: [], benign: true },
-    204: { name: "No Content", meaning: "Succeeded with an empty body (beacons, preflight, deletes).", causes: [], fixes: [], benign: true },
-    206: { name: "Partial Content", meaning: "A byte range was served (media/large downloads).", causes: [], fixes: [], benign: true },
-    301: { name: "Moved Permanently", meaning: "Permanent redirect.", causes: ["Canonical host redirect (www → apex)", "HTTP → HTTPS upgrade", "Trailing-slash normalisation"], fixes: ["Benign if intentional; link to the final URL to save a round-trip"], benign: true },
-    302: { name: "Found", meaning: "Temporary redirect.", causes: ["Auth redirect to the login/SSO page", "Cloudflare challenge flow (/cdn-cgi/challenge-platform)", "App-level redirect"], fixes: ["Expected for gated routes; check for loops if volume is high"], benign: true },
-    303: { name: "See Other", meaning: "Redirect after a POST (form submit → result page).", causes: ["Post/redirect/get pattern"], fixes: ["Benign"], benign: true },
-    304: { name: "Not Modified", meaning: "Browser cache revalidated — nothing to send.", causes: ["ETag / Last-Modified revalidation"], fixes: ["Healthy — this saves bandwidth"], benign: true },
-    307: { name: "Temporary Redirect", meaning: "Temporary redirect that preserves the method.", causes: ["HSTS / HTTPS upgrade", "OAuth / app redirect"], fixes: ["Usually benign"], benign: true },
-    308: { name: "Permanent Redirect", meaning: "Permanent redirect that preserves the method.", causes: ["Redirect Rule or Bulk Redirect", "Wildcard DNS (*.zone) catching unknown subdomains and redirecting them", "Next.js/Pages trailing-slash redirect"], fixes: ["If the host is not a real service, remove it from DNS or let the wildcard 404 instead", "If intentional, nothing to do"], benign: true },
-    400: { name: "Bad Request", meaning: "The request was malformed.", causes: ["Client sent invalid JSON/params", "Missing/invalid OAuth parameters", "Oversized header or cookie"], fixes: ["Inspect the failing path; validate inputs client-side"] },
-    401: { name: "Unauthorized", meaning: "Authentication missing or invalid.", causes: ["Logged-out visitors hitting session endpoints", "Expired session / token", "Unauthenticated API probes"], fixes: ["Expected for protected APIs; investigate if a logged-in flow hits it"] },
-    403: { name: "Forbidden", meaning: "Request refused.", causes: ["Cloudflare security (WAF managed rules, Bot Fight, IP rule) blocked it", "App-level permission check", "Upstream API refusing a Worker subrequest"], fixes: ["If securityAction is block/challenge, review Security → Events", "Otherwise check the app's authz"] },
-    404: { name: "Not Found", meaning: "No resource at that path.", causes: ["Broken/old links or removed pages", "Scanners probing /wp-admin, /.env, etc.", "Missing static asset after a deploy", "API route missing or unknown resource id"], fixes: ["Look at top 404 paths — real paths need a redirect; scanner noise can be ignored or blocked"] },
-    405: { name: "Method Not Allowed", meaning: "Path exists but not for this HTTP method.", causes: ["POST to a static page", "API route missing a handler"], fixes: ["Add the handler or fix the caller"] },
-    408: { name: "Request Timeout", meaning: "Client was too slow to send the request.", causes: ["Slow/mobile clients", "Large uploads"], fixes: ["Usually client-side"] },
-    409: { name: "Conflict", meaning: "State conflict (duplicate, version clash).", causes: ["Concurrent writes", "Duplicate create"], fixes: ["Check idempotency of the endpoint"] },
-    413: { name: "Payload Too Large", meaning: "Body exceeds the limit (100 MB on Free).", causes: ["Large upload"], fixes: ["Chunk uploads or use R2 presigned URLs"] },
-    429: { name: "Too Many Requests", meaning: "Rate limited.", causes: ["Cloudflare rate-limit rule", "App-level rate limiter", "Upstream API throttling"], fixes: ["Check whether securitySource is a rate-limit rule; tune thresholds"] },
-    499: { name: "Client Closed Request", meaning: "Visitor disconnected before the response finished (Cloudflare-specific code).", causes: ["User navigated away / closed the tab", "Slow origin made the client give up", "Browser cancelled a prefetch or duplicate request"], fixes: ["If paired with high origin time or clientDisconnected Function outcomes, speed up the origin"] },
-    500: { name: "Internal Server Error", meaning: "The origin/Function crashed while handling the request.", causes: ["Unhandled exception in a Worker / Pages Function (error 1101)", "Bad deploy"], fixes: ["Check Functions outcomes for scriptThrewException and tail the Worker logs"] },
-    502: { name: "Bad Gateway", meaning: "Cloudflare got an invalid response from the origin.", causes: ["Origin returned garbage or reset the connection", "Worker subrequest failed"], fixes: ["Check the origin / Worker subrequest target"] },
-    503: { name: "Service Unavailable", meaning: "Origin is overloaded, down, or the Worker was killed.", causes: ["Worker / Pages Function exceeded CPU or memory limits (error 1102 → 503)", "App returned 503 itself (maintenance, upstream unavailable)", "Overloaded origin"], fixes: ["Check Functions outcomes for exceededResources and plan limits"] },
-    504: { name: "Gateway Timeout", meaning: "The origin did not answer in time.", causes: ["Early Hints cache lookup miss (requestSource earlyHintsCache) — internal, not visitor-facing", "Pages Function / Worker exceeded CPU or memory (exceededResources)", "Slow upstream fetch (DB, third-party API)", "Origin unreachable"], fixes: ["Split by requestSource first: earlyHintsCache rows are noise", "For visitor (eyeball) 504s, look for exceededResources on the Function behind this host", "Add timeouts + caching around slow upstream calls"] },
-    520: { name: "Unknown Error (CF)", meaning: "Origin returned an empty/unknown response.", causes: ["Origin crashed mid-response", "Response headers too large"], fixes: ["Check origin logs"] },
-    521: { name: "Web Server Is Down (CF)", meaning: "Origin refused the connection.", causes: ["Origin server offline", "Firewall blocking Cloudflare IPs"], fixes: ["Bring the origin up / allowlist Cloudflare IPs"] },
-    522: { name: "Connection Timed Out (CF)", meaning: "TCP handshake to origin timed out.", causes: ["Origin overloaded or unreachable", "Wildcard / stale DNS record pointing at an IP that no longer serves"], fixes: ["Check origin health / network", "Remove DNS records whose origin is gone"] },
-    523: { name: "Origin Is Unreachable (CF)", meaning: "No route to the origin.", causes: ["Wrong DNS target", "Origin IP changed"], fixes: ["Fix the DNS record"] },
-    524: { name: "A Timeout Occurred (CF)", meaning: "Origin accepted the connection but took >100s.", causes: ["Long-running request"], fixes: ["Move long work to a Queue / Workflow"] },
-    525: { name: "SSL Handshake Failed (CF)", meaning: "TLS to origin failed.", causes: ["Origin cert/cipher mismatch"], fixes: ["Check SSL/TLS mode and origin cert"] },
-    526: { name: "Invalid SSL Certificate (CF)", meaning: "Origin cert invalid under Full (strict).", causes: ["Expired/self-signed origin cert"], fixes: ["Renew the origin cert or use an Origin CA cert"] },
-    530: { name: "Origin DNS Error (CF)", meaning: "Cloudflare could not resolve the origin (often with 1xxx error).", causes: ["Dangling CNAME to a deleted Pages/Worker project"], fixes: ["Remove or repoint the DNS record"] },
+    200: {
+        name: "OK",
+        meaning: "Request succeeded.",
+        causes: [],
+        fixes: [],
+        benign: true,
+    },
+    201: {
+        name: "Created",
+        meaning: "A resource was created (POST/PUT succeeded).",
+        causes: [],
+        fixes: [],
+        benign: true,
+    },
+    202: {
+        name: "Accepted",
+        meaning: "Accepted for asynchronous processing.",
+        causes: [],
+        fixes: [],
+        benign: true,
+    },
+    204: {
+        name: "No Content",
+        meaning: "Succeeded with an empty body (beacons, preflight, deletes).",
+        causes: [],
+        fixes: [],
+        benign: true,
+    },
+    206: {
+        name: "Partial Content",
+        meaning: "A byte range was served (media/large downloads).",
+        causes: [],
+        fixes: [],
+        benign: true,
+    },
+    301: {
+        name: "Moved Permanently",
+        meaning: "Permanent redirect.",
+        causes: [
+            "Canonical host redirect (www → apex)",
+            "HTTP → HTTPS upgrade",
+            "Trailing-slash normalisation",
+        ],
+        fixes: [
+            "Benign if intentional; link to the final URL to save a round-trip",
+        ],
+        benign: true,
+    },
+    302: {
+        name: "Found",
+        meaning: "Temporary redirect.",
+        causes: [
+            "Auth redirect to the login/SSO page",
+            "Cloudflare challenge flow (/cdn-cgi/challenge-platform)",
+            "App-level redirect",
+        ],
+        fixes: ["Expected for gated routes; check for loops if volume is high"],
+        benign: true,
+    },
+    303: {
+        name: "See Other",
+        meaning: "Redirect after a POST (form submit → result page).",
+        causes: ["Post/redirect/get pattern"],
+        fixes: ["Benign"],
+        benign: true,
+    },
+    304: {
+        name: "Not Modified",
+        meaning: "Browser cache revalidated — nothing to send.",
+        causes: ["ETag / Last-Modified revalidation"],
+        fixes: ["Healthy — this saves bandwidth"],
+        benign: true,
+    },
+    307: {
+        name: "Temporary Redirect",
+        meaning: "Temporary redirect that preserves the method.",
+        causes: ["HSTS / HTTPS upgrade", "OAuth / app redirect"],
+        fixes: ["Usually benign"],
+        benign: true,
+    },
+    308: {
+        name: "Permanent Redirect",
+        meaning: "Permanent redirect that preserves the method.",
+        causes: [
+            "Redirect Rule or Bulk Redirect",
+            "Wildcard DNS (*.zone) catching unknown subdomains and redirecting them",
+            "Next.js/Pages trailing-slash redirect",
+        ],
+        fixes: [
+            "If the host is not a real service, remove it from DNS or let the wildcard 404 instead",
+            "If intentional, nothing to do",
+        ],
+        benign: true,
+    },
+    400: {
+        name: "Bad Request",
+        meaning: "The request was malformed.",
+        causes: [
+            "Client sent invalid JSON/params",
+            "Missing/invalid OAuth parameters",
+            "Oversized header or cookie",
+        ],
+        fixes: ["Inspect the failing path; validate inputs client-side"],
+    },
+    401: {
+        name: "Unauthorized",
+        meaning: "Authentication missing or invalid.",
+        causes: [
+            "Logged-out visitors hitting session endpoints",
+            "Expired session / token",
+            "Unauthenticated API probes",
+        ],
+        fixes: [
+            "Expected for protected APIs; investigate if a logged-in flow hits it",
+        ],
+    },
+    403: {
+        name: "Forbidden",
+        meaning: "Request refused.",
+        causes: [
+            "Cloudflare security (WAF managed rules, Bot Fight, IP rule) blocked it",
+            "App-level permission check",
+            "Upstream API refusing a Worker subrequest",
+        ],
+        fixes: [
+            "If securityAction is block/challenge, review Security → Events",
+            "Otherwise check the app's authz",
+        ],
+    },
+    404: {
+        name: "Not Found",
+        meaning: "No resource at that path.",
+        causes: [
+            "Broken/old links or removed pages",
+            "Scanners probing /wp-admin, /.env, etc.",
+            "Missing static asset after a deploy",
+            "API route missing or unknown resource id",
+        ],
+        fixes: [
+            "Look at top 404 paths — real paths need a redirect; scanner noise can be ignored or blocked",
+        ],
+    },
+    405: {
+        name: "Method Not Allowed",
+        meaning: "Path exists but not for this HTTP method.",
+        causes: ["POST to a static page", "API route missing a handler"],
+        fixes: ["Add the handler or fix the caller"],
+    },
+    408: {
+        name: "Request Timeout",
+        meaning: "Client was too slow to send the request.",
+        causes: ["Slow/mobile clients", "Large uploads"],
+        fixes: ["Usually client-side"],
+    },
+    409: {
+        name: "Conflict",
+        meaning: "State conflict (duplicate, version clash).",
+        causes: ["Concurrent writes", "Duplicate create"],
+        fixes: ["Check idempotency of the endpoint"],
+    },
+    413: {
+        name: "Payload Too Large",
+        meaning: "Body exceeds the limit (100 MB on Free).",
+        causes: ["Large upload"],
+        fixes: ["Chunk uploads or use R2 presigned URLs"],
+    },
+    429: {
+        name: "Too Many Requests",
+        meaning: "Rate limited.",
+        causes: [
+            "Cloudflare rate-limit rule",
+            "App-level rate limiter",
+            "Upstream API throttling",
+        ],
+        fixes: [
+            "Check whether securitySource is a rate-limit rule; tune thresholds",
+        ],
+    },
+    499: {
+        name: "Client Closed Request",
+        meaning:
+            "Visitor disconnected before the response finished (Cloudflare-specific code).",
+        causes: [
+            "User navigated away / closed the tab",
+            "Slow origin made the client give up",
+            "Browser cancelled a prefetch or duplicate request",
+        ],
+        fixes: [
+            "If paired with high origin time or clientDisconnected Function outcomes, speed up the origin",
+        ],
+    },
+    500: {
+        name: "Internal Server Error",
+        meaning: "The origin/Function crashed while handling the request.",
+        causes: [
+            "Unhandled exception in a Worker / Pages Function (error 1101)",
+            "Bad deploy",
+        ],
+        fixes: [
+            "Check Functions outcomes for scriptThrewException and tail the Worker logs",
+        ],
+    },
+    502: {
+        name: "Bad Gateway",
+        meaning: "Cloudflare got an invalid response from the origin.",
+        causes: [
+            "Origin returned garbage or reset the connection",
+            "Worker subrequest failed",
+        ],
+        fixes: ["Check the origin / Worker subrequest target"],
+    },
+    503: {
+        name: "Service Unavailable",
+        meaning: "Origin is overloaded, down, or the Worker was killed.",
+        causes: [
+            "Worker / Pages Function exceeded CPU or memory limits (error 1102 → 503)",
+            "App returned 503 itself (maintenance, upstream unavailable)",
+            "Overloaded origin",
+        ],
+        fixes: [
+            "Check Functions outcomes for exceededResources and plan limits",
+        ],
+    },
+    504: {
+        name: "Gateway Timeout",
+        meaning: "The origin did not answer in time.",
+        causes: [
+            "Early Hints cache lookup miss (requestSource earlyHintsCache) — internal, not visitor-facing",
+            "Pages Function / Worker exceeded CPU or memory (exceededResources)",
+            "Slow upstream fetch (DB, third-party API)",
+            "Origin unreachable",
+        ],
+        fixes: [
+            "Split by requestSource first: earlyHintsCache rows are noise",
+            "For visitor (eyeball) 504s, look for exceededResources on the Function behind this host",
+            "Add timeouts + caching around slow upstream calls",
+        ],
+    },
+    520: {
+        name: "Unknown Error (CF)",
+        meaning: "Origin returned an empty/unknown response.",
+        causes: ["Origin crashed mid-response", "Response headers too large"],
+        fixes: ["Check origin logs"],
+    },
+    521: {
+        name: "Web Server Is Down (CF)",
+        meaning: "Origin refused the connection.",
+        causes: ["Origin server offline", "Firewall blocking Cloudflare IPs"],
+        fixes: ["Bring the origin up / allowlist Cloudflare IPs"],
+    },
+    522: {
+        name: "Connection Timed Out (CF)",
+        meaning: "TCP handshake to origin timed out.",
+        causes: [
+            "Origin overloaded or unreachable",
+            "Wildcard / stale DNS record pointing at an IP that no longer serves",
+        ],
+        fixes: [
+            "Check origin health / network",
+            "Remove DNS records whose origin is gone",
+        ],
+    },
+    523: {
+        name: "Origin Is Unreachable (CF)",
+        meaning: "No route to the origin.",
+        causes: ["Wrong DNS target", "Origin IP changed"],
+        fixes: ["Fix the DNS record"],
+    },
+    524: {
+        name: "A Timeout Occurred (CF)",
+        meaning: "Origin accepted the connection but took >100s.",
+        causes: ["Long-running request"],
+        fixes: ["Move long work to a Queue / Workflow"],
+    },
+    525: {
+        name: "SSL Handshake Failed (CF)",
+        meaning: "TLS to origin failed.",
+        causes: ["Origin cert/cipher mismatch"],
+        fixes: ["Check SSL/TLS mode and origin cert"],
+    },
+    526: {
+        name: "Invalid SSL Certificate (CF)",
+        meaning: "Origin cert invalid under Full (strict).",
+        causes: ["Expired/self-signed origin cert"],
+        fixes: ["Renew the origin cert or use an Origin CA cert"],
+    },
+    530: {
+        name: "Origin DNS Error (CF)",
+        meaning:
+            "Cloudflare could not resolve the origin (often with 1xxx error).",
+        causes: ["Dangling CNAME to a deleted Pages/Worker project"],
+        fixes: ["Remove or repoint the DNS record"],
+    },
 };
 
 export function statusInfo(code: number): StatusInfo {
@@ -198,22 +464,76 @@ export function statusInfo(code: number): StatusInfo {
     if (k) return { code, ...k };
     const cls = classOf(code);
     const generic: Record<StatusClass, Omit<StatusInfo, "code">> = {
-        "1xx": { name: "Informational", meaning: "Interim response.", causes: [], fixes: [], benign: true },
-        "2xx": { name: "Success", meaning: "Request succeeded.", causes: [], fixes: [], benign: true },
-        "3xx": { name: "Redirect", meaning: "Client was sent elsewhere.", causes: ["Redirect rule or app redirect"], fixes: ["Usually benign"], benign: true },
-        "4xx": { name: "Client error", meaning: "The request was rejected.", causes: ["Bad input, auth or missing resource"], fixes: ["Inspect top paths for this code"] },
-        "5xx": { name: "Server error", meaning: "The origin failed.", causes: ["Origin or Function failure"], fixes: ["Check Functions outcomes and origin health"] },
+        "1xx": {
+            name: "Informational",
+            meaning: "Interim response.",
+            causes: [],
+            fixes: [],
+            benign: true,
+        },
+        "2xx": {
+            name: "Success",
+            meaning: "Request succeeded.",
+            causes: [],
+            fixes: [],
+            benign: true,
+        },
+        "3xx": {
+            name: "Redirect",
+            meaning: "Client was sent elsewhere.",
+            causes: ["Redirect rule or app redirect"],
+            fixes: ["Usually benign"],
+            benign: true,
+        },
+        "4xx": {
+            name: "Client error",
+            meaning: "The request was rejected.",
+            causes: ["Bad input, auth or missing resource"],
+            fixes: ["Inspect top paths for this code"],
+        },
+        "5xx": {
+            name: "Server error",
+            meaning: "The origin failed.",
+            causes: ["Origin or Function failure"],
+            fixes: ["Check Functions outcomes and origin health"],
+        },
     };
     return { code, ...generic[cls] };
 }
 
 /** What each `requestSource` value means. */
-export const REQUEST_SOURCE_INFO: Record<string, { label: string; meaning: string; visitor: boolean }> = {
-    eyeball: { label: "Visitor", meaning: "A real client request (browser, bot, API caller).", visitor: true },
-    earlyHintsCache: { label: "Early Hints lookup", meaning: "Cloudflare's own lookup in the Early Hints cache for an HTML navigation. A 504 with origin status 0 here just means no hints were cached for that URL — the visitor's page request is logged separately.", visitor: false },
-    inBrowserChallenge: { label: "Challenge platform", meaning: "Fetches made by a Cloudflare JS / managed challenge running in the visitor's browser (/cdn-cgi/challenge-platform).", visitor: false },
-    edgeWorkerFetch: { label: "Worker subrequest", meaning: "An outbound fetch() made by one of your Workers. The Worker is the client, so the host may not even be yours (e.g. api.github.com).", visitor: false },
-    edgeWorkerCacheAPI: { label: "Worker Cache API", meaning: "A cache.match/put made by a Worker.", visitor: false },
+export const REQUEST_SOURCE_INFO: Record<
+    string,
+    { label: string; meaning: string; visitor: boolean }
+> = {
+    eyeball: {
+        label: "Visitor",
+        meaning: "A real client request (browser, bot, API caller).",
+        visitor: true,
+    },
+    earlyHintsCache: {
+        label: "Early Hints lookup",
+        meaning:
+            "Cloudflare's own lookup in the Early Hints cache for an HTML navigation. A 504 with origin status 0 here just means no hints were cached for that URL — the visitor's page request is logged separately.",
+        visitor: false,
+    },
+    inBrowserChallenge: {
+        label: "Challenge platform",
+        meaning:
+            "Fetches made by a Cloudflare JS / managed challenge running in the visitor's browser (/cdn-cgi/challenge-platform).",
+        visitor: false,
+    },
+    edgeWorkerFetch: {
+        label: "Worker subrequest",
+        meaning:
+            "An outbound fetch() made by one of your Workers. The Worker is the client, so the host may not even be yours (e.g. api.github.com).",
+        visitor: false,
+    },
+    edgeWorkerCacheAPI: {
+        label: "Worker Cache API",
+        meaning: "A cache.match/put made by a Worker.",
+        visitor: false,
+    },
 };
 
 export function requestSourceInfo(src: string) {
@@ -250,15 +570,57 @@ export const SECURITY_SOURCE_INFO: Record<string, string> = {
 };
 
 /** What each Workers / Pages Functions invocation outcome means. */
-export const FUNCTION_OUTCOME_INFO: Record<string, { label: string; meaning: string; severity: Severity }> = {
-    success: { label: "Success", meaning: "The script ran to completion. The response it produced may still be a 4xx/5xx written by your own code.", severity: "info" },
-    clientDisconnected: { label: "Client disconnected", meaning: "The visitor went away before the script finished (closed tab, navigated, gave up). Usually benign; a high share alongside slow responses means users are giving up (shows as 499).", severity: "info" },
-    exceededResources: { label: "Exceeded resources", meaning: "Killed for exceeding the CPU-time limit (10 ms per invocation on the Free plan) or the 128 MB memory limit. The visitor gets Cloudflare error 1102 (HTTP 503).", severity: "critical" },
-    exceededCpu: { label: "Exceeded CPU", meaning: "Killed for exceeding the CPU-time limit. Visitor gets error 1102 (HTTP 503).", severity: "critical" },
-    exceededMemory: { label: "Exceeded memory", meaning: "Killed for exceeding the 128 MB memory limit. Visitor gets error 1102 (HTTP 503).", severity: "critical" },
-    scriptThrewException: { label: "Threw exception", meaning: "An uncaught exception escaped the handler. The visitor gets Cloudflare error 1101 (HTTP 500).", severity: "critical" },
-    responseStreamDisconnected: { label: "Stream disconnected", meaning: "The response stream was cut off mid-body.", severity: "warning" },
-    internal: { label: "Internal error", meaning: "Cloudflare-side runtime failure; retry, and contact support if persistent.", severity: "warning" },
+export const FUNCTION_OUTCOME_INFO: Record<
+    string,
+    { label: string; meaning: string; severity: Severity }
+> = {
+    success: {
+        label: "Success",
+        meaning:
+            "The script ran to completion. The response it produced may still be a 4xx/5xx written by your own code.",
+        severity: "info",
+    },
+    clientDisconnected: {
+        label: "Client disconnected",
+        meaning:
+            "The visitor went away before the script finished (closed tab, navigated, gave up). Usually benign; a high share alongside slow responses means users are giving up (shows as 499).",
+        severity: "info",
+    },
+    exceededResources: {
+        label: "Exceeded resources",
+        meaning:
+            "Killed for exceeding the CPU-time limit (10 ms per invocation on the Free plan) or the 128 MB memory limit. The visitor gets Cloudflare error 1102 (HTTP 503).",
+        severity: "critical",
+    },
+    exceededCpu: {
+        label: "Exceeded CPU",
+        meaning:
+            "Killed for exceeding the CPU-time limit. Visitor gets error 1102 (HTTP 503).",
+        severity: "critical",
+    },
+    exceededMemory: {
+        label: "Exceeded memory",
+        meaning:
+            "Killed for exceeding the 128 MB memory limit. Visitor gets error 1102 (HTTP 503).",
+        severity: "critical",
+    },
+    scriptThrewException: {
+        label: "Threw exception",
+        meaning:
+            "An uncaught exception escaped the handler. The visitor gets Cloudflare error 1101 (HTTP 500).",
+        severity: "critical",
+    },
+    responseStreamDisconnected: {
+        label: "Stream disconnected",
+        meaning: "The response stream was cut off mid-body.",
+        severity: "warning",
+    },
+    internal: {
+        label: "Internal error",
+        meaning:
+            "Cloudflare-side runtime failure; retry, and contact support if persistent.",
+        severity: "warning",
+    },
 };
 
 export function functionOutcomeInfo(status: string) {
@@ -296,7 +658,8 @@ export interface Finding {
 
 const SCANNER =
     /(wp-|wordpress|\.env|\.git|phpmyadmin|\.php|xmlrpc|cgi-bin|\.aspx?|\/admin\.|\.sql|\/vendor\/|\.ds_store|\.netrc|\.terraform|\.aws|\.ssh|\/actuator|\/boaform|\/owa\/)/i;
-const AUTH_PATH = /(login|signin|sign-in|signup|sign-up|register|\/auth\/|session|oauth)/i;
+const AUTH_PATH =
+    /(login|signin|sign-in|signup|sign-up|register|\/auth\/|session|oauth)/i;
 const SESSION_PROBE = /(\/auth\/me|\/session|\/user\/me|\/whoami|\/api\/me)\b/i;
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -379,7 +742,9 @@ export function diagnose(input: {
                             r.requestSource,
                             (bySource.get(r.requestSource) || 0) + r.count,
                         );
-            const topSource = Array.from(bySource).sort((a, b) => b[1] - a[1])[0]?.[0];
+            const topSource = Array.from(bySource).sort(
+                (a, b) => b[1] - a[1],
+            )[0]?.[0];
 
             const reasons: string[] = [];
             const fixes: string[] = [];
@@ -437,7 +802,9 @@ export function diagnose(input: {
             const vis = rows.filter((r) => r.requestSource === "eyeball");
             const vTotal = vis.reduce((a, r) => a + r.count, 0);
             const vFrac = (pred: (r: NonOkRow) => boolean) =>
-                vTotal ? vis.filter(pred).reduce((a, r) => a + r.count, 0) / vTotal : 0;
+                vTotal
+                    ? vis.filter(pred).reduce((a, r) => a + r.count, 0) / vTotal
+                    : 0;
             const noOrigin = vFrac((r) => r.originStatus === 0);
             const originSame = vFrac((r) => r.originStatus === status);
             if (vTotal && cls === "5xx" && noOrigin > 0.5) {
@@ -459,7 +826,9 @@ export function diagnose(input: {
             );
             if (sec.length) {
                 const top = [...sec].sort((a, b) => b.count - a.count)[0];
-                const by = SECURITY_SOURCE_INFO[top.securitySource] || top.securitySource;
+                const by =
+                    SECURITY_SOURCE_INFO[top.securitySource] ||
+                    top.securitySource;
                 reasons.push(
                     `Cloudflare security answered instead of your app: ${top.securityAction} by ${by} on ${pct(frac((r) => sec.includes(r)))} of them (origin never contacted).`,
                 );
@@ -484,11 +853,17 @@ export function diagnose(input: {
             const challenge = frac((r) =>
                 r.path.startsWith("/cdn-cgi/challenge-platform"),
             );
-            if (rows.length && challenge > 0.5 && !(internalShare > 0.5 && topSource === "inBrowserChallenge"))
+            if (
+                rows.length &&
+                challenge > 0.5 &&
+                !(internalShare > 0.5 && topSource === "inBrowserChallenge")
+            )
                 reasons.push(
                     `${pct(challenge)} are /cdn-cgi/challenge-platform fetches — part of a Cloudflare challenge, not your app.`,
                 );
-            const emailProt = frac((r) => r.path.startsWith("/cdn-cgi/l/email-protection"));
+            const emailProt = frac((r) =>
+                r.path.startsWith("/cdn-cgi/l/email-protection"),
+            );
             if (rows.length && emailProt > 0.3)
                 reasons.push(
                     `${pct(emailProt)} are /cdn-cgi/l/email-protection — bots following Email Obfuscation links without running its JS. Harmless.`,
@@ -519,12 +894,18 @@ export function diagnose(input: {
                     `${fnName} logged ${n(f.requests)} × ${f.status}${matches ? " — this is the direct cause: " : " — "}${o.meaning}`,
                 );
             }
-            if (cls === "5xx" && bad.some((f) => f.status.startsWith("exceeded"))) {
+            if (
+                cls === "5xx" &&
+                bad.some((f) => f.status.startsWith("exceeded"))
+            ) {
                 fixes.push(
                     "Profile the Function: move heavy work (markdown/HTML rendering, crypto, big JSON) off the request path, cache upstream calls, or move to Workers Paid (30 s CPU).",
                 );
             }
-            if (cls === "5xx" && bad.some((f) => f.status === "scriptThrewException")) {
+            if (
+                cls === "5xx" &&
+                bad.some((f) => f.status === "scriptThrewException")
+            ) {
                 fixes.push(
                     "Run `wrangler pages deployment tail` / `wrangler tail` to capture the stack trace and wrap the handler in try/catch.",
                 );
@@ -581,9 +962,10 @@ export function diagnose(input: {
                 const apiRows = rows.filter(
                     (r) => r.path.startsWith("/api/") && !SCANNER.test(r.path),
                 );
-                const api =
-                    apiRows.reduce((a, r) => a + r.count, 0) / rowTotal;
-                const topApi = [...apiRows].sort((a, b) => b.count - a.count)[0];
+                const api = apiRows.reduce((a, r) => a + r.count, 0) / rowTotal;
+                const topApi = [...apiRows].sort(
+                    (a, b) => b.count - a.count,
+                )[0];
                 if (api > 0.1 && topApi)
                     reasons.push(
                         `${pct(api)} are under /api/ (top: ${topApi.method} ${topApi.path}) — the app's API router answered 404, i.e. a client calls a route that is not deployed or asks for a resource id that does not exist. These are real app calls, not scanners.`,
@@ -615,7 +997,10 @@ export function diagnose(input: {
             // --- severity (judged on what visitors actually got)
             const vShare = h.total ? visitorCount / h.total : 0;
             let severity: Severity = "info";
-            if (anomaly || (!inZone(h.host) && topSource === "edgeWorkerFetch")) {
+            if (
+                anomaly ||
+                (!inZone(h.host) && topSource === "edgeWorkerFetch")
+            ) {
                 severity =
                     cls === "5xx" && visitorCount >= 25 ? "warning" : "info";
             } else if (cls === "5xx") {

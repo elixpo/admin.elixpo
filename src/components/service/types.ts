@@ -8,8 +8,8 @@ import type {
     HostStatusRow,
     NonOkRow,
     Result,
-    TimelinePoint,
     SourceRow,
+    TimelinePoint,
 } from "@/lib/diagnostics-core";
 import type { PagesDetail } from "@/lib/discovery";
 import type { ZoneBreakdown } from "@/lib/metrics";
@@ -132,7 +132,10 @@ export type TabData =
 
 export type Health = "healthy" | "degraded" | "idle";
 
-export function healthOf(byClass: Record<string, number>, total: number): Health {
+export function healthOf(
+    byClass: Record<string, number>,
+    total: number,
+): Health {
     if (!total) return "idle";
     if ((byClass["5xx"] || 0) / total > 0.01) return "degraded";
     if ((byClass["4xx"] || 0) / total > 0.2) return "degraded";
@@ -142,6 +145,11 @@ export function healthOf(byClass: Record<string, number>, total: number): Health
 /* ---------------------------------------------------- client-safe helpers */
 
 /** Cache statuses that mean "served from Cloudflare's cache". */
-export const CACHE_SERVED = new Set(["hit", "stale", "updating", "revalidated"]);
+export const CACHE_SERVED = new Set([
+    "hit",
+    "stale",
+    "updating",
+    "revalidated",
+]);
 
 export { classOf } from "@/lib/diagnostics-core";

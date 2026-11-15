@@ -121,7 +121,11 @@ export default function StatusTimeline({
                     {[...model.layers].reverse().map((l) => (
                         <Box
                             key={l.c}
-                            sx={{ display: "flex", alignItems: "center", gap: 0.6 }}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.6,
+                            }}
                         >
                             <Box
                                 sx={{
@@ -131,11 +135,17 @@ export default function StatusTimeline({
                                     bgcolor: STATUS_COLORS[l.c],
                                 }}
                             />
-                            <Typography sx={{ fontSize: "0.74rem", color: C.textDim }}>
+                            <Typography
+                                sx={{ fontSize: "0.74rem", color: C.textDim }}
+                            >
                                 {l.c}
                                 <Box
                                     component="span"
-                                    sx={{ color: C.text, fontWeight: 700, ml: 0.6 }}
+                                    sx={{
+                                        color: C.text,
+                                        fontWeight: 700,
+                                        ml: 0.6,
+                                    }}
                                 >
                                     {fmt(l.total)}
                                 </Box>
@@ -316,7 +326,10 @@ export default function StatusTimeline({
                                             }}
                                         />
                                         <Typography
-                                            sx={{ fontSize: "0.72rem", color: C.textDim }}
+                                            sx={{
+                                                fontSize: "0.72rem",
+                                                color: C.textDim,
+                                            }}
                                         >
                                             {c}
                                         </Typography>
@@ -359,8 +372,12 @@ export default function StatusTimeline({
                 }}
             >
                 <span suppressHydrationWarning>{fmtTs(points[0].ts)}</span>
-                <span suppressHydrationWarning>{fmtTs(points[Math.floor(points.length / 2)].ts)}</span>
-                <span suppressHydrationWarning>{fmtTs(points[points.length - 1].ts)}</span>
+                <span suppressHydrationWarning>
+                    {fmtTs(points[Math.floor(points.length / 2)].ts)}
+                </span>
+                <span suppressHydrationWarning>
+                    {fmtTs(points[points.length - 1].ts)}
+                </span>
             </Box>
         </Box>
     );

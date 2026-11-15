@@ -100,7 +100,9 @@ export function SectionTitle({
         <Box sx={{ mb: 1.25, mt: 0.5 }}>
             <Typography sx={{ ...eyebrow }}>{children}</Typography>
             {note && (
-                <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", mt: 0.25 }}>
+                <Typography
+                    sx={{ color: C.textMuted, fontSize: "0.78rem", mt: 0.25 }}
+                >
                     {note}
                 </Typography>
             )}
@@ -123,7 +125,9 @@ export function Note({ children }: { children: React.ReactNode }) {
                 mt: 1,
             }}
         >
-            <InfoOutlined sx={{ fontSize: "0.9rem", mt: "1px", color: C.blue }} />
+            <InfoOutlined
+                sx={{ fontSize: "0.9rem", mt: "1px", color: C.blue }}
+            />
             <Box>{children}</Box>
         </Box>
     );
@@ -192,9 +196,13 @@ export function KV({
                     }}
                 >
                     <Box sx={{ minWidth: 0 }}>
-                        <Typography sx={{ fontSize: "0.8rem", color: C.text }}>{r.k}</Typography>
+                        <Typography sx={{ fontSize: "0.8rem", color: C.text }}>
+                            {r.k}
+                        </Typography>
                         {r.hint && (
-                            <Typography sx={{ fontSize: "0.7rem", color: C.textMuted }}>
+                            <Typography
+                                sx={{ fontSize: "0.7rem", color: C.textMuted }}
+                            >
                                 {r.hint}
                             </Typography>
                         )}
@@ -241,7 +249,14 @@ export function DataTable<T>({
     const [all, setAll] = useState(false);
     if (!rows.length) {
         return (
-            <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", py: 2, textAlign: "center" }}>
+            <Typography
+                sx={{
+                    color: C.textMuted,
+                    fontSize: "0.82rem",
+                    py: 2,
+                    textAlign: "center",
+                }}
+            >
                 {empty}
             </Typography>
         );
@@ -284,7 +299,10 @@ export function DataTable<T>({
                             {cols.map((c) => (
                                 <th
                                     key={c.key}
-                                    style={{ textAlign: c.align || "left", width: c.width }}
+                                    style={{
+                                        textAlign: c.align || "left",
+                                        width: c.width,
+                                    }}
                                 >
                                     {c.label}
                                 </th>
@@ -300,14 +318,25 @@ export function DataTable<T>({
                                         key={c.key}
                                         style={{
                                             textAlign: c.align || "left",
-                                            fontFamily: c.mono ? C.mono : undefined,
+                                            fontFamily: c.mono
+                                                ? C.mono
+                                                : undefined,
                                             fontVariantNumeric: "tabular-nums",
-                                            whiteSpace: c.mono ? "nowrap" : undefined,
+                                            whiteSpace: c.mono
+                                                ? "nowrap"
+                                                : undefined,
                                         }}
                                     >
                                         {c.render
                                             ? c.render(r)
-                                            : String((r as Record<string, unknown>)[c.key] ?? "—")}
+                                            : String(
+                                                  (
+                                                      r as Record<
+                                                          string,
+                                                          unknown
+                                                      >
+                                                  )[c.key] ?? "—",
+                                              )}
                                     </td>
                                 ))}
                             </tr>
@@ -409,7 +438,14 @@ export function StackedBars({
 
     if (!points.length) {
         return (
-            <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", py: 4, textAlign: "center" }}>
+            <Typography
+                sx={{
+                    color: C.textMuted,
+                    fontSize: "0.82rem",
+                    py: 4,
+                    textAlign: "center",
+                }}
+            >
                 No data in this window.
             </Typography>
         );
@@ -423,12 +459,31 @@ export function StackedBars({
         <Box>
             <Box sx={{ display: "flex", gap: 1.75, mb: 1, flexWrap: "wrap" }}>
                 {cols.map((c) => (
-                    <Box key={c.key} sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: "2px", bgcolor: c.color }} />
-                        <Typography sx={{ fontSize: "0.72rem", color: C.textDim }}>
+                    <Box
+                        key={c.key}
+                        sx={{ display: "flex", alignItems: "center", gap: 0.6 }}
+                    >
+                        <Box
+                            sx={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "2px",
+                                bgcolor: c.color,
+                            }}
+                        />
+                        <Typography
+                            sx={{ fontSize: "0.72rem", color: C.textDim }}
+                        >
                             {c.label}
-                            <Box component="span" sx={{ color: C.text, fontWeight: 650, ml: 0.5 }}>
-                                {fmt(hp ? Number(hp[c.key]) || 0 : totals[c.key] || 0)}
+                            <Box
+                                component="span"
+                                sx={{ color: C.text, fontWeight: 650, ml: 0.5 }}
+                            >
+                                {fmt(
+                                    hp
+                                        ? Number(hp[c.key]) || 0
+                                        : totals[c.key] || 0,
+                                )}
                             </Box>
                         </Typography>
                     </Box>
@@ -461,13 +516,20 @@ export function StackedBars({
                         let y = PAD.top + innerH;
                         const gap = bw > 4 ? Math.min(2, bw * 0.15) : 0;
                         return (
-                            // biome-ignore lint/a11y/noStaticElementInteractions: hover readout only
                             <g
                                 key={p.ts}
                                 onMouseEnter={() => setHover(i)}
-                                opacity={hover == null || hover === i ? 1 : 0.55}
+                                opacity={
+                                    hover == null || hover === i ? 1 : 0.55
+                                }
                             >
-                                <rect x={i * bw} y={0} width={bw} height={H} fill="transparent" />
+                                <rect
+                                    x={i * bw}
+                                    y={0}
+                                    width={bw}
+                                    height={H}
+                                    fill="transparent"
+                                />
                                 {cols.map((c) => {
                                     const v = Number(p[c.key]) || 0;
                                     if (!v) return null;
@@ -489,11 +551,29 @@ export function StackedBars({
                     })}
                 </svg>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 0.5 }}>
-                <Typography sx={{ fontSize: "0.68rem", color: C.textMuted, fontFamily: C.mono }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mt: 0.5,
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: "0.68rem",
+                        color: C.textMuted,
+                        fontFamily: C.mono,
+                    }}
+                >
                     {hp ? fmtTs(hp.ts) : fmtTs(points[0].ts)}
                 </Typography>
-                <Typography sx={{ fontSize: "0.68rem", color: C.textMuted, fontFamily: C.mono }}>
+                <Typography
+                    sx={{
+                        fontSize: "0.68rem",
+                        color: C.textMuted,
+                        fontFamily: C.mono,
+                    }}
+                >
                     {hp ? `peak ${fmt(max)}` : fmtTs(points[n - 1].ts)}
                 </Typography>
             </Box>
@@ -501,10 +581,12 @@ export function StackedBars({
     );
 }
 
-export const STATUS_KEYS: StackKey[] = ["2xx", "3xx", "4xx", "5xx", "1xx"].map((k) => ({
-    key: k,
-    color: STATUS_COLORS[k],
-}));
+export const STATUS_KEYS: StackKey[] = ["2xx", "3xx", "4xx", "5xx", "1xx"].map(
+    (k) => ({
+        key: k,
+        color: STATUS_COLORS[k],
+    }),
+);
 
 /* ----------------------------------------------------- horizontal stack bar */
 
@@ -534,7 +616,10 @@ export function ShareBar({
                         <Box
                             key={p.label}
                             title={`${p.label}: ${p.value.toLocaleString()} (${pct(p.value / total)})`}
-                            sx={{ width: `${(p.value / total) * 100}%`, bgcolor: p.color }}
+                            sx={{
+                                width: `${(p.value / total) * 100}%`,
+                                bgcolor: p.color,
+                            }}
                         />
                     ))}
         </Box>

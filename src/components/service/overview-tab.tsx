@@ -15,9 +15,9 @@ import {
 } from "@/components/service/kit";
 import {
     CACHE_SERVED,
-    classOf,
     type OverviewData,
     type ServiceCtx,
+    classOf,
 } from "@/components/service/types";
 import {
     C,
@@ -33,7 +33,10 @@ import {
 } from "@/components/ui";
 import { Box, Typography } from "@mui/material";
 
-export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: OverviewData }) {
+export default function OverviewTab({
+    ctx,
+    data,
+}: { ctx: ServiceCtx; data: OverviewData }) {
     const s = ctx.service;
     const base = `/dashboard/services/${encodeURIComponent(s.host)}`;
     const withRange = (tab: string) =>
@@ -41,7 +44,13 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
     const pts = data.series.data.points;
     const tot = data.series.data.totals;
 
-    const byClass: Record<string, number> = { "1xx": 0, "2xx": 0, "3xx": 0, "4xx": 0, "5xx": 0 };
+    const byClass: Record<string, number> = {
+        "1xx": 0,
+        "2xx": 0,
+        "3xx": 0,
+        "4xx": 0,
+        "5xx": 0,
+    };
     const codes = new Map<number, number>();
     for (const r of data.matrix.data) {
         byClass[classOf(r.status)] += r.count;
@@ -61,7 +70,9 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
         <Box>
             {!data.series.available && (
                 <Box sx={{ mb: 1.5 }}>
-                    <SectionError message={`Traffic unavailable: ${data.series.error}`} />
+                    <SectionError
+                        message={`Traffic unavailable: ${data.series.error}`}
+                    />
                 </Box>
             )}
             <Grid min={170}>
@@ -88,20 +99,32 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
                 <KpiTile
                     label="Cache hit ratio"
                     value={cacheTotal ? pct(cacheHit / cacheTotal) : "—"}
-                    sub={cacheTotal ? `${fmt(cacheHit)} served from cache` : "no data"}
+                    sub={
+                        cacheTotal
+                            ? `${fmt(cacheHit)} served from cache`
+                            : "no data"
+                    }
                     href={withRange("cache")}
                 />
                 <KpiTile
                     label="2xx share"
                     value={mTotal ? pct(byClass["2xx"] / mTotal) : "—"}
-                    sub={mTotal ? `${fmt(mTotal - byClass["2xx"])} non-2xx` : "no traffic"}
+                    sub={
+                        mTotal
+                            ? `${fmt(mTotal - byClass["2xx"])} non-2xx`
+                            : "no traffic"
+                    }
                     color={STATUS_COLORS["2xx"]}
                     href={withRange("status")}
                 />
                 <KpiTile
                     label="5xx errors"
                     value={fmt(fivexx)}
-                    sub={mTotal ? `${pct(fivexx / mTotal, 2)} of requests` : undefined}
+                    sub={
+                        mTotal
+                            ? `${pct(fivexx / mTotal, 2)} of requests`
+                            : undefined
+                    }
                     color={STATUS_COLORS["5xx"]}
                     href={withRange("status")}
                 />
@@ -117,13 +140,26 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
             <Grid cols={3}>
                 <Wide>
                     <Grid cols={3} mb={0}>
-                        <Box sx={{ gridColumn: { xs: "auto", lg: "span 2" }, minWidth: 0 }}>
+                        <Box
+                            sx={{
+                                gridColumn: { xs: "auto", lg: "span 2" },
+                                minWidth: 0,
+                            }}
+                        >
                             <Panel title={`Requests · ${ctx.rangeLabel}`}>
                                 <MetricChart
                                     points={pts}
                                     series={[
-                                        { key: "requests", label: "Requests", color: C.blue },
-                                        { key: "visits", label: "Visits", color: C.green },
+                                        {
+                                            key: "requests",
+                                            label: "Requests",
+                                            color: C.blue,
+                                        },
+                                        {
+                                            key: "visits",
+                                            label: "Visits",
+                                            color: C.green,
+                                        },
                                     ]}
                                     height={210}
                                 />
@@ -131,7 +167,11 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
                         </Box>
                         <Panel
                             title="Status classes"
-                            action={<TextLink href={withRange("status")}>Details →</TextLink>}
+                            action={
+                                <TextLink href={withRange("status")}>
+                                    Details →
+                                </TextLink>
+                            }
                         >
                             {data.matrix.available ? (
                                 <>
@@ -150,24 +190,39 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
                                                     key={c}
                                                     sx={{
                                                         display: "flex",
-                                                        justifyContent: "space-between",
+                                                        justifyContent:
+                                                            "space-between",
                                                         py: 0.45,
                                                         fontSize: "0.78rem",
                                                         borderBottom: `1px solid ${C.border}`,
                                                     }}
                                                 >
-                                                    <Box component="span" sx={{ fontFamily: C.mono, color: C.text }}>
+                                                    <Box
+                                                        component="span"
+                                                        sx={{
+                                                            fontFamily: C.mono,
+                                                            color: C.text,
+                                                        }}
+                                                    >
                                                         {c}
                                                     </Box>
-                                                    <Box component="span" sx={{ color: C.textDim }}>
-                                                        {n.toLocaleString()} · {pct(n / (mTotal || 1))}
+                                                    <Box
+                                                        component="span"
+                                                        sx={{
+                                                            color: C.textDim,
+                                                        }}
+                                                    >
+                                                        {n.toLocaleString()} ·{" "}
+                                                        {pct(n / (mTotal || 1))}
                                                     </Box>
                                                 </Box>
                                             ))}
                                     </Box>
                                 </>
                             ) : (
-                                <SectionError message={data.matrix.error || "Unavailable"} />
+                                <SectionError
+                                    message={data.matrix.error || "Unavailable"}
+                                />
                             )}
                         </Panel>
                     </Grid>
@@ -175,13 +230,19 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
 
                 <Panel title="Top paths" dense>
                     <TopList
-                        items={data.breakdown.path.map((d) => ({ label: d.label, value: d.count }))}
+                        items={data.breakdown.path.map((d) => ({
+                            label: d.label,
+                            value: d.count,
+                        }))}
                         controls={false}
                     />
                 </Panel>
                 <Panel title="Top countries" dense>
                     <TopList
-                        items={data.breakdown.country.map((d) => ({ label: d.label, value: d.count }))}
+                        items={data.breakdown.country.map((d) => ({
+                            label: d.label,
+                            value: d.count,
+                        }))}
                         color={C.green}
                         controls={false}
                     />
@@ -189,14 +250,21 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
                 <Panel
                     title="Issues"
                     dense
-                    action={<TextLink href={withRange("status")}>All →</TextLink>}
+                    action={
+                        <TextLink href={withRange("status")}>All →</TextLink>
+                    }
                 >
                     {data.findingsError && (
                         <Box sx={{ p: 1 }}>
-                            <SectionError message={`Functions data unavailable: ${data.findingsError}`} />
+                            <SectionError
+                                message={`Functions data unavailable: ${data.findingsError}`}
+                            />
                         </Box>
                     )}
-                    <FindingList findings={data.findings} href={withRange("status")} />
+                    <FindingList
+                        findings={data.findings}
+                        href={withRange("status")}
+                    />
                 </Panel>
             </Grid>
 
@@ -207,7 +275,10 @@ export default function OverviewTab({ ctx, data }: { ctx: ServiceCtx; data: Over
 
 const CHART_TEAL = "#0e8a8a";
 
-function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx }) {
+function LinkedResources({
+    data,
+    ctx,
+}: { data: OverviewData; ctx: ServiceCtx }) {
     const s = ctx.service;
     const p = data.pages;
     const hasAny = s.pagesProject || s.workerScript || s.routes?.length;
@@ -216,7 +287,9 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
             <Panel title="Linked resources">
                 <Typography sx={{ fontSize: "0.82rem", color: C.textMuted }}>
                     No Pages project or Worker is attached to {s.host}
-                    {s.dnsTarget ? ` — it is answered by DNS (${s.dnsType} → ${s.dnsTarget}).` : "."}
+                    {s.dnsTarget
+                        ? ` — it is answered by DNS (${s.dnsType} → ${s.dnsTarget}).`
+                        : "."}
                 </Typography>
             </Panel>
         );
@@ -227,7 +300,14 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
     ) =>
         items.length > 0 && (
             <Box sx={{ mb: 1.25 }}>
-                <Typography sx={{ fontSize: "0.7rem", color: C.textMuted, fontWeight: 650, mb: 0.5 }}>
+                <Typography
+                    sx={{
+                        fontSize: "0.7rem",
+                        color: C.textMuted,
+                        fontWeight: 650,
+                        mb: 0.5,
+                    }}
+                >
                     {kind}
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
@@ -265,7 +345,9 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
                                   {
                                       k: "Pages project",
                                       v: (
-                                          <TextLink href={`/dashboard/projects/${s.pagesProject}`}>
+                                          <TextLink
+                                              href={`/dashboard/projects/${s.pagesProject}`}
+                                          >
                                               {s.pagesProject}
                                           </TextLink>
                                       ),
@@ -273,36 +355,63 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
                               ]
                             : []),
                         ...(s.functionScript
-                            ? [{ k: "Pages Functions script", v: s.functionScript }]
+                            ? [
+                                  {
+                                      k: "Pages Functions script",
+                                      v: s.functionScript,
+                                  },
+                              ]
                             : []),
                         ...(s.workerScript
                             ? [
                                   {
                                       k: "Worker",
-                                      v: <TextLink href="/dashboard/workers">{s.workerScript}</TextLink>,
+                                      v: (
+                                          <TextLink href="/dashboard/workers">
+                                              {s.workerScript}
+                                          </TextLink>
+                                      ),
                                   },
                               ]
                             : []),
-                        ...(s.routes?.length ? [{ k: "Routes", v: s.routes.join(", ") }] : []),
+                        ...(s.routes?.length
+                            ? [{ k: "Routes", v: s.routes.join(", ") }]
+                            : []),
                     ]}
                 />
                 {p ? (
                     <Box sx={{ mt: 1.5 }}>
                         {bind(
                             "D1 databases",
-                            p.d1.map((b) => ({ label: b.binding, href: b.id ? `/dashboard/d1/${b.id}` : undefined })),
+                            p.d1.map((b) => ({
+                                label: b.binding,
+                                href: b.id
+                                    ? `/dashboard/d1/${b.id}`
+                                    : undefined,
+                            })),
                         )}
                         {bind(
                             "KV namespaces",
-                            p.kv.map((b) => ({ label: b.binding, href: b.id ? `/dashboard/kv/${b.id}` : undefined })),
+                            p.kv.map((b) => ({
+                                label: b.binding,
+                                href: b.id
+                                    ? `/dashboard/kv/${b.id}`
+                                    : undefined,
+                            })),
                         )}
                         {bind(
                             "Durable Objects",
-                            p.durableObjects.map((b) => ({ label: b, href: "/dashboard/durable-objects" })),
+                            p.durableObjects.map((b) => ({
+                                label: b,
+                                href: "/dashboard/durable-objects",
+                            })),
                         )}
                         {bind(
                             "Queues",
-                            p.queues.map((b) => ({ label: b, href: "/dashboard/queues" })),
+                            p.queues.map((b) => ({
+                                label: b,
+                                href: "/dashboard/queues",
+                            })),
                         )}
                         {bind(
                             "Service bindings",
@@ -321,7 +430,9 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
                             )}
                     </Box>
                 ) : (
-                    s.pagesProject && <Note>Pages project detail unavailable.</Note>
+                    s.pagesProject && (
+                        <Note>Pages project detail unavailable.</Note>
+                    )
                 )}
             </Panel>
             <Panel title="Latest deployments" dense>
@@ -362,17 +473,36 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
                                         textOverflow: "ellipsis",
                                     }}
                                 >
-                                    {d.message?.split("\n")[0] || d.id.slice(0, 8)}
+                                    {d.message?.split("\n")[0] ||
+                                        d.id.slice(0, 8)}
                                 </Typography>
-                                <Typography sx={{ fontSize: "0.7rem", color: C.textMuted, fontFamily: C.mono }}>
+                                <Typography
+                                    sx={{
+                                        fontSize: "0.7rem",
+                                        color: C.textMuted,
+                                        fontFamily: C.mono,
+                                    }}
+                                >
                                     {d.environment || "—"}
                                     {d.branch ? ` · ${d.branch}` : ""}
-                                    {d.commit ? ` · ${d.commit.slice(0, 7)}` : ""}
-                                    {d.created_on ? ` · ${fmtTs(d.created_on)}` : ""}
+                                    {d.commit
+                                        ? ` · ${d.commit.slice(0, 7)}`
+                                        : ""}
+                                    {d.created_on
+                                        ? ` · ${fmtTs(d.created_on)}`
+                                        : ""}
                                 </Typography>
                             </Box>
                             {d.status && (
-                                <Pill tone={d.status === "success" ? "green" : d.status === "failure" ? "error" : "warn"}>
+                                <Pill
+                                    tone={
+                                        d.status === "success"
+                                            ? "green"
+                                            : d.status === "failure"
+                                              ? "error"
+                                              : "warn"
+                                    }
+                                >
                                     {d.status}
                                 </Pill>
                             )}
@@ -380,7 +510,9 @@ function LinkedResources({ data, ctx }: { data: OverviewData; ctx: ServiceCtx })
                     ))
                 ) : (
                     <Box sx={{ p: 1.75 }}>
-                        <Typography sx={{ fontSize: "0.8rem", color: C.textMuted }}>
+                        <Typography
+                            sx={{ fontSize: "0.8rem", color: C.textMuted }}
+                        >
                             {s.pagesProject
                                 ? "No deployments returned."
                                 : "Deployments are shown for Pages projects only."}

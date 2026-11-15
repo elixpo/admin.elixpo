@@ -29,7 +29,8 @@ export function sslTone(v: unknown): "green" | "warn" | "error" | "neutral" {
 
 export const SSL_MEANING: Record<string, string> = {
     off: "No HTTPS between visitors and Cloudflare.",
-    flexible: "Visitor ↔ Cloudflare is HTTPS, but Cloudflare ↔ origin is plain HTTP.",
+    flexible:
+        "Visitor ↔ Cloudflare is HTTPS, but Cloudflare ↔ origin is plain HTTP.",
     full: "HTTPS to the origin, certificate not validated.",
     strict: "HTTPS to the origin with a validated certificate (Full strict).",
 };

@@ -24,7 +24,5 @@ export default async function WorkersPage({
         })),
     );
 
-    return (
-        <WorkersView data={data} listError={inv.errors.workers?.error} />
-    );
+    return <WorkersView data={data} listError={inv.errors.workers?.error} />;
 }
